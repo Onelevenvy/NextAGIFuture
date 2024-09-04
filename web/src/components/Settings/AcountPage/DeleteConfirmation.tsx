@@ -28,8 +28,8 @@ const DeleteConfirmation = ({ isOpen, onClose }: DeleteProps) => {
     handleSubmit,
     formState: { isSubmitting },
   } = useForm();
-  const currentUser = queryClient.getQueryData<UserOut>("currentUser");
-  const { logout } = useAuth();
+
+  const { logout, currentUser } = useAuth();
 
   const deleteCurrentUser = async (id: number) => {
     await UsersService.deleteUser({ userId: id });

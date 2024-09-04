@@ -12,7 +12,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 
-
 import { useQueryClient } from "react-query";
 import Link from "next/link";
 import useAuth from "../../../hooks/useAuth";
@@ -23,16 +22,11 @@ import { forwardRef, BoxProps } from "@chakra-ui/react";
 import CustomModalWrapper from "../CustomModal";
 import AccountSetting from "@/components/Settings";
 const UserMenu = () => {
-  const { logout } = useAuth();
+  const { logout, currentUser } = useAuth();
 
   const handleLogout = async () => {
     logout();
   };
-
-  const queryClient = useQueryClient();
-  const currentUser = queryClient.getQueryData<UserOut>("currentUser");
-
-
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 

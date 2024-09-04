@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 
 import {
   type Body_login_login_access_token as AccessToken,
@@ -26,6 +26,10 @@ const useAuth = () => {
     }
   );
 
+  const queryClient = useQueryClient();
+
+  const currentUser = queryClient.getQueryData<UserOut>("currentUser");
+
   const login = async (data: AccessToken) => {
     const response = await LoginService.loginAccessToken({
       formData: data,
@@ -39,7 +43,7 @@ const useAuth = () => {
     navigate.push("/login");
   };
 
-  return { login, logout, user, isLoading };
+  return { login, logout, user, isLoading,currentUser};
 };
 
 export { isLoggedIn };

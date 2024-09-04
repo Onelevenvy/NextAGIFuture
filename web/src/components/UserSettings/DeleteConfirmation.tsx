@@ -11,7 +11,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
 
-import { type ApiError, type UserOut, UsersService } from "../../client";
+import { type ApiError, UsersService } from "../../client";
 import useAuth from "../../hooks/useAuth";
 import useCustomToast from "../../hooks/useCustomToast";
 
@@ -28,8 +28,8 @@ const DeleteConfirmation = ({ isOpen, onClose }: DeleteProps) => {
     handleSubmit,
     formState: { isSubmitting },
   } = useForm();
-  const currentUser = queryClient.getQueryData<UserOut>("currentUser");
-  const { logout } = useAuth();
+
+  const { logout,currentUser } = useAuth();
 
   const deleteCurrentUser = async (id: number) => {
     await UsersService.deleteUser({ userId: id });

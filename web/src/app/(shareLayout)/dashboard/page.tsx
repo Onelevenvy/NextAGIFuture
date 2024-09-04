@@ -1,15 +1,11 @@
-"use client"
+"use client";
 
 import { Box, Container, Text } from "@chakra-ui/react";
-import { useQueryClient } from "react-query";
-
-import type { UserOut } from "@/client";
 import React from "react";
+import useAuth from "@/hooks/useAuth";
 
 function Dashboard() {
-  const queryClient = useQueryClient();
-
-  const currentUser = queryClient.getQueryData<UserOut>("currentUser");
+  const { currentUser } = useAuth();
 
   return (
     <>

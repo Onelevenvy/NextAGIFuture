@@ -16,6 +16,7 @@ import ChangePassword from "@/components/UserSettings/ChangePassword";
 import DeleteAccount from "@/components/UserSettings/DeleteAccount";
 import UserInformation from "@/components/UserSettings/UserInformation";
 import React from "react";
+import useAuth from "@/hooks/useAuth";
 
 const tabsConfig = [
   { title: "My profile", component: UserInformation },
@@ -25,8 +26,8 @@ const tabsConfig = [
 ];
 
 function UserSettings() {
-  const queryClient = useQueryClient();
-  const currentUser = queryClient.getQueryData<UserOut>("currentUser");
+  const { currentUser } = useAuth();
+
   const finalTabs = currentUser?.is_superuser
     ? tabsConfig.slice(0, 3)
     : tabsConfig;

@@ -12,6 +12,7 @@ import {
   TabList,
   TabPanel,
   TabPanels,
+  Box,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { TeamsService, type ApiError } from "@/client";
@@ -54,7 +55,13 @@ function Team() {
         </Flex>
       ) : (
         team && (
-          <Container maxW="full" maxHeight="full" ml="8" overflow={"hidden"}>
+          <Container
+            maxW="full"
+            maxHeight="full"
+            ml="8"
+            mt="8"
+            overflow={"hidden"}
+          >
             <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
               <BreadcrumbItem>
                 <Link href="/teams">
@@ -74,27 +81,40 @@ function Team() {
               index={tabIndex}
               onChange={setTabIndex}
             >
-              <TabList>
-                <Tab>团队构建</Tab>
-                <Tab>Chat明细及调试</Tab>
-                <Tab>Threads记录</Tab>
-              </TabList>
+              {team.workflow === "sequential" ||
+              team.workflow === "hierarchical" ? (
+                <TabList>
+                  <Tab>团队构建</Tab>
+                  <Tab>Chat明细及调试</Tab>
+                  <Tab>Threads记录</Tab>
+                </TabList>
+              ) : null}
               <TabPanels>
                 <TabPanel height="80vh">
                   {team.workflow === "sequential" ||
                   team.workflow === "hierarchical" ? (
                     <Flow />
                   ) : (
+                    <Box border={"1px solid red"}>
                     <TeamSettings />
+                    </Box>
                   )}
                 </TabPanel>
 
-                <TabPanel>
-                  <ChatTeam />
-                </TabPanel>
-                <TabPanel>
-                  <ViewThreads teamId={teamId} updateTabIndex={setTabIndex} />
-                </TabPanel>
+                {team.workflow === "sequential" ||
+                team.workflow === "hierarchical" ? (
+                  <Box>
+                    <TabPanel>
+                      <ChatTeam />
+                    </TabPanel>
+                    <TabPanel>
+                      <ViewThreads
+                        teamId={teamId}
+                        updateTabIndex={setTabIndex}
+                      />
+                    </TabPanel>
+                  </Box>
+                ) : null}
               </TabPanels>
             </Tabs>
           </Container>
