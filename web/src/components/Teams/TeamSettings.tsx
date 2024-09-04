@@ -38,7 +38,7 @@ export default function TeamSettings() {
           <Spinner size="xl" color="ui.main" />
         </Flex>
       ) : (
-        <Box display={"flex"} flexDirection={"row"} maxH={"full"}>
+        <Box display={"flex"} flexDirection={"row"} maxH={"full"} h="full">
           <Box
             display={"flex"}
             bg="transparent"

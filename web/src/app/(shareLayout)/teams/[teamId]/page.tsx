@@ -28,7 +28,6 @@ import TeamSettings from "@/components/Teams/TeamSettings";
 
 function Team() {
   const showToast = useCustomToast();
-  //   const router = useRouter();
   const { teamId } = useParams() as { teamId: string };
 
   const [tabIndex, setTabIndex] = useState(0);
@@ -55,69 +54,74 @@ function Team() {
         </Flex>
       ) : (
         team && (
-          <Container
-            maxW="full"
-            maxHeight="full"
-            ml="8"
-            mt="8"
+          <Box
+            display={"flex"}
+            h="full"
+            maxH="full"
+            minH={"full"}
+            flexDirection={"column"}
             overflow={"hidden"}
           >
-            <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
-              <BreadcrumbItem>
-                <Link href="/teams">
-                  <BreadcrumbLink>Teams</BreadcrumbLink>
-                </Link>
-              </BreadcrumbItem>
-              <BreadcrumbItem isCurrentPage>
-                <Link href="#">
-                  <BreadcrumbLink>{team.name}</BreadcrumbLink>
-                </Link>
-              </BreadcrumbItem>
-            </Breadcrumb>
-
-            <Tabs
-              pt={2}
-              variant="enclosed"
-              index={tabIndex}
-              onChange={setTabIndex}
-            >
-              {team.workflow === "sequential" ||
-              team.workflow === "hierarchical" ? (
-                <TabList>
-                  <Tab>团队构建</Tab>
-                  <Tab>Chat明细及调试</Tab>
-                  <Tab>Threads记录</Tab>
-                </TabList>
-              ) : null}
-              <TabPanels>
-                <TabPanel height="80vh">
-                  {team.workflow === "sequential" ||
-                  team.workflow === "hierarchical" ? (
-                    <Flow />
-                  ) : (
-                    <Box border={"1px solid red"}>
-                    <TeamSettings />
-                    </Box>
-                  )}
-                </TabPanel>
-
+            <Box></Box>
+            <Box mt="4" ml="4">
+              <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
+                <BreadcrumbItem>
+                  <Link href="/teams">
+                    <BreadcrumbLink>Teams</BreadcrumbLink>
+                  </Link>
+                </BreadcrumbItem>
+                <BreadcrumbItem isCurrentPage>
+                  <Link href="#">
+                    <BreadcrumbLink>{team.name}</BreadcrumbLink>
+                  </Link>
+                </BreadcrumbItem>
+              </Breadcrumb>
+            </Box>
+            <Box maxW="full" display={"flex"} flexDirection={"column"} maxHeight="full" h="full" overflow={"hidden"} border={"1px solid blue"}>
+              <Tabs
+                pt={2}
+                variant="enclosed"
+                index={tabIndex}
+                onChange={setTabIndex}
+              >
                 {team.workflow === "sequential" ||
                 team.workflow === "hierarchical" ? (
-                  <Box>
-                    <TabPanel>
-                      <ChatTeam />
-                    </TabPanel>
-                    <TabPanel>
-                      <ViewThreads
-                        teamId={teamId}
-                        updateTabIndex={setTabIndex}
-                      />
-                    </TabPanel>
-                  </Box>
+                  <TabList>
+                    <Tab>团队构建</Tab>
+                    <Tab>Chat明细及调试</Tab>
+                    <Tab>Threads记录</Tab>
+                  </TabList>
                 ) : null}
-              </TabPanels>
-            </Tabs>
-          </Container>
+                <TabPanels>
+                  <TabPanel h="full">
+                    {team.workflow === "sequential" ||
+                    team.workflow === "hierarchical" ? (
+                      <Flow />
+                    ) : (
+                      <Box h="full" border={"1px solid red"}>
+                        <TeamSettings />
+                      </Box>
+                    )}
+                  </TabPanel>
+
+                  {team.workflow === "sequential" ||
+                  team.workflow === "hierarchical" ? (
+                    <Box>
+                      <TabPanel>
+                        <ChatTeam />
+                      </TabPanel>
+                      <TabPanel>
+                        <ViewThreads
+                          teamId={teamId}
+                          updateTabIndex={setTabIndex}
+                        />
+                      </TabPanel>
+                    </Box>
+                  ) : null}
+                </TabPanels>
+              </Tabs>
+            </Box>
+          </Box>
         )
       )}
     </>
