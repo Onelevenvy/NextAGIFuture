@@ -1,5 +1,5 @@
 import json
-
+import os
 import requests
 
 from langchain.pydantic_v1 import BaseModel, Field
@@ -14,7 +14,7 @@ class WeatherSearchInput(BaseModel):
 
 def openweather(
     city: str,
-    appid: str = "5034ed07854c2f7eba404af204aa6599",
+    appid: str = os.environ.get("OPEN_WEATHER_API_KEY", ""),
     units: str = "metric",
     lang: str = "zh_cn",
 ):
