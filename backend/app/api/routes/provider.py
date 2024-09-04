@@ -6,11 +6,13 @@ from app.models import (
     ModelProviderCreate,
     ModelProviderUpdate,
     ModelProviderWithModelsListOut,
+    ProvidersListWithModelsOut,
 )
 from app.curd.modelprovider import (
     create_model_provider,
     get_model_provider,
-    get_model_provider_with_models_list,
+    get_model_provider_list_with_models,
+    get_model_provider_with_models,
     update_model_provider,
     delete_model_provider,
 )
@@ -35,10 +37,18 @@ def read_provider(model_provider_id: int, session: SessionDep):
 @router.get(
     "/withmodels/{model_provider_id}", response_model=ModelProviderWithModelsListOut
 )
-def read_provider_with_model_list(model_provider_id: int, session: SessionDep):
-    model_provider_with_models = get_model_provider_with_models_list(
+def read_provider_with_models(model_provider_id: int, session: SessionDep):
+    model_provider_with_models = get_model_provider_with_models(
         session, model_provider_id
     )
+    if model_provider_with_models is None:
+        raise HTTPException(status_code=404, detail="ModelProvider not found")
+    return model_provider_with_models
+
+
+@router.get("/", response_model=ProvidersListWithModelsOut)
+def read_provider_list_with_models(session: SessionDep):
+    model_provider_with_models = get_model_provider_list_with_models(session)
     if model_provider_with_models is None:
         raise HTTPException(status_code=404, detail="ModelProvider not found")
     return model_provider_with_models

@@ -2141,6 +2141,25 @@
       }
     },
     "/api/v1/provider/": {
+      "get": {
+        "tags": [
+          "provider"
+        ],
+        "summary": "Read Provider List With Models",
+        "operationId": "read_provider_list_with_models",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProvidersListWithModelsOut"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "provider"
@@ -2318,8 +2337,8 @@
         "tags": [
           "provider"
         ],
-        "summary": "Read Provider With Model List",
-        "operationId": "read_provider_with_model_list",
+        "summary": "Read Provider With Models",
+        "operationId": "read_provider_with_models",
         "parameters": [
           {
             "name": "model_provider_id",
@@ -3769,6 +3788,22 @@
           "new_password"
         ],
         "title": "NewPassword"
+      },
+      "ProvidersListWithModelsOut": {
+        "properties": {
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/ModelProviderWithModelsListOut"
+            },
+            "type": "array",
+            "title": "Providers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "providers"
+        ],
+        "title": "ProvidersListWithModelsOut"
       },
       "Skill": {
         "properties": {

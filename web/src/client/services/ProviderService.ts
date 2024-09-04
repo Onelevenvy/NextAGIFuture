@@ -6,12 +6,25 @@ import type { ModelProvider } from '../models/ModelProvider';
 import type { ModelProviderCreate } from '../models/ModelProviderCreate';
 import type { ModelProviderUpdate } from '../models/ModelProviderUpdate';
 import type { ModelProviderWithModelsListOut } from '../models/ModelProviderWithModelsListOut';
+import type { ProvidersListWithModelsOut } from '../models/ProvidersListWithModelsOut';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 
 export class ProviderService {
+
+    /**
+     * Read Provider List With Models
+     * @returns ProvidersListWithModelsOut Successful Response
+     * @throws ApiError
+     */
+    public static readProviderListWithModels(): CancelablePromise<ProvidersListWithModelsOut> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/provider/',
+        });
+    }
 
     /**
      * Create Provider
@@ -105,11 +118,11 @@ export class ProviderService {
     }
 
     /**
-     * Read Provider With Model List
+     * Read Provider With Models
      * @returns ModelProviderWithModelsListOut Successful Response
      * @throws ApiError
      */
-    public static readProviderWithModelList({
+    public static readProviderWithModels({
         modelProviderId,
     }: {
         modelProviderId: number,
