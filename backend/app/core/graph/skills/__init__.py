@@ -12,13 +12,11 @@ from .calculator import calculator
 from .open_weather import open_weather_search_tool
 from .human_tool import AskHuman
 
+
 class SkillInfo(BaseModel):
     description: str
     tool: BaseTool
     icon: str = "🔧"
-
-
-os.environ["TAVILY_API_KEY"] = "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"
 
 
 managed_skills: dict[str, SkillInfo] = {
@@ -50,11 +48,7 @@ managed_skills: dict[str, SkillInfo] = {
         tool=open_weather_search_tool,
         icon="🌞",
     ),
-     "ask-human": SkillInfo(
-        description=AskHuman.description,
-        tool=AskHuman,
-        icon="📖"
-    ),
+    "ask-human": SkillInfo(description=AskHuman.description, tool=AskHuman, icon="📖"),
 }
 
 # To add more custom tools, follow these steps:
