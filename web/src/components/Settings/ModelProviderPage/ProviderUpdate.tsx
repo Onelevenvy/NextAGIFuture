@@ -45,16 +45,16 @@ export default function ProviderUpdate({
   } = useForm<ModelProviderUpdate>({
     mode: "onBlur",
     criteriaMode: "all",
-    defaultValues: {
-      base_url: providerInfo!.baseUrl,
-      api_key: providerInfo!.apiKey,
+    values: {
+      base_url: providerInfo!.base_url,
+      api_key: providerInfo!.api_key,
       description: providerInfo!.description,
     },
   });
 
   const updateProvider = async (data: ModelProviderUpdate) => {
     return await ProviderService.updateProvider({
-      modelProviderId: providerInfo!.providerId,
+      modelProviderId: providerInfo!.id,
       requestBody: data,
     });
   };

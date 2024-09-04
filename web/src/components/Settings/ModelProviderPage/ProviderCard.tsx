@@ -51,7 +51,7 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
 
           <Collapse in={isOpen}>
             <VStack align="start">
-              {providerInfo!.aiModelNames.map((modelName, index) => (
+              {providerInfo?.models.map((model, index) => (
                 <Box
                   key={index}
                   display={"flex"}
@@ -68,7 +68,7 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
                     h={4}
                     mr={2}
                   />
-                  <Text>{modelName}</Text>
+                  <Text>{model.ai_model_name}</Text>
                 </Box>
               ))}
             </VStack>
