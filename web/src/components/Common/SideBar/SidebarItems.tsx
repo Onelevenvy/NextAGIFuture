@@ -1,0 +1,122 @@
+import { Box, Flex, Icon, Text, useColorModeValue } from "@chakra-ui/react";
+import Link from "next/link";
+import { FiHome } from "react-icons/fi";
+import { BsRobot } from "react-icons/bs";
+import { RiRobot2Line, RiRobot2Fill } from "react-icons/ri";
+import { usePathname } from "next/navigation";
+import useAuth from "../../../hooks/useAuth";
+import { FaHouseChimney, FaBook } from "react-icons/fa6";
+
+import { LuBookCopy } from "react-icons/lu";
+import { FaToolbox } from "react-icons/fa";
+import { PiToolboxLight } from "react-icons/pi";
+import {
+  IoChatboxEllipsesOutline,
+  IoChatbubbleEllipses,
+} from "react-icons/io5";
+
+const superuser_items = [
+  {
+    activeIcon: FaHouseChimney,
+    inactiveIcon: FiHome,
+    title: "主页",
+    path: "/dashboard",
+  },
+  {
+    activeIcon: IoChatbubbleEllipses,
+    inactiveIcon: IoChatboxEllipsesOutline,
+    title: "会话",
+    path: "/playground",
+  },
+  {
+    activeIcon: RiRobot2Fill,
+    inactiveIcon: RiRobot2Line,
+    title: "团队",
+    path: "/teams",
+  },
+  {
+    activeIcon: FaToolbox,
+    inactiveIcon: PiToolboxLight,
+    title: "技能",
+    path: "/skills",
+  },
+  {
+    activeIcon: FaBook,
+    inactiveIcon: LuBookCopy,
+    title: "知识库",
+    path: "/knowledge",
+  },
+];
+
+const nosuperuser_items = [
+  {
+    activeIcon: FiHome,
+    inactiveIcon: FiHome,
+    title: "主页",
+    path: "/dashboard",
+  },
+  {
+    activeIcon: BsRobot,
+    inactiveIcon: BsRobot,
+    title: "会话",
+    path: "/playground",
+  },
+];
+
+interface SidebarItemsProps {
+  onClose?: () => void;
+}
+
+const SidebarItems = ({ onClose }: SidebarItemsProps) => {
+  const textColor = useColorModeValue("ui.main", "ui.white");
+  const bgActive = useColorModeValue("white", "#4A5568");
+  const currentPath = usePathname(); // 获取当前路径
+  const { user: currentUser } = useAuth();
+
+  const items = currentUser?.is_superuser ? superuser_items : nosuperuser_items;
+
+  const listItems = items.map((item) => {
+    // const isActive = currentPath === item.path;
+    const isActive = new RegExp(`^${item.path}`).test(currentPath);
+
+    return (
+      <Flex
+        as={Link}
+        href={item.path}
+        w="100%"
+        p={2}
+        mt={2}
+        key={item.title}
+        style={{
+          background: isActive ? bgActive : "transparent", // 根据当前路径设置背景
+          borderRadius: "6px",
+        }}
+        color={textColor}
+        onClick={onClose}
+        direction="column" // 使图标和文字垂直排列
+        alignItems="center" // 水平居中对齐
+        justifyContent="center" // 垂直居中对齐
+      >
+        <Icon
+          as={isActive ? item.activeIcon : item.inactiveIcon}
+          fontSize="28px"
+          mb={1}
+          color={isActive ? textColor : "gray.500"}
+        />
+        <Text fontSize={"10px"} color={isActive ? textColor : "gray.500"}>
+          {item.title}
+        </Text>
+      </Flex>
+    );
+  });
+
+  return (
+    <>
+      <Box display="flex" flexDirection={"column"}>
+        {listItems}
+      </Box>
+    </>
+  );
+};
+
+export default SidebarItems;

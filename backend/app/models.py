@@ -1,0 +1,582 @@
+from datetime import datetime
+from enum import Enum
+from typing import Any
+from uuid import UUID, uuid4
+
+from pydantic import BaseModel
+from pydantic import Field as PydanticField
+from sqlalchemy import (
+    JSON,
+    Column,
+    DateTime,
+    PrimaryKeyConstraint,
+    String,
+    UniqueConstraint,
+    func,
+)
+from sqlalchemy import (
+    Enum as SQLEnum,
+)
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlmodel import Field, Relationship, SQLModel
+
+from app.core.graph.messages import ChatResponse
+
+
+class Message(SQLModel):
+    message: str
+
+
+# JSON payload containing access token
+class Token(SQLModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
+# Contents of JWT token
+class TokenPayload(SQLModel):
+    sub: int | None = None
+
+
+class NewPassword(SQLModel):
+    token: str
+    new_password: str
+
+
+# ===============USER========================
+
+
+class UserBase(SQLModel):
+    email: str = Field(unique=True, index=True)
+    is_active: bool = True
+    is_superuser: bool = False
+    full_name: str | None = None
+
+
+# Properties to receive via API on creation
+class UserCreate(UserBase):
+    password: str
+
+
+# TODO replace email str with EmailStr when sqlmodel supports it
+class UserCreateOpen(SQLModel):
+    email: str
+    password: str
+    full_name: str | None = None
+
+
+# Properties to receive via API on update, all are optional
+# TODO replace email str with EmailStr when sqlmodel supports it
+class UserUpdate(UserBase):
+    email: str | None = None  # type: ignore
+    password: str | None = None
+
+
+# TODO replace email str with EmailStr when sqlmodel supports it
+class UserUpdateMe(SQLModel):
+    full_name: str | None = None
+    email: str | None = None
+
+
+class UpdatePassword(SQLModel):
+    current_password: str
+    new_password: str
+
+
+# Database model, database table inferred from class name
+class User(UserBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    hashed_password: str
+    teams: list["Team"] = Relationship(back_populates="owner")
+    skills: list["Skill"] = Relationship(back_populates="owner")
+    uploads: list["Upload"] = Relationship(back_populates="owner")
+
+
+# Properties to return via API, id is always required
+class UserOut(UserBase):
+    id: int
+
+
+class UsersOut(SQLModel):
+    data: list[UserOut]
+    count: int
+
+
+# ==============TEAM=========================
+
+
+class TeamBase(SQLModel):
+    name: str = PydanticField(pattern=r"^[a-zA-Z0-9_-]{1,64}$")
+    description: str | None = None
+    # 增加team的图标
+    icon: str | None = None
+
+
+class TeamCreate(TeamBase):
+    workflow: str
+
+
+class TeamUpdate(TeamBase):
+    name: str | None = PydanticField(pattern=r"^[a-zA-Z0-9_-]{1,64}$", default=None)  # type: ignore[assignment]
+
+
+class ChatMessageType(str, Enum):
+    human = "human"
+    ai = "ai"
+
+
+class ChatMessage(BaseModel):
+    type: ChatMessageType
+    content: str
+
+
+class InterruptDecision(Enum):
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    REPLIED = "replied"
+
+
+class Interrupt(BaseModel):
+    decision: InterruptDecision
+    tool_message: str | None = None
+
+
+class TeamChat(BaseModel):
+    messages: list[ChatMessage]
+    interrupt: Interrupt | None = None
+
+
+class Team(TeamBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    name: str = Field(regex=r"^[a-zA-Z0-9_-]{1,64}$", unique=True)
+    owner_id: int | None = Field(default=None, foreign_key="user.id", nullable=False)
+    owner: User | None = Relationship(back_populates="teams")
+    members: list["Member"] = Relationship(
+        back_populates="belongs", sa_relationship_kwargs={"cascade": "delete"}
+    )
+    workflow: str  # TODO: This should be an enum 'sequential' and 'hierarchical'
+    threads: list["Thread"] = Relationship(
+        back_populates="team", sa_relationship_kwargs={"cascade": "delete"}
+    )
+
+
+# Properties to return via API, id is always required
+class TeamOut(TeamBase):
+    id: int
+    owner_id: int
+    workflow: str
+
+
+class TeamsOut(SQLModel):
+    data: list[TeamOut]
+    count: int
+
+
+# =============Threads===================
+
+
+class ThreadBase(SQLModel):
+    query: str
+
+
+class ThreadCreate(ThreadBase):
+    pass
+
+
+class ThreadUpdate(ThreadBase):
+    query: str | None = None  # type: ignore[assignment]
+    updated_at: datetime | None = None
+
+
+class Thread(ThreadBase, table=True):
+    id: UUID | None = Field(
+        default_factory=uuid4,
+        primary_key=True,
+        index=True,
+        nullable=False,
+    )
+    updated_at: datetime | None = Field(
+        sa_column=Column(
+            DateTime(timezone=True),
+            nullable=False,
+            default=func.now(),
+            onupdate=func.now(),
+            server_default=func.now(),
+        )
+    )
+    team_id: int | None = Field(default=None, foreign_key="team.id", nullable=False)
+    team: Team | None = Relationship(back_populates="threads")
+    checkpoints: list["Checkpoint"] = Relationship(
+        back_populates="thread", sa_relationship_kwargs={"cascade": "delete"}
+    )
+    checkpoint_blobs: list["CheckpointBlobs"] = Relationship(
+        back_populates="thread", sa_relationship_kwargs={"cascade": "delete"}
+    )
+
+    writes: list["Write"] = Relationship(
+        back_populates="thread", sa_relationship_kwargs={"cascade": "delete"}
+    )
+
+
+class ThreadOut(SQLModel):
+    id: UUID
+    query: str
+    updated_at: datetime
+
+
+class ThreadRead(ThreadOut):
+    messages: list[ChatResponse]
+
+
+class ThreadsOut(SQLModel):
+    data: list[ThreadOut]
+    count: int
+
+
+# ==============MEMBER=========================
+
+
+class MemberSkillsLink(SQLModel, table=True):
+    member_id: int | None = Field(
+        default=None, foreign_key="member.id", primary_key=True
+    )
+    skill_id: int | None = Field(default=None, foreign_key="skill.id", primary_key=True)
+
+
+class MemberUploadsLink(SQLModel, table=True):
+    member_id: int | None = Field(
+        default=None, foreign_key="member.id", primary_key=True
+    )
+    upload_id: int | None = Field(
+        default=None, foreign_key="upload.id", primary_key=True
+    )
+
+
+class MemberBase(SQLModel):
+    name: str = PydanticField(pattern=r"^[a-zA-Z0-9_-]{1,64}$")
+    backstory: str | None = None
+    role: str
+    type: str  # one of: leader, worker, freelancer
+    owner_of: int | None = None
+    position_x: float
+    position_y: float
+    source: int | None = None
+    provider: str = "zhipuai"
+    model: str = "glm-4-0520"
+    openai_api_key: str = "fe1f2097b7284bd4baa1284be8d54aea.6VOvX4efbye8M6m0"
+    openai_api_base: str = "https://open.bigmodel.cn/api/paas/v4"
+
+    temperature: float = 0.1
+    interrupt: bool = False
+
+
+class MemberCreate(MemberBase):
+    pass
+
+
+class MemberUpdate(MemberBase):
+    name: str | None = PydanticField(pattern=r"^[a-zA-Z0-9_-]{1,64}$", default=None)  # type: ignore[assignment]
+    backstory: str | None = None
+    role: str | None = None  # type: ignore[assignment]
+    type: str | None = None  # type: ignore[assignment]
+    belongs_to: int | None = None
+    position_x: float | None = None  # type: ignore[assignment]
+    position_y: float | None = None  # type: ignore[assignment]
+    skills: list["Skill"] | None = None
+    uploads: list["Upload"] | None = None
+    provider: str | None = None  # type: ignore[assignment]
+    model: str | None = None  # type: ignore[assignment]
+    openai_api_key: str | None = None
+    openai_api_base: str | None = None
+
+    temperature: float | None = None  # type: ignore[assignment]
+    interrupt: bool | None = None  # type: ignore[assignment]
+
+
+class Member(MemberBase, table=True):
+    __table_args__ = (
+        UniqueConstraint("name", "belongs_to", name="unique_team_and_name"),
+    )
+    id: int | None = Field(default=None, primary_key=True)
+    belongs_to: int | None = Field(default=None, foreign_key="team.id", nullable=False)
+    belongs: Team | None = Relationship(back_populates="members")
+    skills: list["Skill"] = Relationship(
+        back_populates="members",
+        link_model=MemberSkillsLink,
+    )
+    uploads: list["Upload"] = Relationship(
+        back_populates="members",
+        link_model=MemberUploadsLink,
+    )
+
+
+class MemberOut(MemberBase):
+    id: int
+    belongs_to: int
+    owner_of: int | None
+    skills: list["Skill"]
+    uploads: list["Upload"]
+
+
+class MembersOut(SQLModel):
+    data: list[MemberOut]
+    count: int
+
+
+# ===============SKILL========================
+
+
+class SkillBase(SQLModel):
+    name: str
+    description: str
+    icon: str | None = None
+    managed: bool = False
+    tool_definition: dict[str, Any] | None = Field(
+        default_factory=dict, sa_column=Column(JSON)
+    )
+
+
+class SkillCreate(SkillBase):
+    tool_definition: dict[str, Any]  # Tool definition is required if not managed
+    managed: bool = Field(default=False, const=False)  # Managed must be False
+
+
+class SkillUpdate(SkillBase):
+    name: str | None = None  # type: ignore[assignment]
+    description: str | None = None  # type: ignore[assignment]
+    managed: bool | None = None  # type: ignore[assignment]
+    tool_definition: dict[str, Any] | None = None
+
+
+class Skill(SkillBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    members: list["Member"] = Relationship(
+        back_populates="skills",
+        link_model=MemberSkillsLink,
+    )
+    owner_id: int | None = Field(default=None, foreign_key="user.id", nullable=False)
+    owner: User | None = Relationship(back_populates="skills")
+
+
+class SkillsOut(SQLModel):
+    data: list["SkillOut"]
+    count: int
+
+
+class SkillOut(SkillBase):
+    id: int
+
+
+class ToolDefinitionValidate(SQLModel):
+    tool_definition: dict[str, Any]
+
+
+# ==============CHECKPOINT=====================
+
+
+class Checkpoint(SQLModel, table=True):
+    __tablename__ = "checkpoints"
+    __table_args__ = (
+        PrimaryKeyConstraint("thread_id", "checkpoint_id", "checkpoint_ns"),
+    )
+    thread_id: UUID = Field(foreign_key="thread.id", primary_key=True)
+    checkpoint_ns: str = Field(
+        sa_column=Column(
+            "checkpoint_ns", String, nullable=False, server_default="", primary_key=True
+        ),
+    )
+    checkpoint_id: UUID = Field(primary_key=True)
+    parent_checkpoint_id: UUID | None
+    type: str | None
+    checkpoint: dict[Any, Any] = Field(default_factory=dict, sa_column=Column(JSONB))
+    metadata_: dict[Any, Any] = Field(
+        default_factory=dict,
+        sa_column=Column("metadata", JSONB, nullable=False, server_default="{}"),
+    )
+    thread: Thread = Relationship(back_populates="checkpoints")
+    created_at: datetime | None = Field(
+        sa_column=Column(
+            DateTime(timezone=True),
+            nullable=False,
+            default=func.now(),
+            server_default=func.now(),
+        )
+    )
+
+
+class CheckpointBlobs(SQLModel, table=True):
+    __tablename__ = "checkpoint_blobs"
+    __table_args__ = (
+        PrimaryKeyConstraint("thread_id", "checkpoint_ns", "channel", "version"),
+    )
+    thread_id: UUID = Field(foreign_key="thread.id", primary_key=True)
+    checkpoint_ns: str = Field(
+        sa_column=Column(
+            "checkpoint_ns", String, nullable=False, server_default="", primary_key=True
+        ),
+    )
+    channel: str = Field(primary_key=True)
+    version: str = Field(primary_key=True)
+    type: str
+    blob: bytes | None
+    thread: Thread = Relationship(back_populates="checkpoint_blobs")
+
+
+class CheckpointOut(SQLModel):
+    thread_id: UUID
+    checkpoint_id: UUID
+    checkpoint: bytes
+    created_at: datetime
+
+
+class Write(SQLModel, table=True):
+    __tablename__ = "checkpoint_writes"
+    __table_args__ = (
+        PrimaryKeyConstraint(
+            "thread_id", "checkpoint_ns", "checkpoint_id", "task_id", "idx"
+        ),
+    )
+    thread_id: UUID = Field(foreign_key="thread.id", primary_key=True)
+    checkpoint_ns: str = Field(
+        sa_column=Column(
+            "checkpoint_ns", String, nullable=False, server_default="", primary_key=True
+        ),
+    )
+    checkpoint_id: UUID = Field(primary_key=True)
+    task_id: UUID = Field(primary_key=True)
+    idx: int = Field(primary_key=True)
+    channel: str
+    type: str | None
+    blob: bytes
+    thread: Thread = Relationship(back_populates="writes")
+
+
+# ==============Uploads=====================
+
+
+class UploadBase(SQLModel):
+    name: str
+    description: str
+
+
+class UploadCreate(UploadBase):
+    pass
+
+
+class UploadUpdate(UploadBase):
+    name: str | None = None  # type: ignore[assignment]
+    description: str | None = None  # type: ignore[assignment]
+    last_modified: datetime
+
+
+class UploadStatus(str, Enum):
+    IN_PROGRESS = "In Progress"
+    COMPLETED = "Completed"
+    FAILED = "Failed"
+
+
+class Upload(UploadBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    owner_id: int | None = Field(default=None, foreign_key="user.id", nullable=False)
+    owner: User | None = Relationship(back_populates="uploads")
+    members: list["Member"] = Relationship(
+        back_populates="uploads",
+        link_model=MemberUploadsLink,
+    )
+    last_modified: datetime = Field(default_factory=lambda: datetime.now())
+    status: UploadStatus = Field(
+        sa_column=Column(SQLEnum(UploadStatus), nullable=False)
+    )
+
+
+class UploadOut(UploadBase):
+    id: int
+    name: str
+    last_modified: datetime
+    status: UploadStatus
+
+
+class UploadsOut(SQLModel):
+    data: list[UploadOut]
+    count: int
+
+
+# ==============Models=====================
+
+
+class ModelProviderBase(SQLModel):
+    provider_name: str = PydanticField(pattern=r"^[a-zA-Z0-9_-]{1,64}$", unique=True)
+    base_url: str | None = None
+    api_key: str | None = None
+    icon: str | None = None
+    description: str
+
+
+class ModelProviderCreate(ModelProviderBase):
+    pass
+
+
+class ModelProviderUpdate(ModelProviderBase):
+    provider_name: str | None = PydanticField(pattern=r"^[a-zA-Z0-9_-]{1,64}$", default=None, unique=True)  # type: ignore[assignment]
+    description: str | None = None
+
+
+class ModelProvider(ModelProviderBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    provider_name: str = Field(max_length=64)  # 调整长度与ModelProviderBase一致
+    base_url: str | None = Field(default=None)  # 保持可选
+    api_key: str | None = Field(default=None)  # 保持可选
+    icon: str | None = Field(default=None)  # 保持可选
+    description: str | None = Field(default=None, max_length=256)  # 保持可选，长度调整
+    # Relationship with Model
+    models: list["Models"] = Relationship(
+        back_populates="provider", cascade_delete="all, delete-orphan"
+    )
+
+
+class ModelsBase(SQLModel):
+    ai_model_name: str = PydanticField(pattern=r"^[a-zA-Z0-9/_:.-]{1,64}$", unique=True)
+    provider_id: int
+
+
+class Models(ModelsBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    ai_model_name: str = Field(max_length=128)
+    provider_id: int = Field(foreign_key="modelprovider.id")
+    # Relationship with ModelProvider
+    provider: ModelProvider = Relationship(back_populates="models")
+
+
+# Properties to return via API
+class ModelProviderOut(SQLModel):
+    id: int
+    provider_name: str
+    base_url: str | None
+    api_key: str | None
+    icon: str | None
+    description: str | None
+
+
+class ModelOut(SQLModel):
+    id: int
+    ai_model_name: str
+    provider: ModelProviderOut
+
+
+class ModelsOut(SQLModel):
+    data: list[ModelOut]
+    count: int
+
+
+class ModelOutIdWithAndName(SQLModel):
+    id: int
+    ai_model_name: str
+
+class ModelProviderWithModelsListOut(SQLModel):
+    id: int
+    provider_name: str
+    base_url: str | None
+    api_key: str | None
+    icon: str | None
+    description: str | None
+    models: list[ModelOutIdWithAndName]

@@ -1,0 +1,111 @@
+"use client";
+import ChatBotList from "@/components/Playground/ChatBotList";
+import ChatHistoryList from "@/components/Playground/ChatHistoryList";
+import { Box, Center, Flex, useColorModeValue } from "@chakra-ui/react";
+import { useState } from "react";
+import useChatTeamIdStore from "@/store/chatTeamIDStore";
+import ChatMain from "@/components/Playground/ChatMain";
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
+import PaneStateControl from "@/components/Common/PaneStateControl";
+
+const ChatPlayground = () => {
+  const [isChatBotListOpen, setIsChatBotListOpen] = useState(true);
+  const [isChatHistoryOpen, setIsChatHistoryOpen] = useState(true);
+  const { teamId } = useChatTeamIdStore(); // 使用 Zustand store
+
+  const selctedColor = useColorModeValue(
+    "ui.selctedColor",
+    "ui.selctedColorDark"
+  );
+  const toggleChatBotList = () => {
+    setIsChatBotListOpen(!isChatBotListOpen);
+  };
+
+  const toggleChatHistoryList = () => {
+    setIsChatHistoryOpen(!isChatHistoryOpen);
+  };
+
+  const chatAreaWidth =
+    !isChatBotListOpen && !isChatHistoryOpen
+      ? "full"
+      : isChatBotListOpen && isChatHistoryOpen
+        ? "60%"
+        : "80%";
+
+  return (
+    <Flex
+      height="full"
+      direction="row"
+      overflow={"hidden"}
+      maxH="full"
+      w="full"
+      maxW="full"
+    >
+      <Box
+        w={isChatBotListOpen ? "20%" : "0"}
+        maxW={isChatBotListOpen ? "20%" : "0"}
+        minW={isChatBotListOpen ? "20%" : "0"}
+        bg="transparent" // 去除背景
+        border="1px solid #cccccc"
+        visibility={isChatBotListOpen ? "visible" : "hidden"}
+        transition="width 0.1s, visibility 0.1s"
+      >
+        <ChatBotList />
+      </Box>
+
+      <Box
+        w={chatAreaWidth}
+        maxW={chatAreaWidth}
+        minW={chatAreaWidth}
+        h="full"
+        maxH="full"
+        display="flex"
+        overflowY="auto"
+        overflowX="hidden"
+        border={"1px solid #cccccc"}
+        bg={"white"}
+      >
+        <Center>
+          <PaneStateControl
+            onClick={toggleChatBotList}
+            background={"transparent"}
+            selectedColor={selctedColor}
+            Icon={isChatBotListOpen ? LuChevronLeft : LuChevronRight}
+          />
+        </Center>
+
+        <ChatMain isPlayground={true} />
+        <Center>
+          <PaneStateControl
+            selectedColor={selctedColor}
+            onClick={toggleChatHistoryList}
+            background={"transparent"}
+            Icon={isChatHistoryOpen ? LuChevronRight : LuChevronLeft}
+          />
+        </Center>
+      </Box>
+
+      <Box
+        w={isChatHistoryOpen ? "20%" : "0"}
+        maxW={isChatHistoryOpen ? "20%" : "0"}
+        minW={isChatHistoryOpen ? "20%" : "0"}
+        h={"full"}
+        maxH="full"
+        p={4}
+        mt="0"
+        bg="transparent" // 去除背景
+        border="1px solid #cccccc" // 添加边框线
+        borderRadius="md"
+        overflow="hidden"
+        visibility={isChatHistoryOpen ? "visible" : "hidden"}
+        transition="width 0.1s, visibility 0.1s"
+      >
+        <Box maxH="full" h="full">
+          <ChatHistoryList teamId={teamId!} />
+        </Box>
+      </Box>
+    </Flex>
+  );
+};
+
+export default ChatPlayground;

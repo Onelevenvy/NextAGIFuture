@@ -1,0 +1,48 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - 11434:11434
+    volumes:
+      - ollama-model-cache:/app/ollama-model-cache
+    container_name: ollama
+    pull_policy: if_not_present
+    tty: true
+    restart: always
+    networks:
+      - ollama-docker
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities:
+                - gpu
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    pull_policy: if_not_present
+    volumes:
+      - ollama-open-webui:/app/ollama/open-webui
+    depends_on:
+      - ollama
+    ports:
+      - 3333:8080
+    environment:
+      - "OLLAMA_BASE_URL=http://ollama:11434"
+      - "WEBUI_SECRET_KEY=tqxtqxtqx"
+      - "HF_ENDPOINT=https://hf-mirror.com"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+    networks:
+      - ollama-docker
+volumes:
+  ollama-model-cache:
+  ollama-open-webui:
+
+networks:
+  ollama-docker:
+    external: false

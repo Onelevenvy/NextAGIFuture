@@ -1,0 +1,158 @@
+import {
+  Button,
+  Input,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  FormControl,
+  FormLabel,
+  ModalFooter,
+  Text,
+  InputGroup,
+  InputRightElement,
+  IconButton,
+} from "@chakra-ui/react";
+import { useMutation, useQueryClient } from "react-query";
+import { ApiError } from "@/client/core/ApiError";
+import useCustomToast from "@/hooks/useCustomToast";
+import { ProviderService } from "@/client/services/ProviderService";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { type ModelProviderUpdate } from "@/client";
+import { useModelProviderContext } from "@/contexts/modelprovider";
+import { useState } from "react";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+
+interface ProviderUpdateProps {
+  isModalOpen: boolean;
+  setIsModalOpen: (isOpen: boolean) => void;
+}
+
+export default function ProviderUpdate({
+  isModalOpen,
+  setIsModalOpen,
+}: ProviderUpdateProps) {
+  const queryClient = useQueryClient();
+  const showToast = useCustomToast();
+  const providerInfo = useModelProviderContext();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting, isDirty },
+  } = useForm<ModelProviderUpdate>({
+    mode: "onBlur",
+    criteriaMode: "all",
+    defaultValues: {
+      base_url: providerInfo!.baseUrl,
+      api_key: providerInfo!.apiKey,
+      description: providerInfo!.description,
+    },
+  });
+
+  const updateProvider = async (data: ModelProviderUpdate) => {
+    return await ProviderService.updateProvider({
+      modelProviderId: providerInfo!.providerId,
+      requestBody: data,
+    });
+  };
+
+  const mutation = useMutation(updateProvider, {
+    onSuccess: (data) => {
+      showToast("Success!", "Provider updated successfully.", "success");
+      reset(data);
+      setIsModalOpen(false);
+    },
+    onError: (err: ApiError) => {
+      const errDetail = err.body?.detail;
+      showToast("Something went wrong.", `${errDetail}`, "error");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries("providerId");
+    },
+  });
+
+  const onSubmit: SubmitHandler<ModelProviderUpdate> = async (data) => {
+    mutation.mutate(data);
+  };
+
+  const onCancel = () => {
+    reset();
+    setIsModalOpen(false);
+  };
+  const [show, setShow] = useState(false);
+  const handleClick = () => setShow(!show);
+  return (
+    <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <ModalOverlay />
+      <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
+        <ModalHeader>Model Provider</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <FormControl isInvalid={!!errors.api_key}>
+            <FormLabel>API Key</FormLabel>
+            <InputGroup size="md">
+              <Input
+                pr="4.5rem"
+                type={show ? "text" : "password"}
+                id="api_key"
+                {...register("api_key", { required: "API Key是必填项" })}
+              />
+              <InputRightElement>
+                <IconButton
+                  aria-label="api_key"
+                  icon={show ? <ViewIcon /> : <ViewOffIcon />}
+                  onClick={handleClick}
+                />
+              </InputRightElement>
+            </InputGroup>
+
+            {errors.api_key && (
+              <Text as="span" color="red.500">
+                {errors.api_key.message}
+              </Text>
+            )}
+          </FormControl>
+          <FormControl isInvalid={!!errors.base_url}>
+            <FormLabel>Base URL</FormLabel>
+            <Input
+              id="base_url"
+              {...register("base_url", { required: "Base_URL 是必填项" })}
+            />
+            {errors.base_url && (
+              <Text as="span" color="red.500">
+                {errors.base_url.message}
+              </Text>
+            )}
+          </FormControl>
+          <FormControl isInvalid={!!errors.description}>
+            <FormLabel>描述</FormLabel>
+            <Input
+              id="description"
+              {...register("description", { required: "描述是必填项" })}
+            />
+            {errors.description && (
+              <Text as="span" color="red.500">
+                {errors.description.message}
+              </Text>
+            )}
+          </FormControl>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            colorScheme="blue"
+            mr="3"
+            type="submit"
+            isLoading={isSubmitting}
+            isDisabled={!isDirty}
+          >
+            保存
+          </Button>
+          <Button onClick={onCancel}>取消</Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
