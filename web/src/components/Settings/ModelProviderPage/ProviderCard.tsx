@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Button, Collapse, Heading, VStack, Text } from "@chakra-ui/react";
+import { Box, Button, Collapse, VStack, Text } from "@chakra-ui/react";
 import ProviderUpdate from "./ProviderUpdate";
 import { useModelProviderContext } from "@/contexts/modelprovider";
 import ModelsIcon from "@/components/Icons/models";
