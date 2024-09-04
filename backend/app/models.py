@@ -580,3 +580,6 @@ class ModelProviderWithModelsListOut(SQLModel):
     icon: str | None
     description: str | None
     models: list[ModelOutIdWithAndName]
+
+class ProvidersListWithModelsOut(SQLModel):
+    providers: list[ModelProviderWithModelsListOut]

@@ -6,6 +6,7 @@ from ..models import (
     ModelProviderUpdate,
     ModelProviderWithModelsListOut,
     ModelOutIdWithAndName,
+    ProvidersListWithModelsOut,
 )
 
 
@@ -73,7 +74,7 @@ def delete_model_provider(
         return None
 
 
-def get_model_provider_with_models_list(
+def get_model_provider_with_models(
     session: Session, provider_id: int
 ) -> ModelProviderWithModelsListOut:
     statement = select(ModelProvider).where(ModelProvider.id == provider_id)
@@ -105,3 +106,30 @@ def get_model_provider_with_models_list(
             )
     else:
         return None
+
+
+def get_model_provider_list_with_models(
+    session: Session,
+) -> ProvidersListWithModelsOut:
+    statement = select(ModelProvider)
+    results = session.exec(statement).all()
+
+    providers_list = []
+    for result in results:
+        models_out = [
+            ModelOutIdWithAndName(id=model.id, ai_model_name=model.ai_model_name)
+            for model in result.models
+        ]
+        providers_list.append(
+            ModelProviderWithModelsListOut(
+                id=result.id,
+                provider_name=result.provider_name,
+                base_url=result.base_url,
+                api_key=result.api_key,
+                icon=result.icon,
+                description=result.description,
+                models=models_out,
+            )
+        )
+
+    return ProvidersListWithModelsOut(providers=providers_list)
