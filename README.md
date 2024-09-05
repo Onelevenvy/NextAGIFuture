@@ -2,6 +2,8 @@
 
 A chatbot, RAG, agent, and multi-agent application project based on LangChain, LangGraph, and other frameworks, open-source, and capable of offline deployment.
 
+Note: This project is developed by simultaneously learning and mastering technologies such as LangGraph, FastAPI, and Next.js, while building LLM applications. This approach helps improve our skills and allows us to experience the enjoyment brought by LLMs. The project code may undergo significant changes and may contain bugs. We also hope that like-minded individuals will join us and grow together.
+
 ### 🤖️ Overview
 
 ![image](https://github.com/user-attachments/assets/aa3917e3-6e42-461a-ad11-0d32dc6386c6)![image](https://github.com/user-attachments/assets/4d5874f1-aeb0-47c5-b907-21878a2fa4d9)
@@ -19,6 +21,9 @@ LangChain and LangGraph. The goal is to create a suite of LLMOps solutions that 
 
 Inspired by the [StreetLamb](https://github.com/StreetLamb) project and its [tribe](https://github.com/StreetLamb/tribe) project , NextAGIFuture adopts much of the approach and code.
 Building on this foundation, it introduces some new features and directions of its own.
+
+Some of the layout in this project references [Lobe-chat](https://github.com/lobehub/lobe-chat), [Dify](https://github.com/langgenius/dify), and [fastgpt](https://github.com/labring/FastGPT). 
+They are all excellent open-source projects, thanks🙇‍.
 
 ### 👨‍💻 Development
 
