@@ -122,10 +122,10 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
           <Spinner size="xl" color="ui.main" />
         </Flex>
       ) : (
-        <Box h="full" maxH={"full"}>
+        <Box h="full" maxH={"full"} overflow={"hidden"}>
           {threads && members && (
             <>
-              <Box p={4} display="flex">
+              <Box p={4} display="flex" overflow={"hidden"}>
                 <Text fontSize="lg" fontWeight="bold">
                   聊天记录
                 </Text>
@@ -141,6 +141,7 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
                     onClick={() => onClickRowHandler(thread.id)}
                     _hover={{ backgroundColor: rowTint }}
                     position="relative" // Ensure menu is positioned relative to this container
+                    overflow={"hidden"}
                     onMouseEnter={() => {
                       setShowMenu(true);
                     }}
@@ -160,6 +161,7 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
                       flexDirection="row"
                       pt={4}
                       pb={4}
+                      overflow={"hidden"}
                     >
                       <Icon as={StarIcon} mx={2} />
                       <Box mr={2} minW={"45%"} maxW={"45%"}>
