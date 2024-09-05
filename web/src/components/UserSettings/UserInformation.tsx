@@ -10,27 +10,27 @@ import {
   Input,
   Text,
   useColorModeValue,
-} from "@chakra-ui/react"
-import { useState } from "react"
-import { type SubmitHandler, useForm } from "react-hook-form"
-import { useMutation, useQueryClient } from "react-query"
+} from "@chakra-ui/react";
+import { useState } from "react";
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "react-query";
 
 import {
   type ApiError,
   type UserOut,
   type UserUpdateMe,
   UsersService,
-} from "../../client"
-import useAuth from "../../hooks/useAuth"
-import useCustomToast from "../../hooks/useCustomToast"
-import { emailPattern } from "../../utils"
+} from "../../client";
+import useAuth from "../../hooks/useAuth";
+import useCustomToast from "../../hooks/useCustomToast";
+import { emailPattern } from "../../utils";
 
 const UserInformation = () => {
-  const queryClient = useQueryClient()
-  const color = useColorModeValue("inherit", "ui.white")
-  const showToast = useCustomToast()
-  const [editMode, setEditMode] = useState(false)
-  const { user: currentUser } = useAuth()
+  const queryClient = useQueryClient();
+  const color = useColorModeValue("inherit", "ui.white");
+  const showToast = useCustomToast();
+  const [editMode, setEditMode] = useState(false);
+  const { currentUser } = useAuth();
   const {
     register,
     handleSubmit,
@@ -44,38 +44,38 @@ const UserInformation = () => {
       full_name: currentUser?.full_name,
       email: currentUser?.email,
     },
-  })
+  });
 
   const toggleEditMode = () => {
-    setEditMode(!editMode)
-  }
+    setEditMode(!editMode);
+  };
 
   const updateInfo = async (data: UserUpdateMe) => {
-    await UsersService.updateUserMe({ requestBody: data })
-  }
+    await UsersService.updateUserMe({ requestBody: data });
+  };
 
   const mutation = useMutation(updateInfo, {
     onSuccess: () => {
-      showToast("Success!", "User updated successfully.", "success")
+      showToast("Success!", "User updated successfully.", "success");
     },
     onError: (err: ApiError) => {
-      const errDetail = err.body?.detail
-      showToast("Something went wrong.", `${errDetail}`, "error")
+      const errDetail = err.body?.detail;
+      showToast("Something went wrong.", `${errDetail}`, "error");
     },
     onSettled: () => {
-      queryClient.invalidateQueries("users")
-      queryClient.invalidateQueries("currentUser")
+      queryClient.invalidateQueries("users");
+      queryClient.invalidateQueries("currentUser");
     },
-  })
+  });
 
   const onSubmit: SubmitHandler<UserUpdateMe> = async (data) => {
-    mutation.mutate(data)
-  }
+    mutation.mutate(data);
+  };
 
   const onCancel = () => {
-    reset()
-    toggleEditMode()
-  }
+    reset();
+    toggleEditMode();
+  };
 
   return (
     <>
@@ -147,7 +147,7 @@ const UserInformation = () => {
         </Box>
       </Container>
     </>
-  )
-}
+  );
+};
 
-export default UserInformation
+export default UserInformation;

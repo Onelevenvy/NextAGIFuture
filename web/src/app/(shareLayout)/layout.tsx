@@ -27,13 +27,15 @@ function Layout({ children }: { children: React.ReactNode }) {
     return null;
   }
 
- 
-
-
-
   return (
     <>
-      <Box bg={bgmain} borderRadius={"md"} minH={"100vh"} h={"100vh"}>
+      <Box
+        bg={bgmain}
+        borderRadius={"md"}
+        minH={"100vh"}
+        h={"100vh"}
+        overflow={"hidden"}
+      >
         <Flex
           maxW="full"
           maxH="full"
@@ -63,7 +65,7 @@ function Layout({ children }: { children: React.ReactNode }) {
             minW="95vw"
             flexDirection={"column"}
           >
-           {shouldRenderTopBar && <TopBar />}
+            {shouldRenderTopBar && <TopBar />}
             <Box
               w="95vw"
               maxW="95vw"

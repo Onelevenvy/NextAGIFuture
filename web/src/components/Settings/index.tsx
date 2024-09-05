@@ -19,6 +19,7 @@ import UserInfoPage from "./UserInfoPage";
 import MembersPage from "./MembersPage";
 import AppearancePage from "./AcountPage/Appearance";
 import ChangePasswordPage from "./AcountPage/ChangePassword";
+import useAuth from "@/hooks/useAuth";
 
 type IAccountSettingProps = {
   activeTab?: string;
@@ -36,8 +37,7 @@ export default function AccountSetting({
   activeTab = "members",
 }: IAccountSettingProps) {
   const [activeMenu, setActiveMenu] = useState(activeTab);
-  const queryClient = useQueryClient();
-  const currentUser = queryClient.getQueryData<UserOut>("currentUser");
+  const { currentUser } = useAuth();
 
   const isAdmin = currentUser?.is_superuser ? true : false;
   const workplaceGroupItems = (() => {

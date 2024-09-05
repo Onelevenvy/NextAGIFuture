@@ -159,14 +159,23 @@ const EditAgent = forwardRef<HTMLFormElement, EditAgentProps>(
     };
 
     return (
-      <>
-        <Box maxH={"full"} overflowY={"auto"} overflowX={"hidden"}>
+      <Box maxH={"full"} h="full" minH="full" mr="2" overflow={"hidden"}>
+        <Box
+          as="form"
+          ref={ref}
+          onSubmit={handleSubmit(onSubmit)}
+          bg={"white"}
+          borderRadius={"lg"}
+          h="full"
+          maxH={"full"}
+          minH="full"
+        >
           <Box
-            as="form"
-            ref={ref}
-            onSubmit={handleSubmit(onSubmit)}
-            bg={"white"}
-            borderRadius={"lg"}
+            display="flex"
+            flexDirection={"column"}
+            h="full"
+            overflow={"auto"}
+            border={"1px solid red"}
           >
             <FormControl mt={4} isRequired isInvalid={!!errors.name} px="6">
               <FormLabel htmlFor="name">Name</FormLabel>
@@ -206,6 +215,14 @@ const EditAgent = forwardRef<HTMLFormElement, EditAgentProps>(
                 className="nodrag nopan"
               />
             </FormControl>
+            <Box px={6} mt={4}>
+              <ModelSelect
+                models={models}
+                control={control}
+                onModelSelect={onModelSelect}
+                isLoading={isLoadingModel}
+              />
+            </Box>
             <Controller
               control={control}
               name="skills"
@@ -269,13 +286,6 @@ const EditAgent = forwardRef<HTMLFormElement, EditAgentProps>(
               </FormControl>
             ) : null}
 
-            <ModelSelect
-              models={models}
-              control={control}
-              onModelSelect={onModelSelect}
-              isLoading={isLoadingModel}
-            />
-
             <Controller
               control={control}
               name="temperature"
@@ -317,7 +327,7 @@ const EditAgent = forwardRef<HTMLFormElement, EditAgentProps>(
             />
           </Box>
         </Box>
-      </>
+      </Box>
     );
   }
 );

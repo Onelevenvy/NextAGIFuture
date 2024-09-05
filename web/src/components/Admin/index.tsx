@@ -22,11 +22,11 @@ import ActionsMenu from "@/components/Common/ActionsMenu";
 import Navbar from "@/components/Common/Navbar";
 import useCustomToast from "@/hooks/useCustomToast";
 import React from "react";
+import useAuth from "@/hooks/useAuth";
 
 function Admin() {
-  const queryClient = useQueryClient();
   const showToast = useCustomToast();
-  const currentUser = queryClient.getQueryData<UserOut>("currentUser");
+  const { currentUser } = useAuth();
   const {
     data: users,
     isLoading,

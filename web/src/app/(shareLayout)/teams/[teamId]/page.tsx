@@ -12,6 +12,7 @@ import {
   TabList,
   TabPanel,
   TabPanels,
+  Box,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { TeamsService, type ApiError } from "@/client";
@@ -27,7 +28,6 @@ import TeamSettings from "@/components/Teams/TeamSettings";
 
 function Team() {
   const showToast = useCustomToast();
-  //   const router = useRouter();
   const { teamId } = useParams() as { teamId: string };
 
   const [tabIndex, setTabIndex] = useState(0);
@@ -54,50 +54,81 @@ function Team() {
         </Flex>
       ) : (
         team && (
-          <Container maxW="full" maxHeight="full" ml="8" overflow={"hidden"}>
-            <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
-              <BreadcrumbItem>
-                <Link href="/teams">
-                  <BreadcrumbLink>Teams</BreadcrumbLink>
-                </Link>
-              </BreadcrumbItem>
-              <BreadcrumbItem isCurrentPage>
-                <Link href="#">
-                  <BreadcrumbLink>{team.name}</BreadcrumbLink>
-                </Link>
-              </BreadcrumbItem>
-            </Breadcrumb>
-
-            <Tabs
-              pt={2}
-              variant="enclosed"
-              index={tabIndex}
-              onChange={setTabIndex}
+          <Box
+            display={"flex"}
+            h="full"
+            maxH="full"
+            minH={"full"}
+            flexDirection={"column"}
+            overflow={"hidden"}
+          >
+            <Box></Box>
+            <Box pt="4" pl="4">
+              <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
+                <BreadcrumbItem>
+                  <Link href="/teams">
+                    <BreadcrumbLink>Teams</BreadcrumbLink>
+                  </Link>
+                </BreadcrumbItem>
+                <BreadcrumbItem isCurrentPage>
+                  <Link href="#">
+                    <BreadcrumbLink>{team.name}</BreadcrumbLink>
+                  </Link>
+                </BreadcrumbItem>
+              </Breadcrumb>
+            </Box>
+            <Box
+              maxW="full"
+              display={"flex"}
+              flexDirection={"column"}
+              maxHeight="full"
+              h="full"
+              overflow={"hidden"}
             >
-              <TabList>
-                <Tab>团队构建</Tab>
-                <Tab>Chat明细及调试</Tab>
-                <Tab>Threads记录</Tab>
-              </TabList>
-              <TabPanels>
-                <TabPanel height="80vh">
+              <Tabs
+                variant="enclosed"
+                index={tabIndex}
+                onChange={setTabIndex}
+                h="full"
+              >
+                {team.workflow === "sequential" ||
+                team.workflow === "hierarchical" ? (
+                  <TabList>
+                    <Tab>团队构建</Tab>
+                    <Tab>Chat明细及调试</Tab>
+                    <Tab>Threads记录</Tab>
+                  </TabList>
+                ) : null}
+                <TabPanels h={"full"}>
+                  <TabPanel h="full">
+                    {team.workflow === "sequential" ||
+                    team.workflow === "hierarchical" ? (
+                      <Flow />
+                    ) : (
+                      <Box h="full" minH="full">
+                        <TeamSettings />
+                      </Box>
+                    )}
+                  </TabPanel>
+
                   {team.workflow === "sequential" ||
                   team.workflow === "hierarchical" ? (
-                    <Flow />
-                  ) : (
-                    <TeamSettings />
-                  )}
-                </TabPanel>
-
-                <TabPanel>
-                  <ChatTeam />
-                </TabPanel>
-                <TabPanel>
-                  <ViewThreads teamId={teamId} updateTabIndex={setTabIndex} />
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </Container>
+                    <Box>
+                      <TabPanel>
+                        <ChatTeam />
+                      </TabPanel>
+                      <TabPanel>
+                        <ViewThreads
+                          teamId={teamId}
+                          updateTabIndex={setTabIndex}
+                        />
+                      </TabPanel>
+                    </Box>
+                  ) : null}
+                </TabPanels>
+              </Tabs>
+            </Box>
+          </Box>
         )
       )}
     </>
