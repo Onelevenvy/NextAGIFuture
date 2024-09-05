@@ -1,4 +1,4 @@
-import { Spinner, Flex, Container, SimpleGrid } from "@chakra-ui/react";
+import { Spinner, Flex, Container, SimpleGrid, Box } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { ApiError } from "@/client/core/ApiError";
 import useCustomToast from "@/hooks/useCustomToast";
@@ -28,8 +28,8 @@ export default function ModelProviderPage() {
           <Spinner size="xl" color="ui.main" />
         </Flex>
       ) : (
-        <Container maxW="container.lg" py="8">
-          <SimpleGrid columns={{ base: 1, md: 1 }} spacing="8">
+        <Box maxW="full" w="full" overflow={"hidden"}>
+          <SimpleGrid columns={{ base: 1, md: 1 }} spacing="6">
             {providers &&
               providers.providers.map((provider) => {
                 return (
@@ -39,7 +39,7 @@ export default function ModelProviderPage() {
                 );
               })}
           </SimpleGrid>
-        </Container>
+        </Box>
       )}
     </>
   );

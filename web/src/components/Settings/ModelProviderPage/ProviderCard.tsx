@@ -2,7 +2,16 @@ import { useState } from "react";
 import { Box, Button, Collapse, VStack, Text } from "@chakra-ui/react";
 import ProviderUpdate from "./ProviderUpdate";
 import { useModelProviderContext } from "@/contexts/modelprovider";
-import ModelsIcon from "@/components/Icons/models";
+import ModelProviderIcon from "@/components/Icons/models";
+import ModelProviderIconLong, {
+  SiliconFlowIconLong,
+} from "@/components/Icons/Providers";
+import { Icon } from "lucide-react";
+import { CiSettings } from "react-icons/ci";
+import {
+  MdOutlineKeyboardDoubleArrowDown,
+  MdOutlineKeyboardDoubleArrowUp,
+} from "react-icons/md";
 
 interface ModelCardProps {
   providerName: string;
@@ -20,37 +29,59 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
       borderWidth="1px"
       borderRadius="lg"
       overflow="hidden"
-      p="6"
-      mb="4"
       boxShadow="md"
+      bg={"#e5e7eb"}
+      w="full"
+      minW="full"
     >
       <Box display={"flex"} flexDirection={"column"}>
-        <Box display={"flex"} flexDirection={"row"} alignItems={"center"}>
-          <ModelsIcon
+        <Box
+          display={"flex"}
+          flexDirection={"row"}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+          pt="3"
+          pl="3"
+        >
+          <ModelProviderIconLong
             modelprovider_name={providerName}
-            w={8}
-            h={8}
-            my={3}
-            mr={3}
+            h="12"
+            w="40"
           />
-          <Text mb="2" fontSize={"2xl"} fontWeight={"bold"}>
-            {providerName}
-          </Text>
+          <Box mr="2">
+            <Button
+              size={"sm"}
+              onClick={() => setIsModalOpen(true)}
+              leftIcon={<CiSettings />}
+            >
+              设置
+            </Button>
+            <ProviderUpdate
+              isModalOpen={isModalOpen}
+              setIsModalOpen={setIsModalOpen}
+            />
+          </Box>
         </Box>
-        <Box>
-          <Button onClick={() => setIsModalOpen(true)}>设置</Button>
-          <ProviderUpdate
-            isModalOpen={isModalOpen}
-            setIsModalOpen={setIsModalOpen}
-          />
-        </Box>
-        <Box>
-          <Button onClick={toggleCollapse} mb="4">
-            {isOpen ? "隐藏模型" : "显示模型"}
-          </Button>
 
+        <Box>
+          <Box bg={"#edeef1"}>
+            <Button
+              onClick={toggleCollapse}
+              size={"sm"}
+              bg="transparent"
+              leftIcon={
+                isOpen ? (
+                  <MdOutlineKeyboardDoubleArrowUp />
+                ) : (
+                  <MdOutlineKeyboardDoubleArrowDown />
+                )
+              }
+            >
+              {isOpen ? "隐藏模型" : "显示模型"}
+            </Button>
+          </Box>
           <Collapse in={isOpen}>
-            <VStack align="start">
+            <VStack align="start" bg={"#edeef1"}>
               {providerInfo?.models.map((model, index) => (
                 <Box
                   key={index}
@@ -58,11 +89,9 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
                   flexDirection={"row"}
                   alignItems={"center"}
                   w="full"
-                  _hover={{
-                    bg: "gray.200",
-                  }}
+                  pl="3"
                 >
-                  <ModelsIcon
+                  <ModelProviderIcon
                     modelprovider_name={providerName}
                     w={4}
                     h={4}
