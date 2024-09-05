@@ -115,6 +115,7 @@ export default function TeamSettings() {
                     alignItems={"center"}
                   >
                     <Popover preventOverflow={false} isLazy={true}>
+                      {/* {Todo: 需要修改chathistory组件，现在点击会跳转到playground，需要改成根据情况而定 team or playground} */}
                       <PopoverTrigger>
                         <IconButton
                           aria-label="history"
@@ -133,12 +134,19 @@ export default function TeamSettings() {
                           onClick={handelOpenChatHistory}
                         />
                       </PopoverTrigger>
-                      <PopoverContent>
+                      <PopoverContent zIndex="9999" bg={"white"}>
                         <PopoverArrow />
                         <PopoverCloseButton />
-                        <PopoverHeader> 聊天记录</PopoverHeader>
-                        <PopoverBody maxH="50vh" overflowY="auto">
-                          <ChatHistoryList teamId={teamId} />
+                        <PopoverHeader>聊天记录</PopoverHeader>
+                        <PopoverBody
+                          maxH="50vh"
+                          overflowY="auto"
+                          zIndex="9999"
+                          bg={"white"}
+                        >
+                          <Box zIndex="1001">
+                            <ChatHistoryList teamId={teamId} />
+                          </Box>
                         </PopoverBody>
                         <PopoverFooter />
                       </PopoverContent>
