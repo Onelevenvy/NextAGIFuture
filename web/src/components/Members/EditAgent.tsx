@@ -175,10 +175,9 @@ const EditAgent = forwardRef<HTMLFormElement, EditAgentProps>(
             flexDirection={"column"}
             h="full"
             overflow={"auto"}
-            border={"1px solid red"}
           >
             <FormControl mt={4} isRequired isInvalid={!!errors.name} px="6">
-              <FormLabel htmlFor="name">Name</FormLabel>
+              <FormLabel htmlFor="name">名字</FormLabel>
               <Input
                 id="name"
                 {...register("name", {
@@ -196,7 +195,7 @@ const EditAgent = forwardRef<HTMLFormElement, EditAgentProps>(
               )}
             </FormControl>
             <FormControl mt={4} isRequired isInvalid={!!errors.role} px="6">
-              <FormLabel htmlFor="role">Role</FormLabel>
+              <FormLabel htmlFor="role">角色</FormLabel>
               <Textarea
                 id="role"
                 {...register("role", { required: "Role is required." })}
@@ -208,7 +207,7 @@ const EditAgent = forwardRef<HTMLFormElement, EditAgentProps>(
               )}
             </FormControl>
             <FormControl mt={4} px="6">
-              <FormLabel htmlFor="backstory">Backstory</FormLabel>
+              <FormLabel htmlFor="backstory">背景故事</FormLabel>
               <Textarea
                 id="backstory"
                 {...register("backstory")}
@@ -231,7 +230,7 @@ const EditAgent = forwardRef<HTMLFormElement, EditAgentProps>(
                 fieldState: { error },
               }) => (
                 <FormControl mt={4} px="6" isInvalid={!!error} id="skills">
-                  <FormLabel>Skills</FormLabel>
+                  <FormLabel>工具</FormLabel>
                   <MultiSelect
                     // isDisabled={}
                     isLoading={isLoadingSkills}
@@ -258,7 +257,7 @@ const EditAgent = forwardRef<HTMLFormElement, EditAgentProps>(
                 fieldState: { error },
               }) => (
                 <FormControl mt={4} px="6" isInvalid={!!error} id="uploads">
-                  <FormLabel>Knowledge Base</FormLabel>
+                  <FormLabel>知识库</FormLabel>
                   <MultiSelect
                     // isDisabled={}
                     isLoading={isLoadingUploads}
