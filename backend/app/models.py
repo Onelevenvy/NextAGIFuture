@@ -263,7 +263,7 @@ class MemberBase(SQLModel):
     source: int | None = None
     provider: str = "zhipuai"
     model: str = "glm-4-0520"
-    openai_api_key: str = "fe1f2097b7284bd4baa1284be8d54aea.6VOvX4efbye8M6m0"
+    openai_api_key: str = "changtoyourapikey"
     openai_api_base: str = "https://open.bigmodel.cn/api/paas/v4"
 
     temperature: float = 0.1
@@ -572,6 +572,7 @@ class ModelOutIdWithAndName(SQLModel):
     id: int
     ai_model_name: str
 
+
 class ModelProviderWithModelsListOut(SQLModel):
     id: int
     provider_name: str
@@ -580,6 +581,7 @@ class ModelProviderWithModelsListOut(SQLModel):
     icon: str | None
     description: str | None
     models: list[ModelOutIdWithAndName]
+
 
 class ProvidersListWithModelsOut(SQLModel):
     providers: list[ModelProviderWithModelsListOut]

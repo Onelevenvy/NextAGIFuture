@@ -2887,7 +2887,7 @@
           "openai_api_key": {
             "type": "string",
             "title": "Openai Api Key",
-            "default": "fe1f2097b7284bd4baa1284be8d54aea.6VOvX4efbye8M6m0"
+            "default": "changethis"
           },
           "openai_api_base": {
             "type": "string",
@@ -2984,7 +2984,7 @@
           "openai_api_key": {
             "type": "string",
             "title": "Openai Api Key",
-            "default": "fe1f2097b7284bd4baa1284be8d54aea.6VOvX4efbye8M6m0"
+            "default": "changethis"
           },
           "openai_api_base": {
             "type": "string",
