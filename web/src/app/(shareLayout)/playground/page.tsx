@@ -10,7 +10,7 @@ import PaneStateControl from "@/components/Common/PaneStateControl";
 
 const ChatPlayground = () => {
   const [isChatBotListOpen, setIsChatBotListOpen] = useState(true);
-  const [isChatHistoryOpen, setIsChatHistoryOpen] = useState(true);
+  const [isChatHistoryOpen, setIsChatHistoryOpen] = useState(false);
   const { teamId } = useChatTeamIdStore(); // 使用 Zustand store
 
   const selctedColor = useColorModeValue(
