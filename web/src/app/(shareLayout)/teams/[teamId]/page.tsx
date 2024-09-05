@@ -64,7 +64,7 @@ function Team() {
           >
             <Box></Box>
             <Box pt="4" pl="4">
-              <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
+              <Breadcrumb>
                 <BreadcrumbItem>
                   <Link href="/teams">
                     <BreadcrumbLink>Teams</BreadcrumbLink>
@@ -72,7 +72,9 @@ function Team() {
                 </BreadcrumbItem>
                 <BreadcrumbItem isCurrentPage>
                   <Link href="#">
-                    <BreadcrumbLink>{team.name}</BreadcrumbLink>
+                    <BreadcrumbLink fontWeight={"bold"}>
+                      {team.name}
+                    </BreadcrumbLink>
                   </Link>
                 </BreadcrumbItem>
               </Breadcrumb>
