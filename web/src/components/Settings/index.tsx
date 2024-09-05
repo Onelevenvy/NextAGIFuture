@@ -194,7 +194,7 @@ export default function AccountSetting({
             )}
           </Flex>
 
-          <Box px={{ base: "4", sm: "8" }} pt="2">
+          <Box px={{ base: "4", sm: "8" }} pt="2" w="full">
             {activeMenu === "account" && <UserInfoPage />}
             {activeMenu === "members" && isAdmin && <MembersPage />}
             {activeMenu === "appearance" && <AppearancePage />}
