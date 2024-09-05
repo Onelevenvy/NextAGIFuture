@@ -1,6 +1,15 @@
-import { Box, Flex, Avatar, VStack, useColorModeValue } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Avatar,
+  VStack,
+  useColorModeValue,
+  Link,
+  Tooltip,
+} from "@chakra-ui/react";
 
 import SidebarItems from "./SidebarItems";
+import { FaGithubSquare } from "react-icons/fa";
 
 const Sidebar = () => {
   const bgColor = useColorModeValue("ui.white", "ui.dark");
@@ -19,7 +28,22 @@ const Sidebar = () => {
         >
           <Box w="full">
             <VStack align="center" spacing={6}>
-              <Avatar size="sm" name="tqx" src="logo.svg" mt={"12px"} />
+              <Link
+                href="https://github.com/Onelevenvy/NextAGIFuture"
+                isExternal
+              >
+                <Tooltip
+                  label="https://github.com/Onelevenvy/NextAGIFuture"
+                  fontSize="2xs"
+                >
+                  <Avatar
+                    size="md"
+                    bg={"transparent"}
+                    icon={<FaGithubSquare size={"md"} color="black" />}
+                    mt={"12px"}
+                  />
+                </Tooltip>
+              </Link>
               <Box>
                 <SidebarItems />
               </Box>
