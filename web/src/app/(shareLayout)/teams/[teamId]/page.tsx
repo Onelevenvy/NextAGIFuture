@@ -63,7 +63,7 @@ function Team() {
             overflow={"hidden"}
           >
             <Box></Box>
-            <Box mt="4" ml="4">
+            <Box pt="4" pl="4">
               <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
                 <BreadcrumbItem>
                   <Link href="/teams">
@@ -77,12 +77,19 @@ function Team() {
                 </BreadcrumbItem>
               </Breadcrumb>
             </Box>
-            <Box maxW="full" display={"flex"} flexDirection={"column"} maxHeight="full" h="full" overflow={"hidden"} border={"1px solid blue"}>
+            <Box
+              maxW="full"
+              display={"flex"}
+              flexDirection={"column"}
+              maxHeight="full"
+              h="full"
+              overflow={"hidden"}
+            >
               <Tabs
-                pt={2}
                 variant="enclosed"
                 index={tabIndex}
                 onChange={setTabIndex}
+                h="full"
               >
                 {team.workflow === "sequential" ||
                 team.workflow === "hierarchical" ? (
@@ -92,13 +99,13 @@ function Team() {
                     <Tab>Threads记录</Tab>
                   </TabList>
                 ) : null}
-                <TabPanels>
+                <TabPanels h={"full"}>
                   <TabPanel h="full">
                     {team.workflow === "sequential" ||
                     team.workflow === "hierarchical" ? (
                       <Flow />
                     ) : (
-                      <Box h="full" border={"1px solid red"}>
+                      <Box h="full" minH="full">
                         <TeamSettings />
                       </Box>
                     )}

@@ -1,5 +1,5 @@
 "use client";
-import React, {  useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Control, Controller } from "react-hook-form";
 import {
   FormControl,
@@ -57,8 +57,8 @@ const ModelSelect = ({
   );
 
   return (
-    <Box p={5}>
-      <FormControl mb={4}>
+    <Box >
+      <FormControl >
         <FormLabel htmlFor="model">选择模型</FormLabel>
         {isLoading ? (
           <Spinner size="md" />

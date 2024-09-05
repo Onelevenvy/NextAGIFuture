@@ -38,31 +38,38 @@ export default function TeamSettings() {
           <Spinner size="xl" color="ui.main" />
         </Flex>
       ) : (
-        <Box display={"flex"} flexDirection={"row"} maxH={"full"} h="full">
+        <Box
+          maxH={"full"}
+          h="full"
+          w="full"
+          minW="full"
+          display={"flex"}
+          flexDirection={"row"}
+        >
           <Box
             display={"flex"}
-            bg="transparent"
-            flexDirection={"column"}
-            width={"25%"}
+            w="full"
+            h="full"
+            flexDirection={"row"}
+            ml={"2"}
           >
-            {member?.map((member) => (
-              <EditAgent
-                key={member.id}
-                teamId={Number.parseInt(teamId)}
-                member={member}
-                ref={formRef}
-              />
-            ))}
-          </Box>
-          <Box display={"flex"} flexDirection={"column"} w="full">
-            <Box>
-              <ChatMain isPlayground={false} />
-              <Box>
+            <Box bg="transparent" h={"full"} w="30%">
+              {member?.map((member) => (
+                <EditAgent
+                  key={member.id}
+                  teamId={Number.parseInt(teamId)}
+                  member={member}
+                  ref={formRef}
+                />
+              ))}
+            </Box>
+            <Box w="full" display={"flex"} flexDirection={"column"}>
+              <Box ml={"auto"} mr="2">
                 <Button onClick={triggerSubmit}>Save</Button>
               </Box>
-              {/* <Box border={"1px solid red"}>
-         
-              </Box> */}
+              <Box w="full" h="full" bg={"white"} borderRadius={"lg"} pt="8">
+                <ChatMain isPlayground={false} />
+              </Box>
             </Box>
           </Box>
         </Box>
