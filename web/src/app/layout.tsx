@@ -17,7 +17,6 @@ export const viewport: Viewport = {
 const LocaleLayout = ({ children }: { children: React.ReactNode }) => {
   const locale = getLocaleOnServer();
   return (
-    // <html lang={"en"} className="h-full">
     <html lang={locale ?? "en"} className="h-full">
       <head>
         <meta name="theme-color" content="#FFFFFF" />

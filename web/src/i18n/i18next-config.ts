@@ -6,28 +6,6 @@ import { LanguagesSupported } from "@/i18n/language";
 
 const loadLangResources = (lang: string) => ({
   translation: {
-    // common: require(`./${lang}/common`).default,
-    // layout: require(`./${lang}/layout`).default,
-    // login: require(`./${lang}/login`).default,
-    // register: require(`./${lang}/register`).default,
-    // app: require(`./${lang}/app`).default,
-    // appOverview: require(`./${lang}/app-overview`).default,
-    // appDebug: require(`./${lang}/app-debug`).default,
-    // appApi: require(`./${lang}/app-api`).default,
-    // appLog: require(`./${lang}/app-log`).default,
-    // appAnnotation: require(`./${lang}/app-annotation`).default,
-    // share: require(`./${lang}/share-app`).default,
-    // dataset: require(`./${lang}/dataset`).default,
-    // datasetDocuments: require(`./${lang}/dataset-documents`).default,
-    // datasetHitTesting: require(`./${lang}/dataset-hit-testing`).default,
-    // datasetSettings: require(`./${lang}/dataset-settings`).default,
-    // datasetCreation: require(`./${lang}/dataset-creation`).default,
-    // explore: require(`./${lang}/explore`).default,
-    // billing: require(`./${lang}/billing`).default,
-    // custom: require(`./${lang}/custom`).default,
-    // tools: require(`./${lang}/tools`).default,
-    // workflow: require(`./${lang}/workflow`).default,
-    // runLog: require(`./${lang}/run-log`).default,
     dashboard: require(`./${lang}/dashboard`).default,
   },
 });
