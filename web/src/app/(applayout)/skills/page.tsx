@@ -22,9 +22,11 @@ import {
 
 import { useTabSearchParams } from "@/hooks/useTabSearchparams";
 import TabSlider from "@/components/Common/TabSlider";
+import { useTranslation } from "react-i18next";
 
 function Skills() {
   const showToast = useCustomToast();
+  const { t } = useTranslation();
   const {
     data: skills,
     isLoading,
@@ -40,17 +42,17 @@ function Skills() {
   const options = [
     {
       value: "all",
-      text: "全部",
+      text: t(`panestate.tools.all`),
       icon: <RiApps2Fill className="w-[14px] h-[14px] mr-1" />,
     },
     {
       value: "managed",
-      text: "内置",
+      text: t(`panestate.tools.builtin`),
       icon: <RiArchiveDrawerFill className="w-[14px] h-[14px] mr-1" />,
     },
     {
       value: "def",
-      text: "自定义",
+      text: t(`panestate.tools.custom`),
       icon: <RiBarChartFill className="w-[14px] h-[14px] mr-1" />,
     },
   ];

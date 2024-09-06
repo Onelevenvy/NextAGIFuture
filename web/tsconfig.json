@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/Markdown/Markdown.tsx", "src/components/Markdown/CopyButton.tsx", "src/components/Common/PaneStateControl", "src/components/Icons/modelProvider/index.tsx", "src/assets/icons/models/svg2icon.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/Markdown/Markdown.tsx", "src/components/Markdown/CopyButton.tsx", "src/components/Common/PaneStateControl", "src/components/Icons/modelProvider/index.tsx", "src/assets/icons/models/svg2icon.js", "src/i18n/en-US/chat", "src/i18n/zh-Hans/chat.ts"],
   "exclude": ["node_modules"]
 }

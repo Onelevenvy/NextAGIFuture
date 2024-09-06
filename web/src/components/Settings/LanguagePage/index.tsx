@@ -12,8 +12,12 @@ export default function LanguagePage() {
   return (
     <>
       <Select defaultValue={"zh-Hans"} onChange={handleChange}>
-        <option value="zh-Hans">zh-Hans</option>
-        <option value="en-US">en-US</option>
+
+        <option value="zh-Hans">中文-简体</option>
+        <option value="en-US">English-US</option>
+
+     
+
       </Select>
     </>
   );

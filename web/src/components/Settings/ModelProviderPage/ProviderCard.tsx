@@ -12,6 +12,7 @@ import {
   MdOutlineKeyboardDoubleArrowDown,
   MdOutlineKeyboardDoubleArrowUp,
 } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 
 interface ModelCardProps {
   providerName: string;
@@ -21,7 +22,7 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
   const providerInfo = useModelProviderContext();
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { t } = useTranslation();
   const toggleCollapse = () => setIsOpen(!isOpen);
 
   return (
@@ -54,7 +55,7 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
               onClick={() => setIsModalOpen(true)}
               leftIcon={<CiSettings />}
             >
-              设置
+              {t(`setting.modal.setting`)}
             </Button>
             <ProviderUpdate
               isModalOpen={isModalOpen}
@@ -77,7 +78,7 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
                 )
               }
             >
-              {isOpen ? "隐藏模型" : "显示模型"}
+              {isOpen ?  t(`setting.setting.hidemodel`) :  t(`setting.setting.showmodel`)}
             </Button>
           </Box>
           <Collapse in={isOpen}>

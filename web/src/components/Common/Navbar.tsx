@@ -1,10 +1,10 @@
 import { Button, Flex, Icon, useDisclosure } from "@chakra-ui/react";
 import { FaPlus } from "react-icons/fa";
-
 import AddUser from "@/components/Admin/AddUser";
 import AddTeam from "@/components/Teams/AddTeam";
 import AddSkill from "@/components/Skills/AddSkill";
 import AddUpload from "@/components/Uploads/AddUpload";
+import { useTranslation } from "react-i18next";
 
 interface NavbarProps {
   type: string;
@@ -15,7 +15,7 @@ const Navbar = ({ type }: NavbarProps) => {
   const addTeamModal = useDisclosure();
   const addSkillModal = useDisclosure();
   const addUploadModal = useDisclosure();
-
+  const { t } = useTranslation();
   return (
     <>
       <Flex gap={2}>
@@ -33,7 +33,7 @@ const Navbar = ({ type }: NavbarProps) => {
                   : addUploadModal.onOpen
           }
         >
-          <Icon as={FaPlus} /> 创建 {type}
+          <Icon as={FaPlus} /> {t(`setting.create`)} {type}
         </Button>
         <AddUser isOpen={addUserModal.isOpen} onClose={addUserModal.onClose} />
         <AddTeam isOpen={addTeamModal.isOpen} onClose={addTeamModal.onClose} />

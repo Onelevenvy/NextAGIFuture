@@ -6,7 +6,7 @@ import { RiRobot2Line, RiRobot2Fill } from "react-icons/ri";
 import { usePathname } from "next/navigation";
 import useAuth from "../../../hooks/useAuth";
 import { FaHouseChimney, FaBook } from "react-icons/fa6";
-
+import { useTranslation } from "react-i18next";
 import { LuBookCopy } from "react-icons/lu";
 import { FaToolbox } from "react-icons/fa";
 import { PiToolboxLight } from "react-icons/pi";
@@ -15,53 +15,7 @@ import {
   IoChatbubbleEllipses,
 } from "react-icons/io5";
 
-const superuser_items = [
-  {
-    activeIcon: FaHouseChimney,
-    inactiveIcon: FiHome,
-    title: "主页",
-    path: "/dashboard",
-  },
-  {
-    activeIcon: IoChatbubbleEllipses,
-    inactiveIcon: IoChatboxEllipsesOutline,
-    title: "会话",
-    path: "/playground",
-  },
-  {
-    activeIcon: RiRobot2Fill,
-    inactiveIcon: RiRobot2Line,
-    title: "团队",
-    path: "/teams",
-  },
-  {
-    activeIcon: FaToolbox,
-    inactiveIcon: PiToolboxLight,
-    title: "技能",
-    path: "/skills",
-  },
-  {
-    activeIcon: FaBook,
-    inactiveIcon: LuBookCopy,
-    title: "知识库",
-    path: "/knowledge",
-  },
-];
 
-const nosuperuser_items = [
-  {
-    activeIcon: FiHome,
-    inactiveIcon: FiHome,
-    title: "主页",
-    path: "/dashboard",
-  },
-  {
-    activeIcon: BsRobot,
-    inactiveIcon: BsRobot,
-    title: "会话",
-    path: "/playground",
-  },
-];
 
 interface SidebarItemsProps {
   onClose?: () => void;
@@ -72,7 +26,54 @@ const SidebarItems = ({ onClose }: SidebarItemsProps) => {
   const bgActive = useColorModeValue("white", "#4A5568");
   const currentPath = usePathname(); // 获取当前路径
   const { user: currentUser } = useAuth();
-
+  const { t } = useTranslation();
+  const superuser_items = [
+    {
+      activeIcon: FaHouseChimney,
+      inactiveIcon: FiHome,
+      title: t(`sidebar.home`),
+      path: "/dashboard",
+    },
+    {
+      activeIcon: IoChatbubbleEllipses,
+      inactiveIcon: IoChatboxEllipsesOutline,
+      title: t(`sidebar.chat`),
+      path: "/playground",
+    },
+    {
+      activeIcon: RiRobot2Fill,
+      inactiveIcon: RiRobot2Line,
+      title: t(`sidebar.team`),
+      path: "/teams",
+    },
+    {
+      activeIcon: FaToolbox,
+      inactiveIcon: PiToolboxLight,
+      title: t(`sidebar.tools`),
+      path: "/skills",
+    },
+    {
+      activeIcon: FaBook,
+      inactiveIcon: LuBookCopy,
+      title: t(`sidebar.knowledge`),
+      path: "/knowledge",
+    },
+  ];
+  
+  const nosuperuser_items = [
+    {
+      activeIcon: FiHome,
+      inactiveIcon: FiHome,
+      title: "主页",
+      path: "/dashboard",
+    },
+    {
+      activeIcon: BsRobot,
+      inactiveIcon: BsRobot,
+      title: "会话",
+      path: "/playground",
+    },
+  ];
   const items = currentUser?.is_superuser ? superuser_items : nosuperuser_items;
 
   const listItems = items.map((item) => {
