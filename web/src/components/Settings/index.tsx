@@ -21,7 +21,9 @@ import AppearancePage from "./AcountPage/Appearance";
 import ChangePasswordPage from "./AcountPage/ChangePassword";
 import useAuth from "@/hooks/useAuth";
 import LanguagePage from "./LanguagePage";
+
 import { useTranslation } from "react-i18next";
+
 
 type IAccountSettingProps = {
   activeTab?: string;
@@ -90,6 +92,12 @@ export default function AccountSetting({
         {
           key: "language",
           name: t(`setting.setting.language`),
+          icon: <RiAccountCircleLine />,
+          activeIcon: <RiAccountCircleFill color="#155eef" />,
+        },
+        {
+          key: "language",
+          name: "语言",
           icon: <RiAccountCircleLine />,
           activeIcon: <RiAccountCircleFill color="#155eef" />,
         },
