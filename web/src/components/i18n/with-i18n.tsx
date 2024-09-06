@@ -9,10 +9,14 @@ export type II18NHocProps = {
 };
 
 const withI18N = (Component: any) => {
-  return (props: any) => {
+  const WithI18N = (props: any) => {
     const { i18n } = useContext(I18NContext);
     return <Component {...props} i18n={i18n} />;
   };
+
+  WithI18N.displayName = `withI18N(${Component.displayName || Component.name || "Component"})`;
+
+  return WithI18N;
 };
-withI18N.displayname = "withi18n";
+
 export default withI18N;

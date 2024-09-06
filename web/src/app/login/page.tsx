@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 import Logo from "@/assets/images/logo.svg";
 import type { ApiError } from "@/client";
 import type { Body_login_login_access_token as AccessToken } from "@/client/models/Body_login_login_access_token";
-import useAuth, { isLoggedIn } from "@/hooks/useAuth";
+import useAuth from "@/hooks/useAuth";
 import { emailPattern } from "@/utils";
 
 function Login() {
@@ -64,7 +64,7 @@ function Login() {
         centerContent
       >
         <Image
-          src={Logo.src}
+          src='logo.png'
           alt=" logo"
           height="auto"
           maxW="2xs"
@@ -76,7 +76,7 @@ function Login() {
           fontSize={"xx-large"}
           mb={4}
         >
-          TQX Multi-Agent
+          Next AGI Future
         </Container>
         <FormControl id="username" isInvalid={!!errors.username || !!error}>
           <Input
@@ -97,6 +97,7 @@ function Login() {
               {...register("password")}
               type={show ? "text" : "password"}
               placeholder="Password"
+              autoComplete="password"
             />
             <InputRightElement
               color="gray.400"
