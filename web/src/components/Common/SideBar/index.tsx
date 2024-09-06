@@ -39,7 +39,7 @@ const Sidebar = () => {
                   <Avatar
                     size="md"
                     bg={"transparent"}
-                    icon={<FaGithubSquare size={"md"} color="black" />}
+                    icon={<FaGithubSquare size={"40"} color="black" />}
                     mt={"12px"}
                   />
                 </Tooltip>
