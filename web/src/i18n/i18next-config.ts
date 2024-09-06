@@ -8,6 +8,7 @@ const loadLangResources = (lang: string) => ({
   translation: {
     dashboard: require(`./${lang}/dashboard`).default,
     sidebar: require(`./${lang}/sidebar`).default,
+    chat: require(`./${lang}/chat`).default,
   },
 });
 

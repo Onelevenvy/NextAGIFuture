@@ -25,7 +25,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { MembersService, ThreadsService, type ApiError } from "../../client";
 import useCustomToast from "../../hooks/useCustomToast";
 import { useRouter } from "next/navigation";
-
+import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import { EllipsisVerticalIcon, StarIcon, Trash } from "lucide-react";
 import useChatMessageStore from "@/store/chatMessageStore";
@@ -115,6 +115,7 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
     showToast("Something went wrong.", `${errDetail}`, "error");
   }
   const [showMenu, setShowMenu] = useState(false);
+  const { t } = useTranslation();
   return (
     <>
       {isLoading ? (
@@ -127,7 +128,7 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
             <>
               <Box p={4} display="flex" overflow={"hidden"}>
                 <Text fontSize="lg" fontWeight="bold">
-                  聊天记录
+                  {t(`chat.chatHistoryList.chatHistory`)}
                 </Text>
               </Box>
               <Box overflowY={"auto"} overflowX={"hidden"} maxH="full" h="full">

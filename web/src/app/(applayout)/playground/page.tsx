@@ -45,7 +45,7 @@ const ChatPlayground = () => {
         w={isChatBotListOpen ? "20%" : "0"}
         maxW={isChatBotListOpen ? "20%" : "0"}
         minW={isChatBotListOpen ? "20%" : "0"}
-        bg="transparent" // 去除背景
+        bg="transparent" 
         border="1px solid #cccccc"
         visibility={isChatBotListOpen ? "visible" : "hidden"}
         transition="width 0.1s, visibility 0.1s"
@@ -93,8 +93,8 @@ const ChatPlayground = () => {
         maxH="full"
         p={4}
         mt="0"
-        bg="transparent" // 去除背景
-        border="1px solid #cccccc" // 添加边框线
+        bg="transparent" 
+        border="1px solid #cccccc" 
         borderRadius="md"
         overflow="hidden"
         visibility={isChatHistoryOpen ? "visible" : "hidden"}

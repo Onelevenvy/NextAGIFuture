@@ -12,7 +12,7 @@ import useCustomToast from "@/hooks/useCustomToast";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import useChatTeamIdStore from "@/store/chatTeamIDStore"; // 引入 Zustand store
-
+import { useTranslation } from "react-i18next";
 import { FaRobot } from "react-icons/fa";
 import useChatMessageStore from "@/store/chatMessageStore";
 import { tqxIconLibrary } from "../Icons/TqxIcon";
@@ -21,7 +21,7 @@ const ChatBotList = () => {
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>("1");
   const showToast = useCustomToast();
   const navigate = useRouter();
-
+  const { t } = useTranslation();
   const selctedColor = useColorModeValue(
     "ui.selctedColor",
     "ui.selctedColorDark"
@@ -78,17 +78,17 @@ const ChatBotList = () => {
           <Icon as={FaRobot} mr={2} ml={5} w={8} h={8} color="red.500" />
           <Box width="full" display="flex" flexDirection="column">
             <Text fontWeight="bold" fontSize="md" noOfLines={1}>
-              随便聊聊
+              {t(`chat.chatBotList.easyTalk`)}
             </Text>
             <Text color="gray.500" fontSize="xs" noOfLines={1}>
-              {"一个通用的聊天机器人，你可以问他任何问题"}
+              {t(`chat.chatBotList.description`)}
             </Text>
           </Box>
         </Box>
 
         <Box width="full" pb={4} display="flex" alignItems="center">
           <Text ml="6" fontSize="sm" color="gray.500">
-            Agent列表
+            {t(`chat.chatBotList.agentList`)}
           </Text>
         </Box>
         <Divider colorScheme={"gray"} />
