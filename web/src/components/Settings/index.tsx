@@ -20,6 +20,7 @@ import MembersPage from "./MembersPage";
 import AppearancePage from "./AcountPage/Appearance";
 import ChangePasswordPage from "./AcountPage/ChangePassword";
 import useAuth from "@/hooks/useAuth";
+import LanguagePage from "./LanguagePage";
 
 type IAccountSettingProps = {
   activeTab?: string;
@@ -82,6 +83,12 @@ export default function AccountSetting({
         {
           key: "password",
           name: "修改密码",
+          icon: <RiAccountCircleLine />,
+          activeIcon: <RiAccountCircleFill color="#155eef" />,
+        },
+        {
+          key: "language",
+          name: "语言",
           icon: <RiAccountCircleLine />,
           activeIcon: <RiAccountCircleFill color="#155eef" />,
         },
@@ -200,6 +207,7 @@ export default function AccountSetting({
             {activeMenu === "appearance" && <AppearancePage />}
             {activeMenu === "password" && <ChangePasswordPage />}
             {activeMenu === "provider" && isAdmin && <ModelProviderPage />}
+            {activeMenu === "language" && <LanguagePage />}
           </Box>
         </Box>
       </Flex>
