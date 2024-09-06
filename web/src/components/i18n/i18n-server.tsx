@@ -10,8 +10,8 @@ export type II18NServerProps = {
 };
 
 const I18NServer = ({ children }: II18NServerProps) => {
-  const { localValue } = useLocaleStore();
-  const locale = localValue!;
+  const { localeValue } = useLocaleStore();
+  const locale = localeValue!;
 
   return (
     <I18N {...{ locale }}>

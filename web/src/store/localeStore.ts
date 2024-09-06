@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
 interface LocaleStore {
-  localValue: string | null;
-  setLocalValue: (teamId: string | null) => void;
+  localeValue: string | null;
+  setLocaleValue: (teamId: string | null) => void;
 }
 
 const useLocaleStore = create<LocaleStore>((set) => ({
-  localValue: "en-US",
-  setLocalValue: (localValue) => set(() => ({ localValue })),
+  localeValue: "en-US",
+  setLocaleValue: (localeValue) => set(() => ({ localeValue })),
 }));
 
 export default useLocaleStore;
