@@ -7,6 +7,7 @@ import { LanguagesSupported } from "@/i18n/language";
 const loadLangResources = (lang: string) => ({
   translation: {
     dashboard: require(`./${lang}/dashboard`).default,
+    sidebar: require(`./${lang}/sidebar`).default,
   },
 });
 
