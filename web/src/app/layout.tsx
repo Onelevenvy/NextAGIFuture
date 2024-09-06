@@ -1,20 +1,8 @@
-"use client";
-
 import type { Viewport } from "next";
-import { ChakraProvider } from "@chakra-ui/react";
-
-import { QueryClient, QueryClientProvider } from "react-query";
-
+import { ChakraUIProviders } from "@/components/Provider/ChakraUIProvider";
 import { StrictMode } from "react";
-
-import theme from "@/theme";
-
-import { OpenAPI } from "@/client";
-
-OpenAPI.BASE = "http://127.0.0.1:8000";
-OpenAPI.TOKEN = async () => {
-  return localStorage.getItem("access_token") || "";
-};
+import ClientProvider from "../components/Provider/ClientProviders";
+import QueryClientProviderWrapper from "@/components/Provider/QueryClientProvider";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -25,8 +13,6 @@ export const viewport: Viewport = {
 };
 
 const LocaleLayout = ({ children }: { children: React.ReactNode }) => {
-  const queryClient = new QueryClient();
-
   return (
     <html lang={"en"} className="h-full">
       <head>
@@ -35,11 +21,11 @@ const LocaleLayout = ({ children }: { children: React.ReactNode }) => {
       </head>
       <body>
         <StrictMode>
-          <ChakraProvider theme={theme}>
-            <QueryClientProvider client={queryClient}>
-              {children}
-            </QueryClientProvider>
-          </ChakraProvider>
+          <ChakraUIProviders>
+            <QueryClientProviderWrapper>
+              <ClientProvider>{children}</ClientProvider>
+            </QueryClientProviderWrapper>
+          </ChakraUIProviders>
         </StrictMode>
       </body>
     </html>
