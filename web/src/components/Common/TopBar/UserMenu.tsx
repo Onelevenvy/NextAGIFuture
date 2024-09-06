@@ -21,6 +21,7 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import { forwardRef, BoxProps } from "@chakra-ui/react";
 import CustomModalWrapper from "../CustomModal";
 import AccountSetting from "@/components/Settings";
+import { useTranslation } from "react-i18next";
 const UserMenu = () => {
   const { logout, currentUser } = useAuth();
 
@@ -29,7 +30,7 @@ const UserMenu = () => {
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const { t } = useTranslation();
   const tqxMenuComponent = forwardRef<BoxProps, "div">((props, ref) => (
     <Box
       rounded="full"
@@ -86,7 +87,7 @@ const UserMenu = () => {
               <MenuDivider />
 
               <MenuItem as={Link} href="" onClick={onOpen}>
-                设置
+                {t(`setting.modal.setting`)}
                 <CustomModalWrapper
                   component={<AccountSetting />}
                   size="6xl"
@@ -96,13 +97,13 @@ const UserMenu = () => {
               </MenuItem>
 
               <MenuItem as={Link} href="">
-                帮助文档
+              {t(`setting.modal.helpDocu`)}
               </MenuItem>
               <MenuItem as={Link} href="">
                 About
               </MenuItem>
               <MenuDivider />
-              <MenuItem onClick={handleLogout}>登出</MenuItem>
+              <MenuItem onClick={handleLogout}>{t(`setting.modal.logOut`)}</MenuItem>
             </MenuList>
           </Menu>
         </Box>

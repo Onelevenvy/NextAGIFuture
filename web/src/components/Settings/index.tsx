@@ -21,6 +21,7 @@ import AppearancePage from "./AcountPage/Appearance";
 import ChangePasswordPage from "./AcountPage/ChangePassword";
 import useAuth from "@/hooks/useAuth";
 import LanguagePage from "./LanguagePage";
+import { useTranslation } from "react-i18next";
 
 type IAccountSettingProps = {
   activeTab?: string;
@@ -39,25 +40,25 @@ export default function AccountSetting({
 }: IAccountSettingProps) {
   const [activeMenu, setActiveMenu] = useState(activeTab);
   const { currentUser } = useAuth();
-
+  const { t } = useTranslation();
   const isAdmin = currentUser?.is_superuser ? true : false;
   const workplaceGroupItems = (() => {
     return [
       {
         key: "provider",
-        name: "模型",
+        name:t(`setting.modal.setting`),
         icon: <RiBox3Line />,
         activeIcon: <RiBox3Fill color="#155eef" />,
       },
       {
         key: "members",
-        name: "成员",
+        name: t(`setting.setting.member`),
         icon: <RiGroup2Line />,
         activeIcon: <RiGroup2Fill color="#155eef" />,
       },
       {
         key: "appearance",
-        name: "外观",
+        name: t(`setting.setting.theme`),
         icon: <RiGroup2Line />,
         activeIcon: <RiGroup2Fill color="#155eef" />,
       },
@@ -67,28 +68,28 @@ export default function AccountSetting({
   const menuItems = [
     {
       key: "workspace-group",
-      name: "工作区",
+      name: t(`setting.setting.workSpace`),
       items: workplaceGroupItems,
     },
     {
       key: "account-group",
-      name: "账户",
+      name: t(`setting.setting.account`),
       items: [
         {
           key: "account",
-          name: "我的账户",
+          name:  t(`setting.setting.myAccount`),
           icon: <RiAccountCircleLine />,
           activeIcon: <RiAccountCircleFill color="#155eef" />,
         },
         {
           key: "password",
-          name: "修改密码",
+          name:  t(`setting.setting.password`),
           icon: <RiAccountCircleLine />,
           activeIcon: <RiAccountCircleFill color="#155eef" />,
         },
         {
           key: "language",
-          name: "语言",
+          name: t(`setting.setting.language`),
           icon: <RiAccountCircleLine />,
           activeIcon: <RiAccountCircleFill color="#155eef" />,
         },
