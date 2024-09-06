@@ -21,7 +21,7 @@ import {
 } from "../../client/core/request";
 import type { ApiRequestOptions } from "../../client/core/ApiRequestOptions";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import MessageBox from "./MessageBox";
 import MessageInput from "../MessageInput";
 import useChatTeamIdStore from "@/store/chatTeamIDStore";
