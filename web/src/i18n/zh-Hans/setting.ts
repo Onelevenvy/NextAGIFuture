@@ -1,4 +1,5 @@
 const translation = {
+  creat: "创建",
   modal: {
     setting: "设置",
     helpDocu: "帮助文档",
@@ -14,6 +15,10 @@ const translation = {
     myAccount: "我的账户",
     password: "密码",
     language: "语言",
+    showmodel: "显示模型",
+    hidemodel: "隐藏模型",
+    themedark: "深色",
+    themelight: "浅色",
   },
 };
 

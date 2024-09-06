@@ -26,9 +26,11 @@ import {
   FaFileWord,
 } from "react-icons/fa";
 import { PiFileHtmlFill } from "react-icons/pi";
+import { useTranslation } from "react-i18next";
 
 function Uploads() {
   const showToast = useCustomToast();
+  const { t } = useTranslation();
   const {
     data: uploads,
     isLoading,
@@ -44,7 +46,7 @@ function Uploads() {
   const options = [
     {
       value: "all",
-      text: "全部",
+      text: t(`panestate.kb.all`),
       icon: <RiListUnordered className="w-[14px] h-[14px] mr-1" />,
     },
     {

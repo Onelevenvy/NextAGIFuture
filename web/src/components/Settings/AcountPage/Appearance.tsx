@@ -1,38 +1,35 @@
 import {
   Badge,
   Container,
-  Heading,
   Radio,
   RadioGroup,
   Stack,
   useColorMode,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
+import { useTranslation } from "react-i18next";
 
 const AppearancePage = () => {
-  const { colorMode, toggleColorMode } = useColorMode()
-
+  const { colorMode, toggleColorMode } = useColorMode();
+  const { t } = useTranslation();
   return (
     <>
       <Container maxW="full">
-        <Heading size="sm" py={4}>
-          显示模式
-        </Heading>
         <RadioGroup onChange={toggleColorMode} value={colorMode}>
           <Stack>
             {/* TODO: Add system default option */}
             <Radio value="light" colorScheme="teal">
-              浅色
+            {t(`setting.setting.themedark`)}
               <Badge ml="1" colorScheme="teal">
                 Default
               </Badge>
             </Radio>
             <Radio value="dark" colorScheme="teal">
-            深色
+            {t(`setting.setting.themelight`)}
             </Radio>
           </Stack>
         </RadioGroup>
       </Container>
     </>
-  )
-}
-export default AppearancePage
+  );
+};
+export default AppearancePage;

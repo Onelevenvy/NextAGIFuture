@@ -10,6 +10,7 @@ const loadLangResources = (lang: string) => ({
     sidebar: require(`./${lang}/sidebar`).default,
     chat: require(`./${lang}/chat`).default,
     setting: require(`./${lang}/setting`).default,
+    panestate: require(`./${lang}/panestate`).default,
   },
 });
 

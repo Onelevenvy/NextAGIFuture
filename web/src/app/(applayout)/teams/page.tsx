@@ -25,9 +25,11 @@ import { useTabSearchParams } from "@/hooks/useTabSearchparams";
 import { GoGitMerge, GoGitPullRequestDraft } from "react-icons/go";
 import { PiChatCircleDots } from "react-icons/pi";
 import useChatTeamIdStore from "@/store/chatTeamIDStore";
+import { useTranslation } from "react-i18next";
 
 function Teams() {
   const showToast = useCustomToast();
+  const { t } = useTranslation();
   const rowTint = useColorModeValue("blackAlpha.50", "whiteAlpha.50");
   const navigate = useRouter();
   const { setTeamId } = useChatTeamIdStore();
@@ -50,7 +52,7 @@ function Teams() {
   const options = [
     {
       value: "all",
-      text: "全部",
+      text:  t(`panestate.team.all`),
       icon: <RiApps2Line className="w-[14px] h-[14px] mr-1" />,
     },
     {
@@ -65,12 +67,12 @@ function Teams() {
     },
     {
       value: "chatbot",
-      text: "聊天助手",
+      text:t(`panestate.team.chatbot`),
       icon: <PiChatCircleDots className="w-[14px] h-[14px] mr-1" />,
     },
     {
       value: "ragbot",
-      text: "知识检索",
+      text: t(`panestate.team.ragbot`),
       icon: <RiBookLine className="w-[14px] h-[14px] mr-1" />,
     },
   ];
