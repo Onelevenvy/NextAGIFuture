@@ -2,8 +2,6 @@
 
 A chatbot, RAG, agent, and multi-agent application project based on LangChain, LangGraph, and other frameworks, open-source, and capable of offline deployment.
 
-Note: This project is developed by simultaneously learning and mastering technologies such as LangGraph, FastAPI, and Next.js, while building LLM applications. This approach helps improve our skills and allows us to experience the enjoyment brought by LLMs. The project code may undergo significant changes and may contain bugs. We also hope that like-minded individuals will join us and grow together.
-
 ### 🤖️ Overview
 
 ![image](https://github.com/user-attachments/assets/a4e33565-7acf-45d9-8e82-5a740cd88344)
@@ -52,7 +50,7 @@ Project tech stack: LangChain + LangGraph + React + Next.js + Chakra UI + Postgr
 3 Ohters
 
 - [x] Function call
-- [ ] I18n
+- [x] I18n
 - [ ] workflow
 - [ ] CrewAI
 - [ ] langflow
@@ -70,3 +68,6 @@ Project tech stack: LangChain + LangGraph + React + Next.js + Chakra UI + Postgr
 ### How to get started
 
 To be done
+
+### Note: 
+This project is developed by simultaneously learning and mastering technologies such as LangGraph, FastAPI, and Next.js, while building LLM applications. This approach helps improve our skills and allows us to experience the enjoyment brought by LLMs. The project code may undergo significant changes and may contain bugs. We also hope that like-minded individuals will join us and grow together.
