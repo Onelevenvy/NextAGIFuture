@@ -11,6 +11,7 @@ const loadLangResources = (lang: string) => ({
     chat: require(`./${lang}/chat`).default,
     setting: require(`./${lang}/setting`).default,
     panestate: require(`./${lang}/panestate`).default,
+    team: require(`./${lang}/team`).default,
   },
 });
 

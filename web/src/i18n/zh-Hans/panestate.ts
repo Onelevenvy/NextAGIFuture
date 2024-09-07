@@ -2,7 +2,7 @@ const translation = {
   team: {
     all: "全部",
     chatbot: "聊天助手",
-    ragbot: "知识检索",
+    ragbot: "知识库问答",
   },
   tools: {
     all: "全部",

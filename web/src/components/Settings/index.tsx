@@ -3,16 +3,14 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import {
-  RiAccountCircleFill,
-  RiAccountCircleLine,
-  RiBox3Fill,
+  RiAccountBoxFill,
+  RiAccountBoxLine,
   RiBox3Line,
-  RiGroup2Fill,
-  RiGroup2Line,
+  RiLockPasswordFill,
+  RiLockPasswordLine,
+  RiTeamFill,
+  RiTeamLine,
 } from "react-icons/ri";
-
-import { UserOut } from "@/client/models/UserOut";
-import { useQueryClient } from "react-query";
 
 import ModelProviderPage from "./ModelProviderPage";
 import UserInfoPage from "./UserInfoPage";
@@ -23,7 +21,9 @@ import useAuth from "@/hooks/useAuth";
 import LanguagePage from "./LanguagePage";
 
 import { useTranslation } from "react-i18next";
-
+import { BsBoxFill, BsSun, BsSunFill } from "react-icons/bs";
+import { MdLanguage } from "react-icons/md";
+import { LuLanguages } from "react-icons/lu";
 
 type IAccountSettingProps = {
   activeTab?: string;
@@ -48,21 +48,21 @@ export default function AccountSetting({
     return [
       {
         key: "provider",
-        name:t(`setting.modal.setting`),
+        name: t(`setting.modal.setting`),
         icon: <RiBox3Line />,
-        activeIcon: <RiBox3Fill color="#155eef" />,
+        activeIcon: <BsBoxFill color="#155eef" />,
       },
       {
         key: "members",
         name: t(`setting.setting.member`),
-        icon: <RiGroup2Line />,
-        activeIcon: <RiGroup2Fill color="#155eef" />,
+        icon: <RiTeamLine />,
+        activeIcon: <RiTeamFill color="#155eef" />,
       },
       {
         key: "appearance",
         name: t(`setting.setting.theme`),
-        icon: <RiGroup2Line />,
-        activeIcon: <RiGroup2Fill color="#155eef" />,
+        icon: <BsSun />,
+        activeIcon: <BsSunFill color="#155eef" />,
       },
     ].filter((item) => !!item.key) as GroupItem[];
   })();
@@ -79,27 +79,21 @@ export default function AccountSetting({
       items: [
         {
           key: "account",
-          name:  t(`setting.setting.myAccount`),
-          icon: <RiAccountCircleLine />,
-          activeIcon: <RiAccountCircleFill color="#155eef" />,
+          name: t(`setting.setting.myAccount`),
+          icon: <RiAccountBoxLine />,
+          activeIcon: <RiAccountBoxFill color="#155eef" />,
         },
         {
           key: "password",
-          name:  t(`setting.setting.password`),
-          icon: <RiAccountCircleLine />,
-          activeIcon: <RiAccountCircleFill color="#155eef" />,
+          name: t(`setting.setting.password`),
+          icon: <RiLockPasswordLine />,
+          activeIcon: <RiLockPasswordFill color="#155eef" />,
         },
         {
           key: "language",
           name: t(`setting.setting.language`),
-          icon: <RiAccountCircleLine />,
-          activeIcon: <RiAccountCircleFill color="#155eef" />,
-        },
-        {
-          key: "language",
-          name: "语言",
-          icon: <RiAccountCircleLine />,
-          activeIcon: <RiAccountCircleFill color="#155eef" />,
+          icon: <MdLanguage />,
+          activeIcon: <LuLanguages color="#155eef" />,
         },
       ],
     },
@@ -142,7 +136,7 @@ export default function AccountSetting({
             lineHeight="6"
             color="gray.900"
           >
-            {"设置"}
+            {t(`setting.modal.setting`)}
           </Text>
           <Box width="full">
             {menuItems.map((menuItem) => (

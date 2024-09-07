@@ -16,7 +16,6 @@ import {
   Text,
   SimpleGrid,
   Textarea,
-  Icon,
   IconButton,
 } from "@chakra-ui/react";
 import { type SubmitHandler, useForm, Controller } from "react-hook-form";
@@ -26,8 +25,8 @@ import { RiTeamFill, RiChatVoiceLine } from "react-icons/ri";
 import { GiTeamIdea } from "react-icons/gi";
 import { type ApiError, type TeamCreate, TeamsService } from "../../client";
 import useCustomToast from "../../hooks/useCustomToast";
-
-import { FC, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 import IconPicker from "@/components/Icons/TqxIcon";
 
@@ -37,6 +36,7 @@ interface AddTeamProps {
 }
 
 const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const showToast = useCustomToast();
   const {
@@ -101,31 +101,29 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
       colorScheme: "blue",
       backgroundColor: "#36abff",
       icon: <RiTeamFill size="24" />,
-      title: "聊天机器人",
-      descripthion: "基本的聊天机器人应用，单Agent，可以使用工具",
+      title: t(`team.teamcard.chatbot.title`),
+      descripthion: t(`team.teamcard.chatbot.description`),
     },
     ragbot: {
       colorScheme: "green",
       backgroundColor: "#4caf50",
       icon: <TbDatabaseSearch size="24" />,
-      title: "知识库检索",
-      descripthion: "RAG应用，每次对话时可以从知识库中检索信息",
+      title: t(`team.teamcard.ragbot.title`),
+      descripthion: t(`team.teamcard.ragbot.description`),
     },
     hierarchical: {
       colorScheme: "yellow",
       backgroundColor: "#ffc107",
       icon: <RiChatVoiceLine size="24" />,
-      title: "Hierarchical Muti-Agent",
-      descripthion:
-        "Hierarchical类型的Muti-Agent，通常用于复杂任务分解和并行处理的场景",
+      title: t(`team.teamcard.hagent.title`),
+      descripthion: t(`team.teamcard.hagent.description`),
     },
     sequential: {
       colorScheme: "red",
       backgroundColor: "#ff5722",
       icon: <GiTeamIdea size="24" />,
-      title: "Sequential Muti-Agent",
-      descripthion:
-        "Sequential类型的Muti-Agent，通常用于任务分解和逐步执行的场景",
+      title: t(`team.teamcard.hagent.title`),
+      descripthion: t(`team.teamcard.hagent.description`),
     },
   };
 
@@ -138,7 +136,7 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
     return (
       <Box
         bg={selectedWorkflow === workflow ? "gray.100" : "white.200"}
-        height="100px"
+        height="125px"
         onClick={() => handleWorkflowClick(workflow)}
         cursor="pointer"
         borderRadius={"md"}
@@ -167,7 +165,14 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
             {cardIcons[workflow].title}
           </Text>
         </Box>
-        <Text textAlign="left" ml={3} pr="3" fontSize={"sm"} color={"gray.500"}>
+        <Text
+          textAlign="left"
+          ml={3}
+          pr="3"
+          pb="2"
+          fontSize={"sm"}
+          color={"gray.500"}
+        >
           {cardIcons[workflow].descripthion}
         </Text>
       </Box>
@@ -179,11 +184,11 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
       <Modal isOpen={isOpen} onClose={onClose} size="3xl" isCentered>
         <ModalOverlay />
         <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
-          <ModalHeader>创建应用</ModalHeader>
+          <ModalHeader>{t(`team.addteam.createteam`)}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Text whiteSpace="nowrap" fontWeight={"bold"} pb="4">
-              想要哪种应用类型？
+              {t(`team.addteam.apptype`)}
             </Text>
             <SimpleGrid columns={2} spacing={6} pb={4}>
               {taskTypes.map((workflow) => (
@@ -197,7 +202,7 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
             </SimpleGrid>
             <Box alignItems={"left"}>
               <Text whiteSpace="nowrap" pb={2} fontWeight={"bold"}>
-                图标 & 名称
+                {t(`team.addteam.nameandicon`)}
               </Text>
               <Box
                 display="flex"
@@ -238,7 +243,7 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
                           "Name must follow pattern: ^[a-zA-Z0-9_-]{1,64}$",
                       },
                     })}
-                    placeholder="给你的应用取个名字"
+                    placeholder={t(`team.addteam.placeholderapp`) as string}
                     type="text"
                   />
                   {errors.name && (
@@ -249,13 +254,13 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
             </Box>
             <FormControl mt={4}>
               <FormLabel htmlFor="description" fontWeight={"bold"}>
-                描述
+               {t(`team.addteam.description`)}
               </FormLabel>
               <Textarea
                 id="description"
                 resize="none"
                 {...register("description")}
-                placeholder="输入应用的描述"
+                placeholder={t(`team.addteam.placeholderdescription`) as string}
               />
             </FormControl>
           </ModalBody>
