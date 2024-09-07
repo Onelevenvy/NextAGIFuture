@@ -2,12 +2,13 @@ import {
   Box,
   Button,
   Container,
+  Flex,
   FormControl,
   FormErrorMessage,
-  FormLabel,
   Heading,
   Input,
   useColorModeValue,
+  Text,
 } from "@chakra-ui/react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { useMutation } from "react-query";
@@ -56,74 +57,96 @@ const ChangePasswordPage = () => {
     mutation.mutate(data);
   };
 
+  const onCancel = () => {
+    reset();
+  };
+
   return (
     <>
       <Container maxW="full" as="form" onSubmit={handleSubmit(onSubmit)}>
         <Heading size="sm" py={4}>
           Change Password
         </Heading>
-        <Box w={{ sm: "full", md: "50%" }}>
+
+        <Box w="full" mt="4">
           <FormControl isRequired isInvalid={!!errors.current_password}>
-            <FormLabel color={color} htmlFor="current_password">
-              Current password
-            </FormLabel>
-            <Input
-              id="current_password"
-              {...register("current_password")}
-              placeholder="Password"
-              type="password"
-            />
+            <Flex align="center">
+              <Text whiteSpace="nowrap" flexShrink={0} mr={4} w={"140px"}>
+                Current password:
+              </Text>
+              <Input
+                id="current_password"
+                {...register("current_password")}
+                type="password"
+                flex="1"
+              />
+            </Flex>
             {errors.current_password && (
               <FormErrorMessage>
                 {errors.current_password.message}
               </FormErrorMessage>
             )}
           </FormControl>
+
           <FormControl mt={4} isRequired isInvalid={!!errors.new_password}>
-            <FormLabel htmlFor="password">Set Password</FormLabel>
-            <Input
-              id="password"
-              {...register("new_password", {
-                required: "Password is required",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters",
-                },
-              })}
-              placeholder="Password"
-              type="password"
-            />
+            <Flex align="center">
+              <Text whiteSpace="nowrap" flexShrink={0} mr={4} w={"140px"}>
+                New Password:
+              </Text>
+              <Input
+                id="password"
+                {...register("new_password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters",
+                  },
+                })}
+                type="password"
+                flex="1"
+              />
+            </Flex>
             {errors.new_password && (
               <FormErrorMessage>{errors.new_password.message}</FormErrorMessage>
             )}
           </FormControl>
+
           <FormControl mt={4} isRequired isInvalid={!!errors.confirm_password}>
-            <FormLabel htmlFor="confirm_password">Confirm Password</FormLabel>
-            <Input
-              id="confirm_password"
-              {...register("confirm_password", {
-                required: "Please confirm your password",
-                validate: (value) =>
-                  value === getValues().new_password ||
-                  "The passwords do not match",
-              })}
-              placeholder="Password"
-              type="password"
-            />
+            <Flex align="center">
+              <Text whiteSpace="nowrap" flexShrink={0} mr={4} w={"140px"}>
+                Confirm Password:
+              </Text>
+              <Input
+                id="confirm_password"
+                {...register("confirm_password", {
+                  required: "Please confirm your password",
+                  validate: (value) =>
+                    value === getValues().new_password ||
+                    "The passwords do not match",
+                })}
+                type="password"
+                flex="1"
+              />
+            </Flex>
             {errors.confirm_password && (
               <FormErrorMessage>
                 {errors.confirm_password.message}
               </FormErrorMessage>
             )}
           </FormControl>
-          <Button
-            variant="primary"
-            mt={4}
-            type="submit"
-            isLoading={isSubmitting}
-          >
-            Save
-          </Button>
+          <Flex mt={8} gap={3} justifyContent={"right"}>
+            <Button mt={4} onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              mt={4}
+              type="submit"
+              isLoading={isSubmitting}
+            >
+              Save
+            </Button>
+          </Flex>
         </Box>
       </Container>
     </>

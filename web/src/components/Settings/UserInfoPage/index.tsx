@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   Container,
@@ -10,28 +11,28 @@ import {
   Input,
   Text,
   useColorModeValue,
-} from "@chakra-ui/react"
-import { useState } from "react"
-import { type SubmitHandler, useForm } from "react-hook-form"
-import { useMutation, useQueryClient } from "react-query"
+} from "@chakra-ui/react";
+import { useState } from "react";
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "react-query";
 
 import {
   type ApiError,
   type UserOut,
   type UserUpdateMe,
   UsersService,
-} from "../../../client"
+} from "../../../client";
 
-import useAuth from "../../../hooks/useAuth"
-import useCustomToast from "../../../hooks/useCustomToast"
-import { emailPattern } from "../../../utils"
+import useAuth from "../../../hooks/useAuth";
+import useCustomToast from "../../../hooks/useCustomToast";
+import { emailPattern } from "../../../utils";
 
 const UserInfoPage = () => {
-  const queryClient = useQueryClient()
-  const color = useColorModeValue("inherit", "ui.white")
-  const showToast = useCustomToast()
-  const [editMode, setEditMode] = useState(false)
-  const { user: currentUser } = useAuth()
+  const queryClient = useQueryClient();
+  const color = useColorModeValue("inherit", "ui.white");
+  const showToast = useCustomToast();
+  const [editMode, setEditMode] = useState(false);
+  const { user: currentUser } = useAuth();
   const {
     register,
     handleSubmit,
@@ -45,49 +46,55 @@ const UserInfoPage = () => {
       full_name: currentUser?.full_name,
       email: currentUser?.email,
     },
-  })
+  });
 
   const toggleEditMode = () => {
-    setEditMode(!editMode)
-  }
+    setEditMode(!editMode);
+  };
 
   const updateInfo = async (data: UserUpdateMe) => {
-    await UsersService.updateUserMe({ requestBody: data })
-  }
+    await UsersService.updateUserMe({ requestBody: data });
+  };
 
   const mutation = useMutation(updateInfo, {
     onSuccess: () => {
-      showToast("Success!", "User updated successfully.", "success")
+      showToast("Success!", "User updated successfully.", "success");
     },
     onError: (err: ApiError) => {
-      const errDetail = err.body?.detail
-      showToast("Something went wrong.", `${errDetail}`, "error")
+      const errDetail = err.body?.detail;
+      showToast("Something went wrong.", `${errDetail}`, "error");
     },
     onSettled: () => {
-      queryClient.invalidateQueries("users")
-      queryClient.invalidateQueries("currentUser")
+      queryClient.invalidateQueries("users");
+      queryClient.invalidateQueries("currentUser");
     },
-  })
+  });
 
   const onSubmit: SubmitHandler<UserUpdateMe> = async (data) => {
-    mutation.mutate(data)
-  }
+    mutation.mutate(data);
+  };
 
   const onCancel = () => {
-    reset()
-    toggleEditMode()
-  }
+    reset();
+    toggleEditMode();
+  };
 
   return (
     <>
       <Container maxW="full" as="form" onSubmit={handleSubmit(onSubmit)}>
-        <Heading size="sm" py={4}>
-          User Information
-        </Heading>
-        <Box w={{ sm: "full", md: "50%" }}>
+        <FormLabel color={color} htmlFor="name">
+          Avatar
+        </FormLabel>
+        <Box w="full">
           <FormControl>
-            <FormLabel color={color} htmlFor="name">
-              Full name
+            <Avatar
+              size="md"
+              name={currentUser?.full_name!}
+              src=""
+              cursor="pointer"
+            />
+            <FormLabel color={color} htmlFor="name" mt="8">
+              Name
             </FormLabel>
             {editMode ? (
               <Input
@@ -100,13 +107,15 @@ const UserInfoPage = () => {
               <Text
                 size="md"
                 py={2}
+                px="4"
                 color={!currentUser?.full_name ? "gray.400" : "inherit"}
+                bg={"#f2f4f7"}
               >
                 {currentUser?.full_name || "N/A"}
               </Text>
             )}
           </FormControl>
-          <FormControl mt={4} isInvalid={!!errors.email}>
+          <FormControl mt={8} isInvalid={!!errors.email}>
             <FormLabel color={color} htmlFor="email">
               Email
             </FormLabel>
@@ -121,7 +130,7 @@ const UserInfoPage = () => {
                 size="md"
               />
             ) : (
-              <Text size="md" py={2}>
+              <Text size="md" py={2} px="4" bg={"#f2f4f7"}>
                 {currentUser?.email}
               </Text>
             )}
@@ -129,7 +138,7 @@ const UserInfoPage = () => {
               <FormErrorMessage>{errors.email.message}</FormErrorMessage>
             )}
           </FormControl>
-          <Flex mt={4} gap={3}>
+          <Flex mt={8} gap={3} justifyContent={"right"}>
             <Button
               variant="primary"
               onClick={toggleEditMode}
@@ -137,10 +146,14 @@ const UserInfoPage = () => {
               isLoading={editMode ? isSubmitting : false}
               isDisabled={editMode ? !isDirty || !getValues("email") : false}
             >
-              {editMode ? "Save" : "Edit"}
+              {editMode ? "Save" : "Edit Account"}
             </Button>
             {editMode && (
-              <Button onClick={onCancel} isDisabled={isSubmitting}>
+              <Button
+                onClick={onCancel}
+                isDisabled={isSubmitting}
+                variant="primary"
+              >
                 Cancel
               </Button>
             )}
@@ -148,7 +161,7 @@ const UserInfoPage = () => {
         </Box>
       </Container>
     </>
-  )
-}
+  );
+};
 
-export default UserInfoPage
+export default UserInfoPage;
