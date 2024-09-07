@@ -1,5 +1,9 @@
 const translation = {
-  creat: "创建",
+  create: "创建",
+  team: "团队",
+  skill: "工具",
+  user: "用户",
+  knowledge: "知识库",
   modal: {
     setting: "设置",
     helpDocu: "帮助文档",

@@ -11,7 +11,7 @@ import {
 import { useQuery } from "react-query";
 import { SkillsService, type ApiError } from "@/client";
 import ActionsMenu from "@/components/Common/ActionsMenu";
-import Navbar from "@/components/Common/Navbar";
+
 import useCustomToast from "@/hooks/useCustomToast";
 import React from "react";
 import {
@@ -70,13 +70,13 @@ function Skills() {
       ) : (
         skills && (
           <Box
-          maxW="full"
-          maxH="full"
-          display="flex"
-          flexDirection={"column"}
-          overflow={"hidden"}
-        >
-          <Box
+            maxW="full"
+            maxH="full"
+            display="flex"
+            flexDirection={"column"}
+            overflow={"hidden"}
+          >
+            <Box
               display="flex"
               flexDirection={"row"}
               justifyItems={"center"}
@@ -90,56 +90,53 @@ function Skills() {
                   options={options}
                 />
               </Box>
-              <Box ml={"auto"}>
-                <Navbar type={"Skill"} />
+            </Box>
+            <Box mt="2" overflow={"auto"}>
+              <Box maxH="full">
+                <SimpleGrid
+                  columns={{ base: 1, md: 2, lg: 4 }}
+                  spacing={8}
+                  mx="5"
+                >
+                  {skills.data.map((skill) => (
+                    <Box
+                      key={skill.id}
+                      _hover={{ backgroundColor: rowTint }}
+                      cursor={"pointer"}
+                      p={4}
+                      borderRadius="xl"
+                      borderWidth="1px"
+                      borderColor="gray.200"
+                      boxShadow="lg"
+                      bg="white"
+                    >
+                      <Heading size="md">{skill.name}</Heading>
+                      <Box
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                      >
+                        {skill.icon}
+                      </Box>
+                      <Box
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                      >
+                        {skill.description}
+                      </Box>
+                      <Box pt={4}>
+                        {!skill.managed ? (
+                          <ActionsMenu type={"Skill"} value={skill} />
+                        ) : (
+                          <Badge colorScheme="green"> Managed</Badge>
+                        )}
+                      </Box>
+                    </Box>
+                  ))}
+                </SimpleGrid>
               </Box>
             </Box>
-          <Box mt="2" overflow={"auto"}>
-            <Box maxH="full">
-              <SimpleGrid
-                columns={{ base: 1, md: 2, lg: 4 }}
-                spacing={8}
-                mx="5"
-              >
-                {skills.data.map((skill) => (
-                  <Box
-                    key={skill.id}
-                    _hover={{ backgroundColor: rowTint }}
-                    cursor={"pointer"}
-                    p={4}
-                    borderRadius="xl"
-                    borderWidth="1px"
-                    borderColor="gray.200"
-                    boxShadow="lg"
-                    bg="white"
-                  >
-                    <Heading size="md">{skill.name}</Heading>
-                    <Box
-                      overflow="hidden"
-                      textOverflow="ellipsis"
-                      whiteSpace="nowrap"
-                    >
-                      {skill.icon}
-                    </Box>
-                    <Box
-                      overflow="hidden"
-                      textOverflow="ellipsis"
-                      whiteSpace="nowrap"
-                    >
-                      {skill.description}
-                    </Box>
-                    <Box pt={4}>
-                      {!skill.managed ? (
-                        <ActionsMenu type={"Skill"} value={skill} />
-                      ) : (
-                        <Badge colorScheme="green"> Managed</Badge>
-                      )}
-                    </Box>
-                  </Box>
-                ))}
-              </SimpleGrid>
-            </Box>
-          </Box>
           </Box>
         )
       )}
