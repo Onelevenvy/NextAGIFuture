@@ -16,7 +16,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { Controller, type SubmitHandler, useForm } from "react-hook-form";
-
+import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "react-query";
 import {
   type ApiError,
@@ -34,6 +34,7 @@ interface EditTeamProps {
 }
 
 const EditTeam = ({ team, isOpen, onClose }: EditTeamProps) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const showToast = useCustomToast();
   const {
@@ -86,12 +87,12 @@ const EditTeam = ({ team, isOpen, onClose }: EditTeamProps) => {
       >
         <ModalOverlay />
         <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
-          <ModalHeader>编辑应用</ModalHeader>
+          <ModalHeader>{t(`team.addteam.editteam`)}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Box alignItems={"left"}>
               <Text whiteSpace="nowrap" pb={2} fontWeight={"bold"}>
-                图标 & 名称
+                {t(`team.addteam.nameandicon`)}
               </Text>
               <Box
                 display="flex"
@@ -132,7 +133,7 @@ const EditTeam = ({ team, isOpen, onClose }: EditTeamProps) => {
                           "Name must follow pattern: ^[a-zA-Z0-9_-]{1,64}$",
                       },
                     })}
-                    placeholder="给你的应用取个名字"
+                    placeholder={t(`team.addteam.placeholderapp`) as string}
                     type="text"
                   />
                   {errors.name && (
@@ -143,12 +144,12 @@ const EditTeam = ({ team, isOpen, onClose }: EditTeamProps) => {
             </Box>
             <FormControl mt={4}>
               <FormLabel htmlFor="description" fontWeight={"bold"}>
-                描述
+                {t(`team.addteam.description`)}
               </FormLabel>
               <Textarea
                 id="description"
                 {...register("description")}
-                placeholder="输入应用的描述"
+                placeholder={t(`team.addteam.placeholderdescription`) as string}
               />
             </FormControl>
           </ModalBody>
