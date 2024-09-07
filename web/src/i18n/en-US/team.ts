@@ -1,6 +1,7 @@
 const translation = {
   addteam: {
     createteam: "Create App",
+    editteam: "Edite App",
     apptype: "What type of app do you want?",
     nameandicon: "Icon & Name",
     placeholderapp: "Give your app a name",

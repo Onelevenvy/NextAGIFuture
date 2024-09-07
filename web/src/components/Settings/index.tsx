@@ -48,7 +48,7 @@ export default function AccountSetting({
     return [
       {
         key: "provider",
-        name: t(`setting.modal.setting`),
+        name: t(`setting.setting.modelProvider`),
         icon: <RiBox3Line />,
         activeIcon: <BsBoxFill color="#155eef" />,
       },

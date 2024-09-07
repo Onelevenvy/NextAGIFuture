@@ -115,7 +115,7 @@ function Uploads() {
                 />
               </Box>
               <Box ml={"auto"}>
-                <Navbar type={"Upload"} />
+                <Navbar type={"Knowledge"} />
               </Box>
             </Box>
             <Box mt="2" overflow={"auto"}>

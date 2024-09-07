@@ -1,5 +1,9 @@
 const translation = {
   create:"Create",
+  team: "Team",
+  skill: "Tools",
+  user: "User",
+  knowledge: "Knowledge",
   modal: {
     setting: "Settings",
     helpDocu: "Help Document",

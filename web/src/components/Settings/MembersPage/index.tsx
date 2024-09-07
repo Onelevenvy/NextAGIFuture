@@ -15,9 +15,9 @@ import {
   Tr,
 } from "@chakra-ui/react";
 
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 
-import { type ApiError, type UserOut, UsersService } from "@/client";
+import { type ApiError, UsersService } from "@/client";
 import ActionsMenu from "@/components/Common/ActionsMenu";
 import Navbar from "@/components/Common/Navbar";
 import useCustomToast from "@/hooks/useCustomToast";
@@ -49,8 +49,11 @@ function MembersPage() {
       ) : (
         users && (
           <Container maxW="full">
-            <Navbar type={"User"} />
-            <TableContainer>
+            <Flex justifyContent={"right"}>
+              <Navbar type={"User"} />
+            </Flex>
+
+            <TableContainer mt={"8"}>
               <Table fontSize="md" size={{ base: "sm", md: "md" }}>
                 <Thead>
                   <Tr>

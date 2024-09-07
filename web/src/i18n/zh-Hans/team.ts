@@ -1,6 +1,7 @@
 const translation = {
   addteam: {
     createteam: "创建应用",
+    editteam: "编辑应用",
     apptype: "想要哪种应用类型？",
     nameandicon: "图标 & 名称",
     placeholderapp: "给你的应用取个名字",
