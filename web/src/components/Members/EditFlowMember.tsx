@@ -147,7 +147,7 @@ const ALLOWED_MEMBER_CONFIGS: Record<MemberTypes, MemberConfigs> = {
 
 type ModelProvider = keyof typeof AVAILABLE_MODELS;
 
-export function EditMember({
+export function EditFlowMember({
   member,
   teamId,
   isOpen,

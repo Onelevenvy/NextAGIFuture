@@ -57,8 +57,8 @@ const ModelSelect = ({
   );
 
   return (
-    <Box >
-      <FormControl >
+    <Box>
+      <FormControl>
         <FormLabel htmlFor="model">选择模型</FormLabel>
         {isLoading ? (
           <Spinner size="md" />

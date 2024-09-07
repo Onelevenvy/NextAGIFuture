@@ -1,5 +1,4 @@
 import { useParams } from "next/navigation";
-import EditAgent from "../Members/EditAgent";
 import { useQuery } from "react-query";
 import { ApiError, MembersService } from "@/client";
 import {
@@ -19,6 +18,7 @@ import {
   PopoverArrow,
   PopoverCloseButton,
   PopoverFooter,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useRef } from "react";
 import useCustomToast from "@/hooks/useCustomToast";
@@ -26,8 +26,10 @@ import ChatMain from "../Playground/ChatMain";
 import { MdBuild } from "react-icons/md";
 import { ImHistory } from "react-icons/im";
 import ChatHistoryList from "@/components/Playground/ChatHistoryList";
+import EditTeamMember from "../Members";
 
 export default function TeamSettings() {
+  const editMemberModal = useDisclosure();
   const bgColor = useColorModeValue("ui.bgMain", "ui.bgMainDark");
   const buttonColor = useColorModeValue("ui.main", "ui.main");
   const { teamId } = useParams() as { teamId: string };
@@ -81,10 +83,12 @@ export default function TeamSettings() {
           >
             <Box bg="transparent" h={"full"} w="30%">
               {member?.map((member) => (
-                <EditAgent
+                <EditTeamMember
                   key={member.id}
                   teamId={Number.parseInt(teamId)}
                   member={member}
+                  isOpen={editMemberModal.isOpen}
+                  onClose={editMemberModal.onClose}
                   ref={formRef}
                 />
               ))}

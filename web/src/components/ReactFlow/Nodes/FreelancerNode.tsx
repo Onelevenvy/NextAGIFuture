@@ -9,11 +9,11 @@ import {
 } from "@chakra-ui/react";
 import type { NodeProps } from "reactflow";
 import { Position } from "reactflow";
-import { EditMember } from "../../Members/EditMember";
 import type { MemberOut } from "../../../client";
 import { FiEdit2 } from "react-icons/fi";
 import { GrUserWorker } from "react-icons/gr";
 import LimitConnectionHandle from "../Handles/LimitConnectionHandle";
+import  EditTeamMember  from "@/components/Members";
 
 export type FreelancerNodeData = {
   teamId: number;
@@ -60,7 +60,7 @@ export function FreelancerNode({ data }: NodeProps<FreelancerNodeData>) {
         />
       </Stack>
       <Box h="full">
-        <EditMember
+        <EditTeamMember
           isOpen={editMemberModal.isOpen}
           onClose={editMemberModal.onClose}
           teamId={data.teamId}
