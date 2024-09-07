@@ -261,9 +261,9 @@ class MemberBase(SQLModel):
     position_x: float
     position_y: float
     source: int | None = None
-    provider: str = "zhipuai"
-    model: str = "glm-4-0520"
-    openai_api_key: str = "changtoyourapikey"
+    provider: str = ""
+    model: str = ""
+    openai_api_key: str = ""
     openai_api_base: str = "https://open.bigmodel.cn/api/paas/v4"
 
     temperature: float = 0.1

@@ -9,10 +9,10 @@ import {
 } from "@chakra-ui/react";
 import type { NodeProps } from "reactflow";
 import { Handle, Position } from "reactflow";
-import { EditMember } from "../../Members/EditMember";
 import type { MemberOut } from "../../../client";
 import { FiEdit2 } from "react-icons/fi";
 import { GrUserManager } from "react-icons/gr";
+import EditTeamMember from "@/components/Members";
 
 export type RootNodeData = {
   teamId: number;
@@ -21,7 +21,6 @@ export type RootNodeData = {
 
 export function RootNode({ data }: NodeProps<RootNodeData>) {
   const editMemberModal = useDisclosure();
-  const bgColor = useColorModeValue("gray.50", "ui.darkSlate");
 
   return (
     <Box
@@ -55,7 +54,7 @@ export function RootNode({ data }: NodeProps<RootNodeData>) {
           colorScheme="blue"
         />
       </Stack>
-      <EditMember
+      <EditTeamMember
         isOpen={editMemberModal.isOpen}
         onClose={editMemberModal.onClose}
         teamId={data.teamId}

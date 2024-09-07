@@ -43,7 +43,7 @@ const customSelectOption = {
   ),
 };
 
-const EditAgent = forwardRef<HTMLFormElement, EditAgentProps>(
+const EditNormalMember = forwardRef<HTMLFormElement, EditAgentProps>(
   ({ member, teamId }, ref) => {
     const queryClient = useQueryClient();
     const showToast = useCustomToast();
@@ -330,5 +330,5 @@ const EditAgent = forwardRef<HTMLFormElement, EditAgentProps>(
     );
   }
 );
-EditAgent.displayName = "EditAgent";
-export default EditAgent;
+EditNormalMember.displayName = "EditAgent";
+export default EditNormalMember;
