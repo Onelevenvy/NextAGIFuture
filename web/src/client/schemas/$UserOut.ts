@@ -22,6 +22,9 @@ export const $UserOut = {
                 type: 'null',
             }],
         },
+        language: {
+            type: 'string',
+        },
         id: {
             type: 'number',
             isRequired: true,

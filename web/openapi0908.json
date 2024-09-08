@@ -430,53 +430,6 @@
         ]
       }
     },
-    "/api/v1/users/me/language": {
-      "patch": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Update User Language",
-        "description": "Update the language of the current user.",
-        "operationId": "update_user_language",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateLanguageMe"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserOut"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
     "/api/v1/users/open": {
       "post": {
         "tags": [
@@ -2985,17 +2938,17 @@
           "provider": {
             "type": "string",
             "title": "Provider",
-            "default": ""
+            "default": "zhipuai"
           },
           "model": {
             "type": "string",
             "title": "Model",
-            "default": ""
+            "default": "glm-4-0520"
           },
           "openai_api_key": {
             "type": "string",
             "title": "Openai Api Key",
-            "default": ""
+            "default": "changethis"
           },
           "openai_api_base": {
             "type": "string",
@@ -3082,17 +3035,17 @@
           "provider": {
             "type": "string",
             "title": "Provider",
-            "default": ""
+            "default": "zhipuai"
           },
           "model": {
             "type": "string",
             "title": "Model",
-            "default": ""
+            "default": "glm-4-0520"
           },
           "openai_api_key": {
             "type": "string",
             "title": "Openai Api Key",
-            "default": ""
+            "default": "changethis"
           },
           "openai_api_base": {
             "type": "string",
@@ -4460,17 +4413,6 @@
         ],
         "title": "ToolDefinitionValidate"
       },
-      "UpdateLanguageMe": {
-        "properties": {
-          "language": {
-            "type": "string",
-            "title": "Language",
-            "default": "en-US"
-          }
-        },
-        "type": "object",
-        "title": "UpdateLanguageMe"
-      },
       "UpdatePassword": {
         "properties": {
           "current_password": {
@@ -4628,11 +4570,6 @@
             ],
             "title": "Full Name"
           },
-          "language": {
-            "type": "string",
-            "title": "Language",
-            "default": "en-US"
-          },
           "password": {
             "type": "string",
             "title": "Password"
@@ -4701,11 +4638,6 @@
             ],
             "title": "Full Name"
           },
-          "language": {
-            "type": "string",
-            "title": "Language",
-            "default": "en-US"
-          },
           "id": {
             "type": "integer",
             "title": "Id"
@@ -4751,11 +4683,6 @@
               }
             ],
             "title": "Full Name"
-          },
-          "language": {
-            "type": "string",
-            "title": "Language",
-            "default": "en-US"
           },
           "password": {
             "anyOf": [

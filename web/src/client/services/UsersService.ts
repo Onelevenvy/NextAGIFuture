@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { Message } from '../models/Message';
+import type { UpdateLanguageMe } from '../models/UpdateLanguageMe';
 import type { UpdatePassword } from '../models/UpdatePassword';
 import type { UserCreate } from '../models/UserCreate';
 import type { UserCreateOpen } from '../models/UserCreateOpen';
@@ -114,6 +115,28 @@ export class UsersService {
         return __request(OpenAPI, {
             method: 'PATCH',
             url: '/api/v1/users/me/password',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+
+    /**
+     * Update User Language
+     * Update the language of the current user.
+     * @returns UserOut Successful Response
+     * @throws ApiError
+     */
+    public static updateUserLanguage({
+        requestBody,
+    }: {
+        requestBody: UpdateLanguageMe,
+    }): CancelablePromise<UserOut> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/users/me/language',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
