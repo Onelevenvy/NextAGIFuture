@@ -60,6 +60,10 @@ function Skills() {
     searchParamName: "tooltype",
     defaultTab: "all",
   });
+
+  const filteredSkills = skills?.data.filter(
+    (skill) => skill.name !== "ask-human"
+  );
   return (
     <>
       {isLoading ? (
@@ -68,7 +72,7 @@ function Skills() {
           <Spinner size="xl" color="ui.main" />
         </Flex>
       ) : (
-        skills && (
+        filteredSkills && (
           <Box
             maxW="full"
             maxH="full"
@@ -98,7 +102,7 @@ function Skills() {
                   spacing={8}
                   mx="5"
                 >
-                  {skills.data.map((skill) => (
+                  {filteredSkills.map((skill) => (
                     <Box
                       key={skill.id}
                       _hover={{ backgroundColor: rowTint }}
