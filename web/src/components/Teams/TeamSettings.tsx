@@ -27,6 +27,7 @@ import { MdBuild } from "react-icons/md";
 import { ImHistory } from "react-icons/im";
 import ChatHistoryList from "@/components/Playground/ChatHistoryList";
 import EditTeamMember from "../Members";
+import DebugPreviewHead from "./DebugPreview/head";
 
 export default function TeamSettings() {
   const editMemberModal = useDisclosure();
@@ -53,10 +54,6 @@ export default function TeamSettings() {
     if (formRef.current) {
       formRef.current.requestSubmit();
     }
-  };
-
-  const handelOpenChatHistory = () => {
-    console.log("aaa");
   };
 
   return (
@@ -102,72 +99,10 @@ export default function TeamSettings() {
                 display={"flex"}
                 flexDirection={"column"}
               >
-                <Box
-                  display={"flex"}
-                  flexDirection={"row"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text mt="5" ml="5" fontSize={"xl"} fontWeight={"bold"}>
-                    调试预览
-                  </Text>
-                  <Box
-                    display={"flex"}
-                    flexDirection={"row"}
-                    mt="5"
-                    mr="5"
-                    alignItems={"center"}
-                  >
-                    <Popover preventOverflow={false} isLazy={true}>
-                      {/* {Todo: 需要修改chathistory组件，现在点击会跳转到playground，需要改成根据情况而定 team or playground} */}
-                      <PopoverTrigger>
-                        <IconButton
-                          aria-label="history"
-                          icon={
-                            <Icon
-                              as={ImHistory}
-                              h="6"
-                              w="6"
-                              color={buttonColor}
-                            />
-                          }
-                          h="10"
-                          w="10"
-                          bg={bgColor}
-                          as={"button"}
-                          onClick={handelOpenChatHistory}
-                        />
-                      </PopoverTrigger>
-                      <PopoverContent zIndex="9999" bg={"white"}>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverHeader>聊天记录</PopoverHeader>
-                        <PopoverBody
-                          maxH="50vh"
-                          overflowY="auto"
-                          zIndex="9999"
-                          bg={"white"}
-                        >
-                          <Box zIndex="1001">
-                            <ChatHistoryList teamId={teamId} />
-                          </Box>
-                        </PopoverBody>
-                        <PopoverFooter />
-                      </PopoverContent>
-                    </Popover>
-
-                    <Button
-                      ml={"5"}
-                      bg={buttonColor}
-                      borderRadius={"md"}
-                      onClick={triggerSubmit}
-                      _hover={{ backgroundColor: "#1c86ee" }}
-                      rightIcon={<MdBuild color={"white"} />}
-                    >
-                      <Text color={"white"}>发布</Text>
-                    </Button>
-                  </Box>
-                </Box>
+                <DebugPreviewHead
+                  teamId={teamId}
+                  triggerSubmit={triggerSubmit}
+                />
                 <Box
                   display={"flex"}
                   w="full"
