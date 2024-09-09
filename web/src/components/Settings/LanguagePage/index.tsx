@@ -1,24 +1,53 @@
 "use client";
 
-import useLocaleStore from "@/store/localeStore";
-import { Select } from "@chakra-ui/react";
+import { ApiError } from "@/client";
+import { UsersService } from "@/client/services/UsersService";
+import useAuth from "@/hooks/useAuth";
+import useCustomToast from "@/hooks/useCustomToast";
+import { Container, FormControl, Select } from "@chakra-ui/react";
 import React, { ChangeEvent } from "react";
+import { useMutation, useQueryClient } from "react-query";
+
 export default function LanguagePage() {
-  const { setLocaleValue } = useLocaleStore();
-  const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setLocaleValue(event.target.value);
+  const queryClient = useQueryClient();
+  const showToast = useCustomToast();
+
+  const { currentUser } = useAuth();
+
+  const mutation = useMutation(
+    (language: string) =>
+      UsersService.updateUserLanguage({ requestBody: { language } }),
+    {
+      onSuccess: () => {
+        showToast("Success!", "User language updated successfully.", "success");
+      },
+      onError: (err: ApiError) => {
+        const errDetail = err.body?.detail;
+        showToast("Something went wrong.", `${errDetail}`, "error");
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries("users");
+        queryClient.invalidateQueries("currentUser");
+      },
+    }
+  );
+
+  const onChangeLanguage = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selectedLanguage = event.target.value;
+    mutation.mutate(selectedLanguage);
   };
 
   return (
-    <>
-      <Select defaultValue={"zh-Hans"} onChange={handleChange}>
-
-        <option value="zh-Hans">中文-简体</option>
-        <option value="en-US">English-US</option>
-
-     
-
-      </Select>
-    </>
+    <Container maxW="full">
+      <FormControl mt={8}>
+        <Select
+          defaultValue={currentUser?.language}
+          onChange={onChangeLanguage}
+        >
+          <option value="zh-Hans">中文-简体</option>
+          <option value="en-US">English-US</option>
+        </Select>
+      </FormControl>
+    </Container>
   );
 }

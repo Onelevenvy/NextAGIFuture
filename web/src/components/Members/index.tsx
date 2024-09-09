@@ -1,13 +1,10 @@
 import {
   Box,
   Button,
-  ButtonGroup,
   Checkbox,
   FormControl,
   FormErrorMessage,
-  FormHelperText,
   FormLabel,
-  IconButton,
   Input,
   Modal,
   ModalBody,
@@ -37,14 +34,8 @@ import {
   ModelService,
 } from "../../client";
 import { type SubmitHandler, useForm, Controller } from "react-hook-form";
-import {
-  Select as MultiSelect,
-  chakraComponents,
-  CreatableSelect,
-  type OptionBase,
-} from "chakra-react-select";
+import { Select as MultiSelect, chakraComponents } from "chakra-react-select";
 import { forwardRef, Ref, useState } from "react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import ModelSelect from "../Teams/ModelProvider";
 
 interface EditTeamMemberProps {

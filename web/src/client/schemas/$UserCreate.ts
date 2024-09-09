@@ -22,6 +22,9 @@ export const $UserCreate = {
                 type: 'null',
             }],
         },
+        language: {
+            type: 'string',
+        },
         password: {
             type: 'string',
             isRequired: true,

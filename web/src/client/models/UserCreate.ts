@@ -8,6 +8,7 @@ export type UserCreate = {
     is_active?: boolean;
     is_superuser?: boolean;
     full_name?: (string | null);
+    language?: string;
     password: string;
 };
 

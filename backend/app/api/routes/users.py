@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
 from app.models import (
     Message,
+    UpdateLanguageMe,
     UpdatePassword,
     User,
     UserCreate,
@@ -112,6 +113,23 @@ def update_password_me(
     session.commit()
     return Message(message="Password updated successfully")
 
+
+@router.patch("/me/language", response_model=UserOut)
+def update_user_language(
+    *, session: SessionDep, language_update: UpdateLanguageMe, current_user: CurrentUser
+) -> Any:
+    """
+    Update the language of the current user.
+    """
+    # 更新用户的语言字段
+    current_user.language = language_update.language
+    
+    # 提交更改到数据库
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+    
+    return current_user
 
 @router.get("/me", response_model=UserOut)
 def read_user_me(session: SessionDep, current_user: CurrentUser) -> Any:

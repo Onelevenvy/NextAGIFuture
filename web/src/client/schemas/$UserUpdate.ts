@@ -26,6 +26,9 @@ export const $UserUpdate = {
                 type: 'null',
             }],
         },
+        language: {
+            type: 'string',
+        },
         password: {
             type: 'any-of',
             contains: [{

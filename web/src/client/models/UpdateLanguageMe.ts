@@ -3,12 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type UserOut = {
-    email: string;
-    is_active?: boolean;
-    is_superuser?: boolean;
-    full_name?: (string | null);
+export type UpdateLanguageMe = {
     language?: string;
-    id: number;
 };
 
