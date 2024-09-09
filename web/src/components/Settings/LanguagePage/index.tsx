@@ -1,17 +1,10 @@
 "use client";
 
 import { ApiError } from "@/client";
-import { UpdateLanguageMe } from "@/client/models/UpdateLanguageMe";
 import { UsersService } from "@/client/services/UsersService";
 import useAuth from "@/hooks/useAuth";
 import useCustomToast from "@/hooks/useCustomToast";
-import {
-  Container,
-  FormControl,
-  FormErrorMessage,
-  Select,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Container, FormControl, Select } from "@chakra-ui/react";
 import React, { ChangeEvent } from "react";
 import { useMutation, useQueryClient } from "react-query";
 
@@ -26,7 +19,7 @@ export default function LanguagePage() {
       UsersService.updateUserLanguage({ requestBody: { language } }),
     {
       onSuccess: () => {
-        showToast("Success!", "User updated successfully.", "success");
+        showToast("Success!", "User language updated successfully.", "success");
       },
       onError: (err: ApiError) => {
         const errDetail = err.body?.detail;

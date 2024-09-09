@@ -3,15 +3,15 @@
 import React from "react";
 import I18N from "./i18n";
 import { ToastProvider } from "./toast";
-import useLocaleStore from "@/store/localeStore";
+import useAuth from "@/hooks/useAuth";
 
 export type II18NServerProps = {
   children: React.ReactNode;
 };
 
 const I18NServer = ({ children }: II18NServerProps) => {
-  const { localeValue } = useLocaleStore();
-  const locale = localeValue!;
+  const { currentUser } = useAuth();
+  const locale = currentUser?.language!;
 
   return (
     <I18N {...{ locale }}>
