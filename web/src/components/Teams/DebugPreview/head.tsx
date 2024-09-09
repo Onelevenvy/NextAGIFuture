@@ -1,6 +1,3 @@
-import { useParams } from "next/navigation";
-import { useQuery } from "react-query";
-import { ApiError, MembersService } from "@/client";
 import {
   Box,
   Button,
@@ -17,7 +14,6 @@ import {
   PopoverCloseButton,
   PopoverFooter,
 } from "@chakra-ui/react";
-import { useRef } from "react";
 
 import { MdBuild } from "react-icons/md";
 import { ImHistory } from "react-icons/im";
@@ -32,12 +28,6 @@ function DebugPreviewHead({
 }) {
   const bgColor = useColorModeValue("ui.bgMain", "ui.bgMainDark");
   const buttonColor = useColorModeValue("ui.main", "ui.main");
-  // const formRef = useRef<HTMLFormElement>(null);
-  // const triggerSubmit = () => {
-  //   if (formRef.current) {
-  //     formRef.current.requestSubmit();
-  //   }
-  // };
 
   return (
     <Box
@@ -45,18 +35,11 @@ function DebugPreviewHead({
       flexDirection={"row"}
       justifyContent={"space-between"}
       alignItems={"center"}
-      border={"1px solid red"}
     >
-      <Text mt="5" ml="5" fontSize={"xl"} fontWeight={"bold"}>
+      <Text ml="5" fontSize={"xl"} fontWeight={"bold"}>
         调试预览
       </Text>
-      <Box
-        display={"flex"}
-        flexDirection={"row"}
-        mt="5"
-        mr="5"
-        alignItems={"center"}
-      >
+      <Box display={"flex"} flexDirection={"row"} mr="5" alignItems={"center"}>
         <Popover preventOverflow={false} isLazy={true}>
           {/* {Todo: 需要修改chathistory组件，现在点击会跳转到playground，需要改成根据情况而定 team or playground} */}
           <PopoverTrigger>
@@ -69,16 +52,11 @@ function DebugPreviewHead({
               as={"button"}
             />
           </PopoverTrigger>
-          <PopoverContent zIndex="9999" bg={"white"}>
+          <PopoverContent zIndex="9999">
             <PopoverArrow />
             <PopoverCloseButton />
             <PopoverHeader>聊天记录</PopoverHeader>
-            <PopoverBody
-              maxH="50vh"
-              overflowY="auto"
-              zIndex="9999"
-              bg={"white"}
-            >
+            <PopoverBody maxH="50vh" overflowY="auto" zIndex="9999">
               <Box zIndex="1001">
                 <ChatHistoryList teamId={teamId} />
               </Box>
