@@ -27,7 +27,7 @@ import {
 import { type SubmitHandler, useForm, Controller } from "react-hook-form";
 import { Select as MultiSelect, chakraComponents } from "chakra-react-select";
 import { forwardRef, Ref, useState } from "react";
-import ModelSelect from "../Teams/ModelProvider";
+import ModelSelect from "../Common/ModelProvider";
 
 interface EditAgentProps {
   member: MemberOut;

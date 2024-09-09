@@ -16,7 +16,7 @@ import {
 import { ModelsOut } from "@/client/models/ModelsOut";
 import { MemberUpdate } from "@/client/models/MemberUpdate";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import ModelProviderIcon from "../Icons/models";
+import ModelProviderIcon from "../../Icons/models";
 
 const ModelSelect = ({
   models,
