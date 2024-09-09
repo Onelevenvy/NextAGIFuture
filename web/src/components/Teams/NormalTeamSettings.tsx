@@ -1,13 +1,18 @@
 import { useParams } from "next/navigation";
 import { useQuery } from "react-query";
-import { ApiError, MembersService } from "@/client";
+import { ApiError, MembersService, TeamOut } from "@/client";
 import { Box, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
 import { useRef } from "react";
 import useCustomToast from "@/hooks/useCustomToast";
 import EditTeamMember from "../Members";
 import DebugPreview from "./DebugPreview";
+import TeamInforCard from "./TeamInfo";
 
-export default function NormalTeamSettings() {
+export default function NormalTeamSettings({
+  teamData,
+}: {
+  teamData: TeamOut;
+}) {
   const editMemberModal = useDisclosure();
   const { teamId } = useParams() as { teamId: string };
   const showToast = useCustomToast();
@@ -40,33 +45,47 @@ export default function NormalTeamSettings() {
         </Flex>
       ) : (
         <Box
-          maxH={"full"}
           h="full"
+          maxH={"full"}
           w="full"
           minW="full"
           display={"flex"}
           flexDirection={"row"}
+          borderRadius="md"
         >
           <Box
             display={"flex"}
             w="full"
-            h="full"
             flexDirection={"row"}
-            ml={"2"}
-            mt={"2"}
+            m="1"
+            maxH={"full"}
           >
-            <Box bg="transparent" h={"full"} w="30%">
-              {member?.map((member) => (
-                <EditTeamMember
-                  key={member.id}
-                  teamId={Number.parseInt(teamId)}
-                  member={member}
-                  isOpen={editMemberModal.isOpen}
-                  onClose={editMemberModal.onClose}
-                  ref={formRef}
-                />
-              ))}
+            <Box
+              bg="transparent"
+              h={"full"}
+              maxH={"full"}
+              w="30%"
+              display={"flex"}
+              flexDirection={"column"}
+              mr="4"
+            >
+              <Box w="full" mb={"2"}>
+                <TeamInforCard teamData={teamData} />
+              </Box>
+              <Box h={"full"} maxH={"full"}>
+                {member?.map((member) => (
+                  <EditTeamMember
+                    key={member.id}
+                    teamId={Number.parseInt(teamId)}
+                    member={member}
+                    isOpen={editMemberModal.isOpen}
+                    onClose={editMemberModal.onClose}
+                    ref={formRef}
+                  />
+                ))}
+              </Box>
             </Box>
+
             <Box
               w="full"
               display={"flex"}

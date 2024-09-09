@@ -16,6 +16,9 @@ import Flow from "@/components/ReactFlow/Flow";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import NormalTeamSettings from "@/components/Teams/NormalTeamSettings";
+import DebugPreview from "@/components/Teams/DebugPreview";
+import { useRef } from "react";
+import { color } from "framer-motion";
 
 function Team() {
   const showToast = useCustomToast();
@@ -34,7 +37,12 @@ function Team() {
     const errDetail = (error as ApiError).body?.detail;
     showToast("Something went wrong.", `${errDetail}`, "error");
   }
-
+  const formRef = useRef<HTMLFormElement>(null);
+  const triggerSubmit = () => {
+    if (formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  };
   return (
     <>
       {isLoading ? (
@@ -48,11 +56,10 @@ function Team() {
             display={"flex"}
             h="full"
             maxH="full"
-            minH={"full"}
             flexDirection={"column"}
             overflow={"hidden"}
           >
-            <Box py="3" pl="4">
+            <Box py="3" pl="4" bg={"#f2f4f7"}>
               <Breadcrumb>
                 <BreadcrumbItem>
                   <Link href="/teams">
@@ -75,6 +82,7 @@ function Team() {
               maxHeight="full"
               h="full"
               overflow={"hidden"}
+              maxH={"full"}
             >
               {team.workflow === "sequential" ||
               team.workflow === "hierarchical" ? (
@@ -83,14 +91,21 @@ function Team() {
                   display={"flex"}
                   flexDirection={"row"}
                   maxH={"full"}
+                  p="2"
                 >
-                  <Box w="80%" maxH={"full"}>
+                  <Box w="80%" maxH={"full"} bg={"#f6f8fa"} mr="2">
                     <Flow />
+                  </Box>
+                  <Box w="20%">
+                    <DebugPreview
+                      teamId={teamId}
+                      triggerSubmit={triggerSubmit}
+                    />
                   </Box>
                 </Box>
               ) : (
-                <Box h="full" minH="full">
-                  <NormalTeamSettings />
+                <Box h="full" maxH={"full"} borderRadius="md">
+                  <NormalTeamSettings teamData={team} />
                 </Box>
               )}
             </Box>

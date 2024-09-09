@@ -250,7 +250,7 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
 
     if (member.type.endsWith("bot")) {
       return (
-        <Box maxH={"full"} h="full" minH="full" mr="2" overflow={"hidden"}>
+        <Box maxH={"full"} h="full" minH="full" overflow={"hidden"}>
           <Box
             as="form"
             ref={ref}
@@ -265,6 +265,7 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
               display="flex"
               flexDirection={"column"}
               h="full"
+              maxH={"full"}
               overflow={"auto"}
             >
               <FormControl mt={4} isRequired isInvalid={!!errors.name} px="6">

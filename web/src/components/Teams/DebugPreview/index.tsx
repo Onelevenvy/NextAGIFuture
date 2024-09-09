@@ -18,7 +18,9 @@ function DebugPreview({
       display={"flex"}
       flexDirection={"column"}
     >
-      <Box py="5" overflow={"hidden"}>
+      <Box 
+      py="5"
+       overflow={"hidden"}>
         <DebugPreviewHead teamId={teamId} triggerSubmit={triggerSubmit} />
       </Box>
       <Box
