@@ -37,6 +37,7 @@ import { type SubmitHandler, useForm, Controller } from "react-hook-form";
 import { Select as MultiSelect, chakraComponents } from "chakra-react-select";
 import { forwardRef, Ref, useState } from "react";
 import ModelSelect from "../Common/ModelProvider";
+import { useTranslation } from "react-i18next";
 
 interface EditTeamMemberProps {
   member: MemberOut;
@@ -125,6 +126,7 @@ const ALLOWED_MEMBER_CONFIGS: Record<MemberTypes, MemberConfigs> = {
 
 const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
   ({ member, teamId, isOpen, onClose }, ref) => {
+    const {t} = useTranslation();
     const queryClient = useQueryClient();
     const showToast = useCustomToast();
     const [showTooltip, setShowTooltip] = useState(false);
@@ -269,7 +271,7 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
               overflow={"auto"}
             >
               <FormControl mt={4} isRequired isInvalid={!!errors.name} px="6">
-                <FormLabel htmlFor="name">名字</FormLabel>
+                <FormLabel htmlFor="name">{t("team.teamsetting.name")}</FormLabel>
                 <Input
                   id="name"
                   {...register("name", {
@@ -288,7 +290,7 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
                 )}
               </FormControl>
               <FormControl mt={4} isRequired isInvalid={!!errors.role} px="6">
-                <FormLabel htmlFor="role">角色</FormLabel>
+                <FormLabel htmlFor="role">{t("team.teamsetting.role")}</FormLabel>
                 <Textarea
                   id="role"
                   {...register("role", { required: "Role is required." })}
@@ -300,7 +302,7 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
                 )}
               </FormControl>
               <FormControl mt={4} px="6">
-                <FormLabel htmlFor="backstory">背景故事</FormLabel>
+                <FormLabel htmlFor="backstory">{t("team.teamsetting.backstory")}</FormLabel>
                 <Textarea
                   id="backstory"
                   {...register("backstory")}
@@ -324,7 +326,7 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
                     fieldState: { error },
                   }) => (
                     <FormControl mt={4} px="6" isInvalid={!!error} id="skills">
-                      <FormLabel>工具</FormLabel>
+                      <FormLabel>{t("team.teamsetting.tools")}</FormLabel>
                       <MultiSelect
                         isLoading={isLoadingSkills}
                         isMulti
@@ -353,7 +355,7 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
                     fieldState: { error },
                   }) => (
                     <FormControl mt={4} px="6" isInvalid={!!error} id="uploads">
-                      <FormLabel>知识库</FormLabel>
+                      <FormLabel>{t("team.teamsetting.knowledge")}</FormLabel>
                       <MultiSelect
                         // isDisabled={}
                         isLoading={isLoadingUploads}

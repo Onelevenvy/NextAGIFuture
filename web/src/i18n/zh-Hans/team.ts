@@ -28,6 +28,19 @@ const translation = {
         "Sequential类型的Muti-Agent，通常用于任务分解和逐步执行的场景",
     },
   },
+  teamsetting: {
+    debugoverview: "调试预览",
+    savedeploy: "发布",
+    name: "名字",
+    description: "描述",
+    type: "类型",
+    role: "角色",
+    backstory: "背景故事",
+    model: "模型",
+    tools: "工具",
+    knowledge: "知识库",
+    chathistory: "聊天记录",
+  },
 };
 
 export default translation;

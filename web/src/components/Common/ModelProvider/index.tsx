@@ -17,7 +17,7 @@ import { ModelsOut } from "@/client/models/ModelsOut";
 import { MemberUpdate } from "@/client/models/MemberUpdate";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import ModelProviderIcon from "../../Icons/models";
-
+import { useTranslation } from "react-i18next";
 const ModelSelect = ({
   models,
   control,
@@ -29,6 +29,7 @@ const ModelSelect = ({
   onModelSelect: (selectData: string) => void;
   isLoading: Boolean;
 }) => {
+  const { t } = useTranslation();
   const groupedModels = models?.data.reduce(
     (acc, model) => {
       const providerName = model.provider.provider_name;
@@ -59,7 +60,7 @@ const ModelSelect = ({
   return (
     <Box>
       <FormControl>
-        <FormLabel htmlFor="model">选择模型</FormLabel>
+        <FormLabel htmlFor="model">{t("team.teamsetting.model")}</FormLabel>
         {isLoading ? (
           <Spinner size="md" />
         ) : (

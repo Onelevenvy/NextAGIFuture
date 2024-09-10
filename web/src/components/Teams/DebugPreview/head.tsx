@@ -14,7 +14,7 @@ import {
   PopoverCloseButton,
   PopoverFooter,
 } from "@chakra-ui/react";
-
+import { useTranslation } from "react-i18next";
 import { MdBuild } from "react-icons/md";
 import { ImHistory } from "react-icons/im";
 import ChatHistoryList from "@/components/Playground/ChatHistoryList";
@@ -28,7 +28,7 @@ function DebugPreviewHead({
 }) {
   const bgColor = useColorModeValue("ui.bgMain", "ui.bgMainDark");
   const buttonColor = useColorModeValue("ui.main", "ui.main");
-
+  const { t } = useTranslation();
   return (
     <Box
       display={"flex"}
@@ -37,7 +37,7 @@ function DebugPreviewHead({
       alignItems={"center"}
     >
       <Text ml="5" fontSize={"xl"} fontWeight={"bold"}>
-        调试预览
+        {t(`team.teamsetting.debugoverview`)}
       </Text>
       <Box display={"flex"} flexDirection={"row"} mr="5" alignItems={"center"}>
         <Popover preventOverflow={false} isLazy={true}>
@@ -55,7 +55,7 @@ function DebugPreviewHead({
           <PopoverContent zIndex="9999">
             <PopoverArrow />
             <PopoverCloseButton />
-            <PopoverHeader>聊天记录</PopoverHeader>
+            <PopoverHeader> {t(`team.teamsetting.chathistory`)}</PopoverHeader>
             <PopoverBody maxH="50vh" overflowY="auto" zIndex="9999">
               <Box zIndex="1001">
                 <ChatHistoryList teamId={teamId} />
@@ -73,7 +73,7 @@ function DebugPreviewHead({
           _hover={{ backgroundColor: "#1c86ee" }}
           rightIcon={<MdBuild color={"white"} />}
         >
-          <Text color={"white"}>发布</Text>
+          <Text color={"white"}>{t("team.teamsetting.savedeploy")}</Text>
         </Button>
       </Box>
     </Box>

@@ -33,7 +33,7 @@ const Navbar = ({ type }: NavbarProps) => {
                   : addUploadModal.onOpen
           }
         >
-          <Icon as={FaPlus} /> {t(`setting.create`)}
+          <Icon as={FaPlus} /> {t(`setting.create`)}{" "}
           {t(`setting.${type.toLowerCase()}`)}
         </Button>
         <AddUser isOpen={addUserModal.isOpen} onClose={addUserModal.onClose} />
