@@ -29,6 +29,19 @@ const translation = {
         "Sequential type of Multi-Agent, usually used for task decomposition and step-by-step execution",
     },
   },
+  teamsetting: {
+    debugoverview: "Debug Overview",
+    savedeploy: "Deploy",
+    name: "Name",
+    description: "Description",
+    type: "Type",
+    role: "Role",
+    backstory: "Backstory",
+    model: "Model",
+    tools: "Tools",
+    knowledge: "Knowledge Base",
+    chathistory: "Chat History",
+  },
 };
 
 export default translation;

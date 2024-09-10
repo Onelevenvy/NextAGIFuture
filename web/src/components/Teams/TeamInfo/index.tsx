@@ -1,7 +1,9 @@
 import { TeamOut } from "@/client";
 import { Box, Tag, TagLabel, Text } from "@chakra-ui/react";
+import { useTranslation } from "react-i18next";
 
 function TeamInforCard({ teamData }: { teamData: TeamOut }) {
+  const { t } = useTranslation();
   return (
     <Box
       key={teamData.id}
@@ -13,7 +15,7 @@ function TeamInforCard({ teamData }: { teamData: TeamOut }) {
       bg="white"
     >
       <Box justifyItems={"center"} display={"flex"} flexDirection={"row"}>
-        <Text color="gray.400">类别：</Text>
+        <Text color="gray.400">{t("team.teamsetting.type")}：</Text>
         <Tag variant="outline" colorScheme="green" size={"sm"}>
           <TagLabel>{teamData.workflow || "N/A"}</TagLabel>
         </Tag>
@@ -23,7 +25,7 @@ function TeamInforCard({ teamData }: { teamData: TeamOut }) {
           color={!teamData.description ? "gray.400" : "gray.400"}
           noOfLines={2}
         >
-          描述：{teamData.description || "N/A"}
+          {t("team.teamsetting.description")}：{teamData.description || "N/A"}
         </Text>
       </Box>
     </Box>

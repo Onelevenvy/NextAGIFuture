@@ -7,19 +7,19 @@ import { Terminal } from "lucide-react";
 import { v4 } from "uuid";
 import dynamic from "next/dynamic";
 
-const DynamicLoadMarkdownCSSStyle = dynamic(
-  () => import("./LoadMarkdownCSSStyle"),
-  {
-    ssr: false, // 关闭服务器端渲染，这样只在客户端执行
-  }
-);
+// const DynamicLoadMarkdownCSSStyle = dynamic(
+//   () => import("./LoadMarkdownCSSStyle"),
+//   {
+//     ssr: false, // 关闭服务器端渲染，这样只在客户端执行
+//   }
+// );
 
 const Markdown = ({ content }: { content: string }) => {
   const textColor = useColorModeValue("ui.dark", "ui.white");
   const secBgColor = useColorModeValue("ui.secondary", "ui.darkSlate");
   return (
     <>
-      <DynamicLoadMarkdownCSSStyle />
+      {/* <DynamicLoadMarkdownCSSStyle /> */}
       <ReactMarkdown
         rehypePlugins={[rehypeHighlight]}
         components={{

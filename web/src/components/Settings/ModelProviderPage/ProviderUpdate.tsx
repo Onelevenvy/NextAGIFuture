@@ -128,7 +128,7 @@ export default function ProviderUpdate({
             )}
           </FormControl>
           <FormControl isInvalid={!!errors.description}>
-            <FormLabel>描述</FormLabel>
+            <FormLabel>Description</FormLabel>
             <Input
               id="description"
               {...register("description", { required: "描述是必填项" })}
