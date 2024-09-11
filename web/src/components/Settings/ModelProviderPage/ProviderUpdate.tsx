@@ -81,6 +81,7 @@ export default function ProviderUpdate({
   const onCancel = () => {
     reset();
     setIsModalOpen(false);
+    setShow(false);
   };
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
@@ -147,6 +148,9 @@ export default function ProviderUpdate({
             type="submit"
             isLoading={isSubmitting}
             isDisabled={!isDirty}
+            onClick={() => {
+              setShow(false);
+            }}
           >
             保存
           </Button>

@@ -3,10 +3,7 @@ import { Box, Button, Collapse, VStack, Text } from "@chakra-ui/react";
 import ProviderUpdate from "./ProviderUpdate";
 import { useModelProviderContext } from "@/contexts/modelprovider";
 import ModelProviderIcon from "@/components/Icons/models";
-import ModelProviderIconLong, {
-  SiliconFlowIconLong,
-} from "@/components/Icons/Providers";
-import { Icon } from "lucide-react";
+import ModelProviderIconLong from "@/components/Icons/Providers";
 import { CiSettings } from "react-icons/ci";
 import {
   MdOutlineKeyboardDoubleArrowDown,

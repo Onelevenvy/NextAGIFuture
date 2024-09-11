@@ -1,5 +1,5 @@
 import os
-
+from sqlalchemy import text
 from sqlmodel import Session, create_engine, select
 from app.curd import users
 from app.core.config import settings
@@ -84,4 +84,41 @@ def init_db(session: Session) -> None:
             skill_to_delete = existing_skills_dict[skill_name]
             session.delete(skill_to_delete)
 
+    session.commit()
+
+
+def init_modelprovider_model_db(session: Session) -> None:
+    # Insert or update ModelProvider data
+    model_provider_sql = """
+    INSERT INTO ModelProvider (id, provider_name, base_url, api_key, icon, description)
+    VALUES
+        (4, 'openai', 'fakeurl', 'fakeapikey', 'string', 'open ai'),
+        (1, 'Ollama', 'fakeurl', 'fakeapikey', 'string', 'string fake'),
+        (2, 'Siliconflow', 'fakeurl', 'fakeapikey', 'string', 'siliconflow'),
+        (3, 'zhipuai', 'https://open.bigmodel.cn/api/paas/v4', 'fakeapikey', 'zhipuai', '智谱AI')
+    ON CONFLICT (id) DO UPDATE
+        SET base_url = EXCLUDED.base_url,
+            api_key = EXCLUDED.api_key,
+            icon = EXCLUDED.icon,
+            description = EXCLUDED.description;
+    """
+
+    # Insert Models data
+    models_sql = """
+    INSERT INTO Models (id, ai_model_name, provider_id)
+    VALUES
+        (1, 'gpt4', 4),
+        (2, 'gpt4o', 4),
+        (3, 'gpt4o-mini', 4),
+        (4, 'llama3.1:8b', 1),
+        (5, 'Qwen/Qwen2-7B-Instruct', 2),
+        (6, 'glm-4', 3),
+        (7, 'glm-4-0520', 3),
+        (8, 'glm-4-flash', 3)
+    ON CONFLICT (id) DO NOTHING;
+    """
+
+    # Execute the SQL statements
+    session.exec(text(model_provider_sql))
+    session.exec(text(models_sql))
     session.commit()
