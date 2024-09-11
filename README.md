@@ -129,8 +129,7 @@ alembic upgrade head
 # Create initial data in DB
 python /app/app/initial_data.py
 ```
-##### 2.3 run unicorn and 
-
+##### 2.3 run unicorn  
 
 ```bash
  uvicorn app.main:app --reload --log-level debug
