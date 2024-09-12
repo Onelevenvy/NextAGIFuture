@@ -1,21 +1,8 @@
 import {
   Flex,
   Spinner,
-  Container,
   useColorModeValue,
   IconButton,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
   Icon,
   Box,
   Text,
@@ -27,15 +14,8 @@ import useCustomToast from "../../hooks/useCustomToast";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
-import {
-  EllipsisVerticalIcon,
-  StarIcon,
-  Trash,
-  Trash2Icon,
-} from "lucide-react";
+import { StarIcon, Trash2Icon } from "lucide-react";
 import useChatMessageStore from "@/store/chatMessageStore";
-import { FaTrashCan } from "react-icons/fa6";
-import { error } from "console";
 
 interface ChatHistoryProps {
   teamId: string;
@@ -88,35 +68,45 @@ const ChatHistoryList = ({ teamId, isPlayground }: ChatHistoryProps) => {
   const deleteThreadMutation = useMutation(deleteThread, {
     onError: (err: ApiError) => {
       const errDetail = err.body?.detail;
-      showToast("Unable to delete thread.", `${errDetail}`, "error");
+      // showToast("Unable to delete thread.", `${errDetail}`, "error");
+      console.log("error", errDetail);
     },
     onSettled: () => {
       queryClient.invalidateQueries(["threads", teamId]);
-      // queryClient.invalidateQueries(["threads", threadId]);
+      queryClient.invalidateQueries(["threads", selectedThreadId]);
     },
   });
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
   const onClickRowHandler = (threadId: string) => {
+    setSelectedThreadId(threadId);
     if (isPlayground) {
       navigate.push(`/playground?teamId=${teamId}&threadId=${threadId}`);
     } else {
       navigate.push(`/teams/${teamId}?threadId=${threadId}`);
     }
-    setSelectedThreadId(threadId);
   };
 
   const { setMessages } = useChatMessageStore();
+  const [shouldNavigate, setShouldNavigate] = useState(false);
+
   const handleDeleteThread = () => {
     if (selectedThreadId) {
       deleteThreadMutation.mutate(selectedThreadId);
-
       setMessages([]);
-      const path = isPlayground
-        ? `/playground?teamId=${teamId}`
-        : `/teams/${teamId}`;
-      navigate.push(path);
+      setShouldNavigate(true);
     }
   };
+
+  useEffect(() => {
+    if (shouldNavigate) {
+      if (isPlayground) {
+        navigate.push(`/playground?teamId=${teamId}`);
+      } else {
+        navigate.push(`/steamsS/${teamId}`);
+      }
+      setShouldNavigate(false);
+    }
+  }, [shouldNavigate, isPlayground, teamId, navigate]);
 
   if (isError || membersIsError) {
     const errors = error || membersError;
@@ -185,7 +175,7 @@ const ChatHistoryList = ({ teamId, isPlayground }: ChatHistoryProps) => {
                           {thread.query}
                         </Text>
                       </Box>
-                      <Box mr={2} minW={"30%"} maxW={"30%"}>
+                      <Box mr={2} minW={"40%"} maxW={"40%"}>
                         <Text
                           fontFamily="Arial, sans-serif"
                           fontSize={"sm"}
@@ -199,16 +189,18 @@ const ChatHistoryList = ({ teamId, isPlayground }: ChatHistoryProps) => {
                         <Box
                           display="flex"
                           position={"absolute"}
-                          right={2}
+                          right={1}
                           ml={1}
                         >
-                          {/* <Menu> */}
                           <Button
                             as={IconButton}
+                            size={"sm"}
                             aria-label="Options"
                             icon={<Icon as={Trash2Icon} w="4" h="4" />}
                             variant="ghost"
-                            onClick={handleDeleteThread}
+                            onClick={() => {
+                              handleDeleteThread();
+                            }}
                           />
                         </Box>
                       )}
