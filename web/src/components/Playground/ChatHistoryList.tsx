@@ -35,12 +35,14 @@ import {
 } from "lucide-react";
 import useChatMessageStore from "@/store/chatMessageStore";
 import { FaTrashCan } from "react-icons/fa6";
+import { error } from "console";
 
 interface ChatHistoryProps {
   teamId: string;
+  isPlayground?: boolean;
 }
 
-const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
+const ChatHistoryList = ({ teamId, isPlayground }: ChatHistoryProps) => {
   const queryClient = useQueryClient();
 
   const navigate = useRouter();
@@ -95,7 +97,11 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
   });
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
   const onClickRowHandler = (threadId: string) => {
-    navigate.push(`/playground?teamId=${teamId}&threadId=${threadId}`);
+    if (isPlayground) {
+      navigate.push(`/playground?teamId=${teamId}&threadId=${threadId}`);
+    } else {
+      navigate.push(`/teams/${teamId}?threadId=${threadId}`);
+    }
     setSelectedThreadId(threadId);
   };
 
@@ -105,12 +111,16 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
       deleteThreadMutation.mutate(selectedThreadId);
 
       setMessages([]);
-      navigate.push(`/playground?teamId=${teamId}`);
+      const path = isPlayground
+        ? `/playground?teamId=${teamId}`
+        : `/teams/${teamId}`;
+      navigate.push(path);
     }
   };
 
-  if (isError) {
-    const errDetail = (error as ApiError).body?.detail;
+  if (isError || membersIsError) {
+    const errors = error || membersError;
+    const errDetail = (errors as ApiError).body?.detail;
 
     showToast("Something went wrong.", `${errDetail}`, "error");
   }
@@ -118,7 +128,7 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
   const { t } = useTranslation();
   return (
     <>
-      {isLoading ? (
+      {isLoading && membersLoading ? (
         <Flex justify="center" align="center" height="100vh" width="full">
           <Spinner size="xl" color="ui.main" />
         </Flex>

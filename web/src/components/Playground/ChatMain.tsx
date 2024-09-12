@@ -61,8 +61,9 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const { t } = useTranslation();
   const { teamId } = useChatTeamIdStore() as { teamId: string };
 
-  // const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
-  const [currentThreadId, setCurrentThreadId] = useState<string | null>(searchParams.get("threadId"));
+  const [currentThreadId, setCurrentThreadId] = useState<string | null>(
+    searchParams.get("threadId")
+  );
   const showToast = useCustomToast();
   const [input, setInput] = useState("");
   const { messages, setMessages } = useChatMessageStore();
@@ -140,9 +141,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
         id: threadId,
         requestBody: data,
       });
-
       cancelablePromise.then((thread) => resolve(thread.id)).catch(reject);
-
       cancelUpdateRef.current = () => cancelablePromise.cancel();
     });
   };
@@ -161,37 +160,20 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     },
   });
 
-  // const processMessage = (response: ChatResponse) => {
-  //   setMessages((prevMessages: ChatResponse[]) => {
-  //     const updatedMessages = [...prevMessages];
-
-  //     const messageIndex = updatedMessages.findIndex(
-  //       (msg) => msg.id === response.id
-  //     );
-
-  //     if (messageIndex !== -1) {
-  //       const currentMessage = updatedMessages[messageIndex];
-  //       updatedMessages[messageIndex] = {
-  //         ...currentMessage,
-  //         // only content is streamable in chunks
-  //         content: currentMessage.content
-  //           ? currentMessage.content + (response.content || "")
-  //           : null,
-  //         tool_output: response.tool_output,
-  //       };
-  //     } else {
-  //       updatedMessages.push(response);
-  //     }
-  //     return updatedMessages;
-  //   });
-  // };
-
   const processMessage = (response: ChatResponse) => {
     setMessages((prevMessages: ChatResponse[]) => {
-      const messageIndex = prevMessages.findIndex((msg) => msg.id === response.id);
+      const messageIndex = prevMessages.findIndex(
+        (msg) => msg.id === response.id
+      );
       if (messageIndex !== -1) {
-        return prevMessages.map((msg, index) => 
-          index === messageIndex ? { ...msg, content: (msg.content ?? "") + (response.content ?? ""), tool_output: response.tool_output } : msg
+        return prevMessages.map((msg, index) =>
+          index === messageIndex
+            ? {
+                ...msg,
+                content: (msg.content ?? "") + (response.content ?? ""),
+                tool_output: response.tool_output,
+              }
+            : msg
         );
       }
       return [...prevMessages, response];
@@ -231,10 +213,9 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
       },
     });
 
-    // 从 TeamChat 数据中提取适合 ThreadUpdate 的信息
+ 
     const threadUpdateData: ThreadUpdate = {
-      query: data.messages[0].content, 
-    
+      query: data.messages[0].content,
     };
 
     const updatePromise = updateThreadMutation.mutateAsync(threadUpdateData);
@@ -252,7 +233,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     abortControllerRef.current?.abort();
     cancelUpdateRef.current?.();
     setIsInterruptible(false);
-  
+
     setMessages((prev) => [
       ...prev,
       {
@@ -320,14 +301,19 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     },
   });
 
-  const onSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    mutation.mutate({ messages: [{ type: "human", content: input }] });
-    setInput("");
-  }, [input, mutation]);
-  
+  const onSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      mutation.mutate({ messages: [{ type: "human", content: input }] });
+      setInput("");
+    },
+    [input, mutation]
+  );
+
   const newChatHandler = useCallback(() => {
-    const path = isPlayground ? `/playground?teamId=${teamId}` : `/teams/${teamId}`;
+    const path = isPlayground
+      ? `/playground?teamId=${teamId}`
+      : `/teams/${teamId}`;
     navigate.push(path);
     setMessages([]);
   }, [isPlayground, teamId, navigate, setMessages]);
@@ -335,20 +321,20 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   /**
    * Submit the interrupt decision and optional tool message
    */
-  const onResumeHandler = useCallback((
-    decision: InterruptDecision,
-    tool_message?: string | null
-  ) => {
-    mutation.mutate({
-      messages: [
-        {
-          type: "human",
-          content: tool_message || decision,
-        },
-      ],
-      interrupt: { decision, tool_message },
-    });
-  }, [mutation]);
+  const onResumeHandler = useCallback(
+    (decision: InterruptDecision, tool_message?: string | null) => {
+      mutation.mutate({
+        messages: [
+          {
+            type: "human",
+            content: tool_message || decision,
+          },
+        ],
+        interrupt: { decision, tool_message },
+      });
+    },
+    [mutation]
+  );
 
   return (
     <Box
