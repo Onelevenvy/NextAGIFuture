@@ -66,7 +66,7 @@ function DebugPreviewHead({
               <Box
               // zIndex="1001"
               >
-                <ChatHistoryList teamId={teamId} />
+                <ChatHistoryList teamId={teamId} isPlayground={false} />
               </Box>
             </PopoverBody>
             <PopoverFooter />

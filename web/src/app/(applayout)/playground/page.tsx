@@ -101,7 +101,7 @@ const ChatPlayground = () => {
         transition="width 0.1s, visibility 0.1s"
       >
         <Box maxH="full" h="full">
-          <ChatHistoryList teamId={teamId!} />
+          <ChatHistoryList teamId={teamId!} isPlayground={true} />
         </Box>
       </Box>
     </Flex>

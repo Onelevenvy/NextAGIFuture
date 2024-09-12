@@ -1,21 +1,8 @@
 import {
   Flex,
   Spinner,
-  Container,
   useColorModeValue,
   IconButton,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
   Icon,
   Box,
   Text,
@@ -27,20 +14,15 @@ import useCustomToast from "../../hooks/useCustomToast";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
-import {
-  EllipsisVerticalIcon,
-  StarIcon,
-  Trash,
-  Trash2Icon,
-} from "lucide-react";
+import { StarIcon, Trash2Icon } from "lucide-react";
 import useChatMessageStore from "@/store/chatMessageStore";
-import { FaTrashCan } from "react-icons/fa6";
 
 interface ChatHistoryProps {
   teamId: string;
+  isPlayground?: boolean;
 }
 
-const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
+const ChatHistoryList = ({ teamId, isPlayground }: ChatHistoryProps) => {
   const queryClient = useQueryClient();
 
   const navigate = useRouter();
@@ -86,31 +68,49 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
   const deleteThreadMutation = useMutation(deleteThread, {
     onError: (err: ApiError) => {
       const errDetail = err.body?.detail;
-      showToast("Unable to delete thread.", `${errDetail}`, "error");
+      // showToast("Unable to delete thread.", `${errDetail}`, "error");
+      console.log("error", errDetail);
     },
     onSettled: () => {
       queryClient.invalidateQueries(["threads", teamId]);
-      // queryClient.invalidateQueries(["threads", threadId]);
+      queryClient.invalidateQueries(["threads", selectedThreadId]);
     },
   });
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
   const onClickRowHandler = (threadId: string) => {
-    navigate.push(`/playground?teamId=${teamId}&threadId=${threadId}`);
     setSelectedThreadId(threadId);
-  };
-
-  const { setMessages } = useChatMessageStore();
-  const handleDeleteThread = () => {
-    if (selectedThreadId) {
-      deleteThreadMutation.mutate(selectedThreadId);
-
-      setMessages([]);
-      navigate.push(`/playground?teamId=${teamId}`);
+    if (isPlayground) {
+      navigate.push(`/playground?teamId=${teamId}&threadId=${threadId}`);
+    } else {
+      navigate.push(`/teams/${teamId}?threadId=${threadId}`);
     }
   };
 
-  if (isError) {
-    const errDetail = (error as ApiError).body?.detail;
+  const { setMessages } = useChatMessageStore();
+  const [shouldNavigate, setShouldNavigate] = useState(false);
+
+  const handleDeleteThread = () => {
+    if (selectedThreadId) {
+      deleteThreadMutation.mutate(selectedThreadId);
+      setMessages([]);
+      setShouldNavigate(true);
+    }
+  };
+
+  useEffect(() => {
+    if (shouldNavigate) {
+      if (isPlayground) {
+        navigate.push(`/playground?teamId=${teamId}`);
+      } else {
+        navigate.push(`/steamsS/${teamId}`);
+      }
+      setShouldNavigate(false);
+    }
+  }, [shouldNavigate, isPlayground, teamId, navigate]);
+
+  if (isError || membersIsError) {
+    const errors = error || membersError;
+    const errDetail = (errors as ApiError).body?.detail;
 
     showToast("Something went wrong.", `${errDetail}`, "error");
   }
@@ -118,7 +118,7 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
   const { t } = useTranslation();
   return (
     <>
-      {isLoading ? (
+      {isLoading && membersLoading ? (
         <Flex justify="center" align="center" height="100vh" width="full">
           <Spinner size="xl" color="ui.main" />
         </Flex>
@@ -175,7 +175,7 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
                           {thread.query}
                         </Text>
                       </Box>
-                      <Box mr={2} minW={"30%"} maxW={"30%"}>
+                      <Box mr={2} minW={"40%"} maxW={"40%"}>
                         <Text
                           fontFamily="Arial, sans-serif"
                           fontSize={"sm"}
@@ -189,16 +189,18 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
                         <Box
                           display="flex"
                           position={"absolute"}
-                          right={2}
+                          right={1}
                           ml={1}
                         >
-                          {/* <Menu> */}
                           <Button
                             as={IconButton}
+                            size={"sm"}
                             aria-label="Options"
                             icon={<Icon as={Trash2Icon} w="4" h="4" />}
                             variant="ghost"
-                            onClick={handleDeleteThread}
+                            onClick={() => {
+                              handleDeleteThread();
+                            }}
                           />
                         </Box>
                       )}

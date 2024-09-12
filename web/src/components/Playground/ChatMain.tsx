@@ -18,7 +18,7 @@ import {
   useQueryClient,
 } from "react-query";
 import useCustomToast from "../../hooks/useCustomToast";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   getQueryString,
   getRequestBody,
@@ -61,7 +61,9 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const { t } = useTranslation();
   const { teamId } = useChatTeamIdStore() as { teamId: string };
 
-  const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
+  const [currentThreadId, setCurrentThreadId] = useState<string | null>(
+    searchParams.get("threadId")
+  );
   const showToast = useCustomToast();
   const [input, setInput] = useState("");
   const { messages, setMessages } = useChatMessageStore();
@@ -139,9 +141,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
         id: threadId,
         requestBody: data,
       });
-
       cancelablePromise.then((thread) => resolve(thread.id)).catch(reject);
-
       cancelUpdateRef.current = () => cancelablePromise.cancel();
     });
   };
@@ -162,26 +162,21 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
 
   const processMessage = (response: ChatResponse) => {
     setMessages((prevMessages: ChatResponse[]) => {
-      const updatedMessages = [...prevMessages];
-
-      const messageIndex = updatedMessages.findIndex(
+      const messageIndex = prevMessages.findIndex(
         (msg) => msg.id === response.id
       );
-
       if (messageIndex !== -1) {
-        const currentMessage = updatedMessages[messageIndex];
-        updatedMessages[messageIndex] = {
-          ...currentMessage,
-          // only content is streamable in chunks
-          content: currentMessage.content
-            ? currentMessage.content + (response.content || "")
-            : null,
-          tool_output: response.tool_output,
-        };
-      } else {
-        updatedMessages.push(response);
+        return prevMessages.map((msg, index) =>
+          index === messageIndex
+            ? {
+                ...msg,
+                content: (msg.content ?? "") + (response.content ?? ""),
+                tool_output: response.tool_output,
+              }
+            : msg
+        );
       }
-      return updatedMessages;
+      return [...prevMessages, response];
     });
   };
 
@@ -218,10 +213,9 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
       },
     });
 
-    // 从 TeamChat 数据中提取适合 ThreadUpdate 的信息
+ 
     const threadUpdateData: ThreadUpdate = {
-      query: data.messages[0].content, // 假设第一条消息是查询
-      // 如果需要，可以添加其他 ThreadUpdate 所需的字段
+      query: data.messages[0].content,
     };
 
     const updatePromise = updateThreadMutation.mutateAsync(threadUpdateData);
@@ -235,17 +229,12 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     }
   };
 
-  const interruptStreamAndUpdate = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    if (cancelUpdateRef.current) {
-      cancelUpdateRef.current();
-    }
+  const interruptStreamAndUpdate = useCallback(() => {
+    abortControllerRef.current?.abort();
+    cancelUpdateRef.current?.();
     setIsInterruptible(false);
 
-    // 添加中断消息
-    setMessages((prev: ChatResponse[]) => [
+    setMessages((prev) => [
       ...prev,
       {
         type: "ai",
@@ -254,7 +243,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
         name: "system",
       },
     ]);
-  };
+  }, [setMessages, t]);
 
   const chatTeam = async (data: TeamChat) => {
     // Create a new thread or update current thread with most recent user query
@@ -312,39 +301,40 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     },
   });
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    mutation.mutate({ messages: [{ type: "human", content: input }] });
-    setInput("");
-  };
+  const onSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      mutation.mutate({ messages: [{ type: "human", content: input }] });
+      setInput("");
+    },
+    [input, mutation]
+  );
 
-  const newChatHandler = () => {
-    if (isPlayground) {
-      navigate.push(`/playground?teamId=${teamId}`);
-      setMessages([]);
-    } else {
-      navigate.push(`/teams/${teamId}`);
-      setMessages([]);
-    }
-  };
+  const newChatHandler = useCallback(() => {
+    const path = isPlayground
+      ? `/playground?teamId=${teamId}`
+      : `/teams/${teamId}`;
+    navigate.push(path);
+    setMessages([]);
+  }, [isPlayground, teamId, navigate, setMessages]);
 
   /**
    * Submit the interrupt decision and optional tool message
    */
-  const onResumeHandler = (
-    decision: InterruptDecision,
-    tool_message?: string | null
-  ) => {
-    mutation.mutate({
-      messages: [
-        {
-          type: "human",
-          content: tool_message || decision,
-        },
-      ],
-      interrupt: { decision, tool_message },
-    });
-  };
+  const onResumeHandler = useCallback(
+    (decision: InterruptDecision, tool_message?: string | null) => {
+      mutation.mutate({
+        messages: [
+          {
+            type: "human",
+            content: tool_message || decision,
+          },
+        ],
+        interrupt: { decision, tool_message },
+      });
+    },
+    [mutation]
+  );
 
   return (
     <Box
@@ -384,7 +374,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
             borderRadius={"lg"}
             size={"sm"}
           >
-            { t(`chat.chatMain.abort`)}
+            {t(`chat.chatMain.abort`)}
           </Button>
         )}
       </Box>
