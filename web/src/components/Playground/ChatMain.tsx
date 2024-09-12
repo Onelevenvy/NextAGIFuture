@@ -31,6 +31,7 @@ import MessageBox from "./MessageBox";
 import MessageInput from "../MessageInput";
 import useChatTeamIdStore from "@/store/chatTeamIDStore";
 import { useTranslation } from "react-i18next";
+import { FaRegStopCircle } from "react-icons/fa";
 
 const getUrl = (config: OpenAPIConfig, options: ApiRequestOptions): string => {
   const encoder = config.ENCODE_PATH || encodeURI;
@@ -57,7 +58,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const navigate = useRouter();
   const searchParams = useSearchParams();
   const threadId = searchParams.get("threadId");
-  const {t} = useTranslation()
+  const { t } = useTranslation();
   const { teamId } = useChatTeamIdStore() as { teamId: string };
 
   const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
@@ -372,7 +373,21 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
           />
         ))}
       </Box>
-
+      <Box display={"flex"} justifyContent={"center"} mt="2">
+        {isInterruptible && (
+          <Button
+            leftIcon={<FaRegStopCircle />}
+            bg={"transparent"}
+            border={"1px solid #f7fafc"}
+            boxShadow="0 0 10px rgba(0,0,0,0.2)"
+            onClick={interruptStreamAndUpdate}
+            borderRadius={"lg"}
+            size={"sm"}
+          >
+            { t(`chat.chatMain.abort`)}
+          </Button>
+        )}
+      </Box>
       <MessageInput
         input={input}
         setInput={setInput}
@@ -380,18 +395,6 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
         isStreaming={isStreaming}
         newChatHandler={newChatHandler}
       />
-
-      {isInterruptible && (
-        <Button
-          position="absolute"
-          bottom="70px"
-          right="20px"
-          colorScheme="red"
-          onClick={interruptStreamAndUpdate}
-        >
-          Interrupt
-        </Button>
-      )}
     </Box>
   );
 };
