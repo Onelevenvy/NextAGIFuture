@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import useChatMessageStore from "@/store/chatMessageStore";
 import {
   type TeamChat,
@@ -11,9 +11,14 @@ import {
   type InterruptDecision,
   type ChatResponse,
 } from "../../client";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+  useQueryClient,
+} from "react-query";
 import useCustomToast from "../../hooks/useCustomToast";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   getQueryString,
   getRequestBody,
@@ -25,6 +30,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import MessageBox from "./MessageBox";
 import MessageInput from "../MessageInput";
 import useChatTeamIdStore from "@/store/chatTeamIDStore";
+import { useTranslation } from "react-i18next";
+import { FaRegStopCircle } from "react-icons/fa";
 
 const getUrl = (config: OpenAPIConfig, options: ApiRequestOptions): string => {
   const encoder = config.ENCODE_PATH || encodeURI;
@@ -51,7 +58,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const navigate = useRouter();
   const searchParams = useSearchParams();
   const threadId = searchParams.get("threadId");
-
+  const { t } = useTranslation();
   const { teamId } = useChatTeamIdStore() as { teamId: string };
 
   const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
@@ -59,6 +66,11 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const [input, setInput] = useState("");
   const { messages, setMessages } = useChatMessageStore();
   const [isStreaming, setIsStreaming] = useState(false);
+
+  const [isInterruptible, setIsInterruptible] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const cancelUpdateRef = useRef<(() => void) | null>(null);
+
   useQuery(
     ["thread", threadId],
     () =>
@@ -119,19 +131,29 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     },
   });
 
-  const updateThread = async (data: ThreadUpdate) => {
-    if (!threadId) return;
-    const thread = await ThreadsService.updateThread({
-      teamId: Number.parseInt(teamId),
-      id: threadId,
-      requestBody: data,
+  const updateThread = async (data: ThreadUpdate): Promise<string> => {
+    if (!threadId) throw new Error("Thread ID is not available");
+    return new Promise((resolve, reject) => {
+      const cancelablePromise = ThreadsService.updateThread({
+        teamId: Number.parseInt(teamId),
+        id: threadId,
+        requestBody: data,
+      });
+
+      cancelablePromise.then((thread) => resolve(thread.id)).catch(reject);
+
+      cancelUpdateRef.current = () => cancelablePromise.cancel();
     });
-    return thread.id;
   };
-  const updateThreadMutation = useMutation(updateThread, {
+
+  const updateThreadMutation: UseMutationResult<
+    string,
+    ApiError,
+    ThreadUpdate
+  > = useMutation<string, ApiError, ThreadUpdate>(updateThread, {
     onError: (err: ApiError) => {
       const errDetail = err.body?.detail;
-      showToast("Unable to update thread.", `${errDetail}`, "error");
+      // showToast("Unable to update thread.", `${errDetail}`, "error");
     },
     onSettled: () => {
       queryClient.invalidateQueries(["threads", teamId]);
@@ -164,6 +186,10 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   };
 
   const stream = async (id: number, threadId: string, data: TeamChat) => {
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    const signal = controller.signal;
+
     const requestOptions = {
       method: "POST" as const,
       url: "/api/v1/teams/{id}/stream/{threadId}",
@@ -181,38 +207,79 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     const body = getRequestBody(requestOptions);
     const headers = await getHeaders(OpenAPI, requestOptions);
 
-    await fetchEventSource(url, {
-      // openWhenHidden: true,
+    const streamPromise = fetchEventSource(url, {
       method: requestOptions.method,
       headers,
       body: JSON.stringify(body),
+      signal,
       onmessage(message) {
         const response: ChatResponse = JSON.parse(message.data);
         processMessage(response);
       },
     });
+
+    // 从 TeamChat 数据中提取适合 ThreadUpdate 的信息
+    const threadUpdateData: ThreadUpdate = {
+      query: data.messages[0].content, // 假设第一条消息是查询
+      // 如果需要，可以添加其他 ThreadUpdate 所需的字段
+    };
+
+    const updatePromise = updateThreadMutation.mutateAsync(threadUpdateData);
+
+    setIsInterruptible(true);
+
+    try {
+      await Promise.all([streamPromise, updatePromise]);
+    } finally {
+      setIsInterruptible(false);
+    }
+  };
+
+  const interruptStreamAndUpdate = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    if (cancelUpdateRef.current) {
+      cancelUpdateRef.current();
+    }
+    setIsInterruptible(false);
+
+    // 添加中断消息
+    setMessages((prev: ChatResponse[]) => [
+      ...prev,
+      {
+        type: "ai",
+        id: self.crypto.randomUUID(),
+        content: t(`chat.chatMain.interruptinfo`),
+        name: "system",
+      },
+    ]);
   };
 
   const chatTeam = async (data: TeamChat) => {
     // Create a new thread or update current thread with most recent user query
     const query = data.messages;
-    let currentThreadId: string | undefined | null = threadId;
+    let currentThreadId: string | null = threadId;
     if (!threadId) {
       currentThreadId = await createThreadMutation.mutateAsync({
         query: query[0].content,
       });
     } else {
-      currentThreadId = await updateThreadMutation.mutateAsync({
-        query: query[0].content,
-      });
+      try {
+        currentThreadId = await updateThreadMutation.mutateAsync({
+          query: query[0].content,
+        });
+      } catch (error) {
+        console.error("Failed to update thread:", error);
+        // showToast("Failed to update thread", "", "error");
+        return;
+      }
     }
 
-    if (!currentThreadId)
-      return showToast(
-        "Something went wrong.",
-        "Unable to obtain thread id",
-        "error"
-      );
+    if (!currentThreadId) {
+      // showToast("Something went wrong.", "Unable to obtain thread id", "error");
+      return;
+    }
 
     setMessages((prev: ChatResponse[]) => [
       ...prev,
@@ -230,16 +297,18 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const mutation = useMutation(chatTeam, {
     onMutate: () => {
       setIsStreaming(true);
+      setIsInterruptible(true);
     },
     onError: (err: ApiError) => {
       const errDetail = err.body?.detail;
-      showToast("Something went wrong.", `${errDetail}`, "error");
+      // showToast("Something went wrong.", `${errDetail}`, "error");
     },
     onSuccess: () => {
       // showToast("Streaming completed", "", "success");
     },
     onSettled: () => {
       setIsStreaming(false);
+      setIsInterruptible(false);
     },
   });
 
@@ -304,7 +373,21 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
           />
         ))}
       </Box>
-
+      <Box display={"flex"} justifyContent={"center"} mt="2">
+        {isInterruptible && (
+          <Button
+            leftIcon={<FaRegStopCircle />}
+            bg={"transparent"}
+            border={"1px solid #f7fafc"}
+            boxShadow="0 0 10px rgba(0,0,0,0.2)"
+            onClick={interruptStreamAndUpdate}
+            borderRadius={"lg"}
+            size={"sm"}
+          >
+            { t(`chat.chatMain.abort`)}
+          </Button>
+        )}
+      </Box>
       <MessageInput
         input={input}
         setInput={setInput}
