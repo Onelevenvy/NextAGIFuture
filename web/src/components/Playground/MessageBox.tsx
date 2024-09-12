@@ -154,7 +154,7 @@ const MessageBox = ({ message, onResume }: MessageBoxProps) => {
                     ? "gray.50"
                     : "transparent"
               }
-              zIndex={1000}
+              // zIndex={1000}
               borderRadius="lg" // 添加圆角
               p={content === null ? 0 : 2}
               flexDirection="column"
@@ -378,7 +378,7 @@ const MessageBox = ({ message, onResume }: MessageBoxProps) => {
           </Box>
         </Box>
         {/* 这个空的 div 用于自动滚动 */}
-        <div ref={messagesEndRef} />
+        <Box ref={messagesEndRef} pb={"5"}/>
       </Box>
     </VStack>
   );

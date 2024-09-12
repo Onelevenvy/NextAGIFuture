@@ -27,8 +27,14 @@ import useCustomToast from "../../hooks/useCustomToast";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
-import { EllipsisVerticalIcon, StarIcon, Trash } from "lucide-react";
+import {
+  EllipsisVerticalIcon,
+  StarIcon,
+  Trash,
+  Trash2Icon,
+} from "lucide-react";
 import useChatMessageStore from "@/store/chatMessageStore";
+import { FaTrashCan } from "react-icons/fa6";
 
 interface ChatHistoryProps {
   teamId: string;
@@ -84,7 +90,7 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
     },
     onSettled: () => {
       queryClient.invalidateQueries(["threads", teamId]);
-      // queryClient.invalidateQueries(["thread", threadId]);
+      // queryClient.invalidateQueries(["threads", threadId]);
     },
   });
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
@@ -93,17 +99,11 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
     setSelectedThreadId(threadId);
   };
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const onDeleteHandler = (threadId: string) => {
-    setSelectedThreadId(threadId);
-    onOpen();
-  };
   const { setMessages } = useChatMessageStore();
-  const handleDeleteConfirm = () => {
+  const handleDeleteThread = () => {
     if (selectedThreadId) {
       deleteThreadMutation.mutate(selectedThreadId);
-      onClose();
+
       setMessages([]);
       navigate.push(`/playground?teamId=${teamId}`);
     }
@@ -175,7 +175,7 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
                           {thread.query}
                         </Text>
                       </Box>
-                      <Box mr={2} minW={"55%"} maxW={"55%"}>
+                      <Box mr={2} minW={"30%"} maxW={"30%"}>
                         <Text
                           fontFamily="Arial, sans-serif"
                           fontSize={"sm"}
@@ -192,24 +192,14 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
                           right={2}
                           ml={1}
                         >
-                          <Menu>
-                            <MenuButton
-                              as={IconButton}
-                              aria-label="Options"
-                              icon={
-                                <Icon as={EllipsisVerticalIcon} w="4" h="4" />
-                              }
-                              variant="ghost"
-                            />
-                            <MenuList>
-                              <MenuItem
-                                onClick={() => onDeleteHandler(thread.id)}
-                              >
-                                <Icon as={Trash} mr={2} />
-                                <Text fontSize={"sm"}>删除</Text>
-                              </MenuItem>
-                            </MenuList>
-                          </Menu>
+                          {/* <Menu> */}
+                          <Button
+                            as={IconButton}
+                            aria-label="Options"
+                            icon={<Icon as={Trash2Icon} w="4" h="4" />}
+                            variant="ghost"
+                            onClick={handleDeleteThread}
+                          />
                         </Box>
                       )}
                     </Box>
@@ -220,20 +210,6 @@ const ChatHistoryList = ({ teamId }: ChatHistoryProps) => {
           )}
         </Box>
       )}
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Delete Thread</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>Are you sure you want to delete this thread?</ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleDeleteConfirm}>
-              Delete
-            </Button>
-            <Button onClick={onClose}>Cancel</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </>
   );
 };

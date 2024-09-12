@@ -52,12 +52,20 @@ function DebugPreviewHead({
               as={"button"}
             />
           </PopoverTrigger>
-          <PopoverContent zIndex="9999">
+          <PopoverContent
+          // zIndex="9999"
+          >
             <PopoverArrow />
             <PopoverCloseButton />
             <PopoverHeader> {t(`team.teamsetting.chathistory`)}</PopoverHeader>
-            <PopoverBody maxH="50vh" overflowY="auto" zIndex="9999">
-              <Box zIndex="1001">
+            <PopoverBody
+              maxH="50vh"
+              overflowY="auto"
+              //  zIndex="9999"
+            >
+              <Box
+              // zIndex="1001"
+              >
                 <ChatHistoryList teamId={teamId} />
               </Box>
             </PopoverBody>
