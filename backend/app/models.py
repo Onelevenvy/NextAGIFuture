@@ -591,3 +591,59 @@ class ModelProviderWithModelsListOut(SQLModel):
 
 class ProvidersListWithModelsOut(SQLModel):
     providers: list[ModelProviderWithModelsListOut]
+
+
+# ==============Graph=====================
+
+
+class GraphBase(SQLModel):
+    name: str = PydanticField(pattern=r"^[a-zA-Z0-9_-]{1,64}$")
+    description: str | None = None
+    config:  dict[Any, Any] = Field(default_factory=dict, sa_column=Column(JSONB))
+    metadata_: dict[Any, Any] = Field(
+        default_factory=dict,
+        sa_column=Column("metadata", JSONB, nullable=False, server_default="{}"),
+    )
+    owner_id: int | None = Field(default=None, foreign_key="user.id", nullable=False)
+    created_at: datetime | None = Field(
+        sa_column=Column(
+            DateTime(timezone=True),
+            nullable=False,
+            default=func.now(),
+            server_default=func.now(),
+        )
+    )
+    updated_at: datetime | None = Field(
+        sa_column=Column(
+            DateTime(timezone=True),
+            nullable=False,
+            default=func.now(),
+            onupdate=func.now(),
+            server_default=func.now(),
+        )
+    )
+
+
+class GraphCreate(GraphBase):
+    pass
+
+
+class GraphUpdate(GraphBase):
+    config:  dict[Any, Any] = Field(default_factory=dict, sa_column=Column(JSONB))
+    metadata_: dict[Any, Any] = Field(
+        default_factory=dict,
+        sa_column=Column("metadata", JSONB, nullable=False, server_default="{}"),
+    )
+    updated_at: datetime | None = None
+
+class Graph(GraphBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+
+
+class GraphOut(GraphBase):
+    id: int
+
+
+class GraphsOut(SQLModel):
+    data: list[GraphOut]
+    count: int
