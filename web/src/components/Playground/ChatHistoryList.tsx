@@ -102,7 +102,7 @@ const ChatHistoryList = ({ teamId, isPlayground }: ChatHistoryProps) => {
       if (isPlayground) {
         navigate.push(`/playground?teamId=${teamId}`);
       } else {
-        navigate.push(`/steamsS/${teamId}`);
+        navigate.push(`/teams/${teamId}`);
       }
       setShouldNavigate(false);
     }

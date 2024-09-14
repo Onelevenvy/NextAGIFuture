@@ -36,6 +36,7 @@ from app.core.graph.members import (
 )
 from app.core.graph.messages import ChatResponse, event_to_response
 from app.models import ChatMessage, Interrupt, InterruptDecision, Member, Team
+from app.core.workflow.init_graph import initialize_graph
 
 
 def convert_hierarchical_team_to_dict(
@@ -689,6 +690,47 @@ async def generator(
                 )
 
                 root = create_chatbot_ragbot_graph(member_dict, checkpointer)
+                # config = {
+                #     "id": "1",
+                #     "name": "Simple LangGraph Example",
+                #     "nodes": [
+                #         {
+                #             "id": "chatbot",
+                #             "type": "llm",
+                #             "position": {"x": 250, "y": 100},
+                #             "data": {
+                #                 "model": "glm-4",
+                #             },
+                #         },
+                #         {
+                #             "id": "tools",
+                #             "type": "tool_node",
+                #             "position": {"x": 250, "y": 300},
+                #             "data": {
+                #                 "tools": ["tavilysearch", "calculator"]
+                #             },  # 添加新工具
+                #         },
+                #     ],
+                #     "edges": [
+                #         {
+                #             "id": "chatbot-to-tools",
+                #             "source": "chatbot",
+                #             "target": "tools",
+                #             "type": "conditional",
+                #         },
+                #         {
+                #             "id": "tools-to-chatbot",
+                #             "source": "tools",
+                #             "target": "chatbot",
+                #             "type": "default",
+                #         },
+                #     ],
+                #     "config": {"entry_point": "chatbot"},
+                # }
+
+                # # 使用示例
+
+                # root = initialize_graph(config, checkpointer)
                 first_member = list(member_dict.values())[0]
                 state = {
                     "history": formatted_messages,
