@@ -263,7 +263,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       <NodePalette />
       <Box flex={1} position="relative">
         <ReactFlow
-         onNodeClick={onNodeClick}
+          onNodeClick={onNodeClick}
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}

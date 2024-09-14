@@ -2,12 +2,7 @@
 
 import React from "react";
 import { Box, Heading } from "@chakra-ui/react";
-import {
-  Node,
-  Edge,
-  MarkerType,
-
-} from "reactflow";
+import { Node, Edge, MarkerType } from "reactflow";
 import { ReactFlowProvider } from "reactflow";
 import FlowVisualizer from "./components/FlowVisualizer";
 import { nodeTypes } from "./components/CustomNodes";
@@ -172,7 +167,7 @@ export default function Home() {
 
   return (
     <Box h="100vh" w="100vw">
-      <Heading as="h1" size="xl" textAlign="center" py={4}>
+      <Heading as="h2" size="xl" textAlign="center" py={4}>
         Flow Visualization
       </Heading>
       <Box h="calc(100vh - 68px)">
