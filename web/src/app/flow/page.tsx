@@ -11,6 +11,7 @@ import {
   Handle,
   NodeTypes,
   NodeProps,
+  EdgeTypes,
 } from "reactflow";
 import type { FlowVisualizerProps } from "./components/FlowVisualizer";
 
@@ -166,7 +167,7 @@ export default function Home() {
       target: conn.target,
       sourceHandle: "bottom",
       targetHandle: "top",
-      type: "smoothstep",
+      type: "bezier", // 或者使用 "bezier"
       animated: conn.type === "conditional",
       style: { strokeDasharray: conn.type === "conditional" ? "5,5" : "none" },
       markerEnd: {
@@ -179,7 +180,7 @@ export default function Home() {
       target: edge.target,
       sourceHandle: edge.sourceHandle,
       targetHandle: edge.targetHandle,
-      type: "smoothstep",
+      type: "bezier", // 或者使用 "bezier"
       animated: edge.type === "conditional",
       style: { strokeDasharray: edge.type === "conditional" ? "5,5" : "none" },
       markerEnd: {
@@ -192,7 +193,7 @@ export default function Home() {
       target: "END",
       sourceHandle: "bottom",
       targetHandle: "top",
-      type: "smoothstep",
+      type: "bezier", // 或者使用 "bezier"
       animated: conn.type === "conditional",
       style: { strokeDasharray: conn.type === "conditional" ? "5,5" : "none" },
       markerEnd: {
@@ -212,6 +213,7 @@ export default function Home() {
             initialNodes={nodes}
             initialEdges={edges}
             nodeTypes={nodeTypes}
+            defaultEdgeOptions={{ type: "bezier" }} // 添加这一行
           />
         )}
       </Box>

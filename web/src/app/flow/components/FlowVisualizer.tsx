@@ -10,6 +10,7 @@ import ReactFlow, {
   EdgeChange,
   ConnectionLineType,
   NodeTypes,
+  DefaultEdgeOptions,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -17,12 +18,14 @@ export interface FlowVisualizerProps {
   initialNodes: Node[];
   initialEdges: Edge[];
   nodeTypes: NodeTypes;
+  defaultEdgeOptions?: DefaultEdgeOptions;
 }
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   initialNodes,
   initialEdges,
   nodeTypes,
+  defaultEdgeOptions,
 }) => {
   const [nodes, setNodes] = React.useState<Node[]>(initialNodes);
   const [edges, setEdges] = React.useState<Edge[]>(initialEdges);
@@ -45,6 +48,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       nodeTypes={nodeTypes}
+      defaultEdgeOptions={defaultEdgeOptions}
       fitView
       connectionLineType={ConnectionLineType.SmoothStep}
     >
