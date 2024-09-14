@@ -1,5 +1,6 @@
 "use client";
 import React, { useCallback, useMemo, useState, KeyboardEvent } from "react";
+
 import ReactFlow, {
   Background,
   Controls,
@@ -24,6 +25,7 @@ import ReactFlow, {
   getConnectedEdges,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import NodeProperties from "./NodeProperties";
 import NodePalette from "./NodePalette";
 import {
   Box,
@@ -50,12 +52,15 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const reactFlowInstance = useReactFlow();
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
     nodeId: string | null;
   }>({ x: 0, y: 0, nodeId: null });
-
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    setSelectedNode(node);
+  }, []);
   const isValidConnection = useCallback(
     (connection: Connection) => {
       const sourceNode = nodes.find((node) => node.id === connection.source);
@@ -258,6 +263,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       <NodePalette />
       <Box flex={1} position="relative">
         <ReactFlow
+         onNodeClick={onNodeClick}
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
@@ -301,6 +307,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           </Menu>
         )}
       </Box>
+      <NodeProperties node={selectedNode} />
       <Button onClick={saveConfig} position="absolute" top={4} right={4}>
         保存配置
       </Button>
