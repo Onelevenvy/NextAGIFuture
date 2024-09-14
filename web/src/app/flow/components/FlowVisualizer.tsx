@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -41,14 +41,18 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     []
   );
 
+  // 使用 useMemo 来记忆化 nodeTypes 和 defaultEdgeOptions
+  const memoizedNodeTypes = useMemo(() => nodeTypes, [nodeTypes]);
+  const memoizedDefaultEdgeOptions = useMemo(() => defaultEdgeOptions, [defaultEdgeOptions]);
+
   return (
     <ReactFlow
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
-      nodeTypes={nodeTypes}
-      defaultEdgeOptions={defaultEdgeOptions}
+      nodeTypes={memoizedNodeTypes}
+      defaultEdgeOptions={memoizedDefaultEdgeOptions}
       fitView
       connectionLineType={ConnectionLineType.SmoothStep}
     >

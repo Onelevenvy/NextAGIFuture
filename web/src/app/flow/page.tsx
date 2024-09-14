@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Box, Heading } from "@chakra-ui/react";
-import dynamic from "next/dynamic";
 import {
   Node,
   Edge,
@@ -11,14 +10,8 @@ import {
   Handle,
   NodeTypes,
   NodeProps,
-  EdgeTypes,
 } from "reactflow";
-import type { FlowVisualizerProps } from "./components/FlowVisualizer";
-
-const FlowVisualizer = dynamic<FlowVisualizerProps>(
-  () => import("./components/FlowVisualizer"),
-  { ssr: false }
-);
+import FlowVisualizer from "./components/FlowVisualizer";
 
 interface ConfigNode {
   id: string;
@@ -104,103 +97,101 @@ const config: Config = {
   },
 };
 
+const CustomNode: React.FC<NodeProps> = ({ data }) => (
+  <div
+    style={{
+      border: "1px solid #777",
+      padding: "10px",
+      borderRadius: "3px",
+      background: "white",
+      minWidth: "150px",
+      textAlign: "center",
+      position: "relative",
+    }}
+  >
+    <Handle type="target" position={Position.Top} id="top" />
+    <Handle type="source" position={Position.Top} id="top" />
+    <Handle type="target" position={Position.Bottom} id="bottom" />
+    <Handle type="source" position={Position.Bottom} id="bottom" />
+    <div>{data.label}</div>
+  </div>
+);
+const nodeTypes: NodeTypes = {
+  custom: CustomNode,
+};
+const startNode: Node = {
+  id: "START",
+  type: "custom",
+  position: { x: 250, y: 0 },
+  data: { label: "Start" },
+};
+
+const endNode: Node = {
+  id: "END",
+  type: "custom",
+  position: { x: 250, y: 400 },
+  data: { label: "End" },
+};
+
+const nodes: Node[] = [
+  startNode,
+  ...config.nodes.map((node) => ({
+    id: node.id,
+    position: node.position,
+    data: { label: node.data.label || node.id },
+    type: "custom",
+  })),
+  endNode,
+];
+
+const edges: Edge[] = [
+  ...config.metadata.start_connections.map((conn) => ({
+    id: `start-to-${conn.target}`,
+    source: "START",
+    target: conn.target,
+    sourceHandle: "bottom",
+    targetHandle: "top",
+    type: "default", // 或者使用 "bezier"
+    animated: conn.type === "conditional",
+    style: { strokeDasharray: conn.type === "conditional" ? "5,5" : "none" },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+    },
+  })),
+  ...config.edges.map((edge) => ({
+    id: edge.id,
+    source: edge.source,
+    target: edge.target,
+    sourceHandle: edge.sourceHandle,
+    targetHandle: edge.targetHandle,
+    type: "default", // 或者使用 "bezier"
+    animated: edge.type === "conditional",
+    style: { strokeDasharray: edge.type === "conditional" ? "5,5" : "none" },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+    },
+  })),
+  ...config.metadata.end_connections.map((conn) => ({
+    id: `${conn.source}-to-end`,
+    source: conn.source,
+    target: "END",
+    sourceHandle: "bottom",
+    targetHandle: "top",
+    type: "default", // 或者使用 "bezier"
+    animated: conn.type === "conditional",
+    style: { strokeDasharray: conn.type === "conditional" ? "5,5" : "none" },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+    },
+  })),
+];
+
 export default function Home() {
   const [isClient, setIsClient] = React.useState(false);
 
   React.useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const CustomNode: React.FC<NodeProps> = ({ data }) => (
-    <div
-      style={{
-        border: "1px solid #777",
-        padding: "10px",
-        borderRadius: "3px",
-        background: "white",
-        minWidth: "150px",
-        textAlign: "center",
-        position: "relative",
-      }}
-    >
-      <Handle type="target" position={Position.Top} id="top" />
-      <Handle type="source" position={Position.Top} id="top" />
-      <Handle type="target" position={Position.Bottom} id="bottom" />
-      <Handle type="source" position={Position.Bottom} id="bottom" />
-      <div>{data.label}</div>
-    </div>
-  );
-
-  const nodeTypes: NodeTypes = {
-    custom: CustomNode,
-  };
-
-  const startNode: Node = {
-    id: "START",
-    type: "custom",
-    position: { x: 250, y: 0 },
-    data: { label: "Start" },
-  };
-
-  const endNode: Node = {
-    id: "END",
-    type: "custom",
-    position: { x: 250, y: 400 },
-    data: { label: "End" },
-  };
-
-  const nodes: Node[] = [
-    startNode,
-    ...config.nodes.map((node) => ({
-      id: node.id,
-      position: node.position,
-      data: { label: node.data.label || node.id },
-      type: "custom",
-    })),
-    endNode,
-  ];
-
-  const edges: Edge[] = [
-    ...config.metadata.start_connections.map((conn) => ({
-      id: `start-to-${conn.target}`,
-      source: "START",
-      target: conn.target,
-      sourceHandle: "bottom",
-      targetHandle: "top",
-      type: "bezier", // 或者使用 "bezier"
-      animated: conn.type === "conditional",
-      style: { strokeDasharray: conn.type === "conditional" ? "5,5" : "none" },
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-      },
-    })),
-    ...config.edges.map((edge) => ({
-      id: edge.id,
-      source: edge.source,
-      target: edge.target,
-      sourceHandle: edge.sourceHandle,
-      targetHandle: edge.targetHandle,
-      type: "bezier", // 或者使用 "bezier"
-      animated: edge.type === "conditional",
-      style: { strokeDasharray: edge.type === "conditional" ? "5,5" : "none" },
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-      },
-    })),
-    ...config.metadata.end_connections.map((conn) => ({
-      id: `${conn.source}-to-end`,
-      source: conn.source,
-      target: "END",
-      sourceHandle: "bottom",
-      targetHandle: "top",
-      type: "bezier", // 或者使用 "bezier"
-      animated: conn.type === "conditional",
-      style: { strokeDasharray: conn.type === "conditional" ? "5,5" : "none" },
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-      },
-    })),
-  ];
 
   return (
     <Box h="100vh" w="100vw">
@@ -213,7 +204,7 @@ export default function Home() {
             initialNodes={nodes}
             initialEdges={edges}
             nodeTypes={nodeTypes}
-            defaultEdgeOptions={{ type: "bezier" }} // 添加这一行
+            defaultEdgeOptions={{ type: "default" }}
           />
         )}
       </Box>
