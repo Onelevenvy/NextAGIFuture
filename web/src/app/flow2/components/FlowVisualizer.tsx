@@ -69,11 +69,11 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       if (!sourceNode || !targetNode) return false;
 
       // start 节点只能从 bottom 连出
-      if (sourceNode.type === "start" && connection.sourceHandle !== "bottom")
+      if (sourceNode.type === "start" && connection.sourceHandle !== "right")
         return false;
 
       // end 节点只能从 top 连入
-      if (targetNode.type === "end" && connection.targetHandle !== "top")
+      if (targetNode.type === "end" && connection.targetHandle !== "left")
         return false;
 
       // 防止自连接

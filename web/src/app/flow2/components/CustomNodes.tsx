@@ -15,20 +15,20 @@ const CustomNode: React.FC<NodeProps> = ({ data, type }) => (
   >
     {type !== "start" && (
       <>
-        <Handle type="target" position={Position.Top} id="top" />
-        {/* <Handle type="target" position={Position.Left} id="left" />
-        <Handle type="target" position={Position.Right} id="right" /> */}
-        <Handle type="target" position={Position.Bottom} id="bottom" />
+        {/* <Handle type="target" position={Position.Top} id="top" /> */}
+        <Handle type="target" position={Position.Left} id="left" />
+        <Handle type="target" position={Position.Right} id="right" />
+        {/* <Handle type="target" position={Position.Bottom} id="bottom" /> */}
       </>
     )}
     <div>{data.label}</div>
 
     {type !== "end" && (
       <>
-        <Handle type="source" position={Position.Top} id="top" />
-        {/* <Handle type="source" position={Position.Left} id="left" />
-        <Handle type="source" position={Position.Right} id="right" /> */}
-        <Handle type="source" position={Position.Bottom} id="bottom" />
+        {/* <Handle type="source" position={Position.Top} id="top" /> */}
+        <Handle type="source" position={Position.Left} id="left" />
+        <Handle type="source" position={Position.Right} id="right" />
+        {/* <Handle type="source" position={Position.Bottom} id="bottom" /> */}
       </>
     )}
   </div>
