@@ -9,4 +9,4 @@ const StartNode: React.FC<NodeProps> = (props) => (
   </BaseNode>
 );
 
-export default StartNode;
+export default React.memo(StartNode);

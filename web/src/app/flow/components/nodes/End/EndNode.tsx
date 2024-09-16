@@ -9,4 +9,4 @@ const EndNode: React.FC<NodeProps> = (props) => (
   </BaseNode>
 );
 
-export default EndNode;
+export default React.memo(EndNode);

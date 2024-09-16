@@ -16,4 +16,4 @@ const ToolNode: React.FC<NodeProps> = (props) => (
   </BaseNode>
 );
 
-export default ToolNode;
+export default React.memo(ToolNode);

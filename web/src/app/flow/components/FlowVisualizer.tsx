@@ -34,6 +34,8 @@ import LLMNodeProperties from "./nodes/LLM/Properties";
 import ToolNodeProperties from "./nodes/Tool/Properties";
 import StartNodeProperties from "./nodes/Start/Properties";
 import EndNodeProperties from "./nodes/End/Properties";
+import QuestionClassifierProperties from "./nodes/QuestionClassifier/Properties";
+
 
 interface NodeData {
   label: string;
@@ -85,6 +87,10 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         return (
           <ToolNodeProperties node={node} onNodeDataChange={onNodeDataChange} />
         );
+        case "questionClassifier":
+          return (
+            <QuestionClassifierProperties node={node} onNodeDataChange={onNodeDataChange} />
+          );
       case "start":
         return (
           <StartNodeProperties
