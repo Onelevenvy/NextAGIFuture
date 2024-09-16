@@ -20,7 +20,7 @@ import ReactFlow, {
   useViewport,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import NodeProperties from "./NodeProperties";
+
 import NodePalette from "./NodePalette";
 import {
   Box,
@@ -30,6 +30,10 @@ import {
   MenuList,
   MenuItem,
 } from "@chakra-ui/react";
+import LLMNodeProperties from "./nodes/LLM/Properties";
+import ToolNodeProperties from "./nodes/Tool/Properties";
+import StartNodeProperties from "./nodes/Start/Properties";
+import EndNodeProperties from "./nodes/End/Properties";
 
 interface NodeData {
   label: string;
@@ -68,6 +72,35 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
     setSelectedNode(node);
   }, []);
+
+  const getNodePropertiesComponent = (node: Node | null) => {
+    if (!node) return null;
+
+    switch (node.type) {
+      case "llm":
+        return (
+          <LLMNodeProperties node={node} onNodeDataChange={onNodeDataChange} />
+        );
+      case "tool":
+        return (
+          <ToolNodeProperties node={node} onNodeDataChange={onNodeDataChange} />
+        );
+      case "start":
+        return (
+          <StartNodeProperties
+            node={node}
+            onNodeDataChange={onNodeDataChange}
+          />
+        );
+      case "end":
+        return (
+          <EndNodeProperties node={node} onNodeDataChange={onNodeDataChange} />
+        );
+      default:
+        return null;
+    }
+  };
+
   const isValidConnection = useCallback(
     (connection: Connection) => {
       const sourceNode = nodes.find((node) => node.id === connection.source);
@@ -373,7 +406,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           </Menu>
         )}
       </Box>
-      <NodeProperties node={selectedNode} onNodeDataChange={onNodeDataChange} />
+      {getNodePropertiesComponent(selectedNode)}
       <Button onClick={saveConfig} position="absolute" top={4} right={4}>
         保存配置
       </Button>
