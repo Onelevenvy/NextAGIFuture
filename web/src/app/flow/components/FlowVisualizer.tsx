@@ -245,8 +245,16 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     }
     closeContextMenu();
   }, [contextMenu.nodeId, setNodes, setEdges, closeContextMenu]);
-  
+
   const saveConfig = () => {
+    const startEdge = edges.find((edge) => {
+      const sourceNode = nodes.find(
+        (node) => node.id === edge.source && node.type === "start"
+      );
+      return sourceNode !== undefined;
+    });
+
+    const entryPointId = startEdge ? startEdge.target : null; // Get the target ID of the first 'start' edge
     const config = {
       name: "Flow Visualization",
       nodes: nodes.map((node) => ({
@@ -267,7 +275,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         type: edge.type,
       })),
       metadata: {
-        entry_point: nodes.find((node) => node.type === "start")?.id || "",
+        entry_point: entryPointId,
         start_connections: edges
           .filter((edge) =>
             nodes.find(
