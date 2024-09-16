@@ -36,8 +36,20 @@ import {
   MenuItem,
 } from "@chakra-ui/react";
 
+interface NodeData {
+  label: string;
+  onChange: (key: string, value: any) => void;
+  model?: string;
+  temperature?: number;
+  tool?: string;
+}
+
+interface CustomNode extends Node {
+  data: NodeData;
+}
+
 export interface FlowVisualizerProps {
-  initialNodes: Node[];
+  initialNodes: CustomNode[];
   initialEdges: Edge[];
   nodeTypes: NodeTypes;
   defaultEdgeOptions?: DefaultEdgeOptions;
@@ -68,11 +80,11 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
       if (!sourceNode || !targetNode) return false;
 
-      // start 节点只能从 bottom 连出
+      // start 节点只能从 right 连出
       if (sourceNode.type === "start" && connection.sourceHandle !== "right")
         return false;
 
-      // end 节点只能从 top 连入
+      // end 节点只能从 left 连入
       if (targetNode.type === "end" && connection.targetHandle !== "left")
         return false;
 
@@ -91,7 +103,25 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     },
     [nodes, edges]
   );
-
+  const onNodeDataChange = useCallback(
+    (nodeId: string, key: string, value: any) => {
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id === nodeId) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                [key]: value,
+              },
+            };
+          }
+          return node;
+        })
+      );
+    },
+    [setNodes]
+  );
   const onConnect = useCallback(
     (connection: Connection) => {
       if (isValidConnection(connection)) {
@@ -166,15 +196,30 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         x: event.clientX,
         y: event.clientY,
       });
-      const newNode = {
+      const newNode: CustomNode = {
         id: `${type}-${nodes.length + 1}`,
         type,
         position,
-        data: { label: `${type} node` },
+        data: {
+          label: `${type.toUpperCase()} Node`,
+          onChange: (key: string, value: any) =>
+            onNodeDataChange(`${type}-${nodes.length + 1}`, key, value),
+        },
       };
+      // 为不同类型的节点添加特定的初始数据
+      switch (type) {
+        case "llm":
+          newNode.data.model = "gpt-3.5-turbo";
+          newNode.data.temperature = 0.7;
+          break;
+        case "tool":
+          newNode.data.tool = "calculator";
+          break;
+      }
+
       setNodes((nds) => nds.concat(newNode));
     },
-    [nodes, reactFlowInstance, setNodes]
+    [nodes, reactFlowInstance, setNodes, onNodeDataChange]
   );
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -307,7 +352,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           </Menu>
         )}
       </Box>
-      <NodeProperties node={selectedNode} />
+      <NodeProperties node={selectedNode} onNodeDataChange={onNodeDataChange} />
       <Button onClick={saveConfig} position="absolute" top={4} right={4}>
         保存配置
       </Button>
