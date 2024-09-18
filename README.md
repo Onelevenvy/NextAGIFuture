@@ -58,7 +58,7 @@ Project tech stack: LangChain + LangGraph + React + Next.js + Chakra UI + Postgr
 
 - [x] Function call
 - [x] I18n
-- [ ] workflow
+- [ ] workflow -- coming soon
 - [ ] CrewAI
 - [ ] langflow
 

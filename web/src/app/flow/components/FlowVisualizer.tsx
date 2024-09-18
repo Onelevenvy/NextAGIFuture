@@ -1,6 +1,6 @@
 "use client";
 import React, { useCallback, useMemo, useState, KeyboardEvent } from "react";
-
+import { v4 } from "uuid";
 import ReactFlow, {
   Background,
   Controls,
@@ -20,7 +20,7 @@ import ReactFlow, {
   useViewport,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import NodeProperties from "./NodeProperties";
+
 import NodePalette from "./NodePalette";
 import {
   Box,
@@ -30,13 +30,15 @@ import {
   MenuList,
   MenuItem,
 } from "@chakra-ui/react";
+import { nodeConfig, NodeType } from "./nodes/nodeConfig";
 
 interface NodeData {
   label: string;
   onChange: (key: string, value: any) => void;
   model?: string;
   temperature?: number;
-  tool?: string;
+  tool?: string[];
+  [key: string]: any; // 添加索引签名
 }
 
 interface CustomNode extends Node {
@@ -68,6 +70,18 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
     setSelectedNode(node);
   }, []);
+
+  const getNodePropertiesComponent = (node: Node | null) => {
+    if (!node) return null;
+
+    const nodeType = node.type as NodeType;
+    const PropertiesComponent = nodeConfig[nodeType]?.properties;
+
+    return PropertiesComponent ? (
+      <PropertiesComponent node={node} onNodeDataChange={onNodeDataChange} />
+    ) : null;
+  };
+
   const isValidConnection = useCallback(
     (connection: Connection) => {
       const sourceNode = nodes.find((node) => node.id === connection.source);
@@ -75,24 +89,36 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
       if (!sourceNode || !targetNode) return false;
 
-      // start 节点只能从 right 连出
-      if (sourceNode.type === "start" && connection.sourceHandle !== "right")
-        return false;
+      const sourceType = sourceNode.type as NodeType;
+      const targetType = targetNode.type as NodeType;
 
-      // end 节点只能从 left 连入
-      if (targetNode.type === "end" && connection.targetHandle !== "left")
-        return false;
+      const sourceAllowedConnections =
+        nodeConfig[sourceType].allowedConnections;
+      const targetAllowedConnections =
+        nodeConfig[targetType].allowedConnections;
 
+      // 检查源节点是否允许从指定的 handle 连出
+      if (
+        connection.sourceHandle &&
+        !sourceAllowedConnections.sources.includes(connection.sourceHandle)
+      ) {
+        return false;
+      }
+      // 检查目标节点是否允许从指定的 handle 连入
+      if (
+        connection.targetHandle &&
+        !targetAllowedConnections.targets.includes(connection.targetHandle)
+      ) {
+        return false;
+      }
       // 防止自连接
       if (connection.source === connection.target) return false;
-
       // 防止重复连接
       const existingEdge = edges.find(
         (edge) =>
           edge.source === connection.source && edge.target === connection.target
       );
       if (existingEdge) return false;
-
       // 允许所有其他连接
       return true;
     },
@@ -184,9 +210,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
-      const type = event.dataTransfer.getData("application/reactflow");
+      const type = event.dataTransfer.getData("application/reactflow") as NodeType;
       if (typeof type === "undefined" || !type) return;
-
+  
       const position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
@@ -196,22 +222,13 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         type,
         position,
         data: {
-          label: `${type.toUpperCase()} `,
+          label: `${nodeConfig[type].display}`,
           onChange: (key: string, value: any) =>
             onNodeDataChange(`${type}-${nodes.length + 1}`, key, value),
+          ...nodeConfig[type].initialData,
         },
       };
-      // 为不同类型的节点添加特定的初始数据
-      switch (type) {
-        case "llm":
-          newNode.data.model = "gpt-3.5-turbo";
-          newNode.data.temperature = 0.7;
-          break;
-        case "tool":
-          newNode.data.tool = "calculator";
-          break;
-      }
-
+  
       setNodes((nds) => nds.concat(newNode));
     },
     [nodes, reactFlowInstance, setNodes, onNodeDataChange]
@@ -245,19 +262,39 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     }
     closeContextMenu();
   }, [contextMenu.nodeId, setNodes, setEdges, closeContextMenu]);
-  
+
   const saveConfig = () => {
+    const startEdge = edges.find((edge) => {
+      const sourceNode = nodes.find(
+        (node) => node.id === edge.source && node.type === "start"
+      );
+      return sourceNode !== undefined;
+    });
+  
+    const entryPointId = startEdge ? startEdge.target : null;
     const config = {
+      id: v4(),
       name: "Flow Visualization",
-      nodes: nodes.map((node) => ({
-        id: node.id,
-        type: node.type,
-        position: node.position,
-        data: {
+      nodes: nodes.map((node) => {
+        const nodeType = node.type as NodeType;
+        const initialData = nodeConfig[nodeType].initialData || {};
+        const nodeData: Record<string, any> = {
           label: node.data.label,
-          // Add other necessary data fields
-        },
-      })),
+        };
+  
+        Object.keys(initialData).forEach((key) => {
+          if (node.data[key as keyof NodeData] !== undefined) {
+            nodeData[key] = node.data[key as keyof NodeData];
+          }
+        });
+  
+        return {
+          id: node.id,
+          type: node.type,
+          position: node.position,
+          data: nodeData,
+        };
+      }),
       edges: edges.map((edge) => ({
         id: edge.id,
         source: edge.source,
@@ -267,7 +304,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         type: edge.type,
       })),
       metadata: {
-        entry_point: nodes.find((node) => node.type === "start")?.id || "",
+        entry_point: entryPointId,
         start_connections: edges
           .filter((edge) =>
             nodes.find(
@@ -289,7 +326,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       },
     };
     console.log(JSON.stringify(config, null, 2));
-    // Here you can implement saving the config to a file or sending it to a server
+    // 这里您可以实现将配置保存到文件或发送到服务器的逻辑
   };
 
   // 使用 useMemo 来记忆化 nodeTypes 和 defaultEdgeOptions
@@ -365,7 +402,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           </Menu>
         )}
       </Box>
-      <NodeProperties node={selectedNode} onNodeDataChange={onNodeDataChange} />
+      {getNodePropertiesComponent(selectedNode)}
       <Button onClick={saveConfig} position="absolute" top={4} right={4}>
         保存配置
       </Button>

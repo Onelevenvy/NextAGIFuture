@@ -1,14 +1,12 @@
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import StructuredTool, BaseTool
-from typing import List, Annotated, Dict, Any
+from typing import Dict, Any, List
+
 from langgraph.graph.graph import CompiledGraph
 from typing_extensions import TypedDict
 from langgraph.graph.message import add_messages
 from langchain_core.tools import tool
-from langchain_openai import ChatOpenAI
-from langchain_community.tools.tavily_search import TavilySearchResults
-from langgraph.prebuilt import ToolNode, tools_condition
-from langchain_core.messages import HumanMessage
+from typing import Annotated
 
 
 class CalculatorInput(BaseModel):
@@ -28,6 +26,9 @@ calculator = StructuredTool.from_function(
     args_schema=CalculatorInput,
     return_direct=True,
 )
+import os
+
+
 
 
 @tool
@@ -37,7 +38,7 @@ def AskHuman(query: Annotated[str, "query to ask the human"]) -> None:
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
-    required_keys = ["id", "name", "nodes", "edges", "config"]
+    required_keys = ["id", "name", "nodes", "edges", "metadata"]
     return all(key in config for key in required_keys)
 
 
@@ -83,6 +84,15 @@ def create_tools_router(tool_nodes: Dict[str, List[BaseTool]]):
             return tool_to_node[tool_name]
 
     return tools_router
+
+
+from typing import Annotated, Dict, Any
+from langchain_openai import ChatOpenAI
+from langchain_community.tools.tavily_search import TavilySearchResults
+from langgraph.graph import StateGraph
+from langgraph.prebuilt import ToolNode, tools_condition
+from langchain_core.tools import Tool
+from langchain_core.messages import HumanMessage, ToolMessage, AIMessage
 
 
 class State(TypedDict):
@@ -135,21 +145,44 @@ def initialize_graph(config: Dict[str, Any]) -> CompiledGraph:
     if not validate_config(config):
         raise ValueError("Invalid configuration structure")
     try:
+        nodes_to_keep = [
+            node for node in config["nodes"] if node["type"] not in ["start", "end"]
+        ]
+        nodes_to_keep_ids = {node["id"] for node in nodes_to_keep}
+
+        # Filter edges
+        edges_to_keep = [
+            edge
+            for edge in config["edges"]
+            if edge["source"] in nodes_to_keep_ids
+            and edge["target"] in nodes_to_keep_ids
+        ]
+
+        new_configs = {
+            "id": config["id"],
+            "name": config["name"],
+            "nodes": nodes_to_keep,
+            "edges": edges_to_keep,
+            "metadata": config["metadata"],
+        }
+
+        config = new_configs
         graph_builder = StateGraph(State)
         llm_node = next(node for node in config["nodes"] if node["type"] == "llm")
         llm_node_id = llm_node["id"]
         # 初始化 LLM 和工具
-        llm = ChatOpenAI(
-            model=config["nodes"][0]["data"]["model"],
-            openai_api_key="yourapikey",
-            openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
-        )
+        for node in config["nodes"]:
+            if node["type"] == "llm":
+                llm = ChatOpenAI(
+                    model=node["data"]["model"],
+                    openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
+                )
 
         # 收集所有工具
         all_tools = []
         tool_nodes = {}
         for node in config["nodes"]:
-            if node["type"] == "tool_node":
+            if node["type"] == "tool":
                 node_tools = [
                     get_tool(tool_name) for tool_name in node["data"]["tools"]
                 ]
@@ -167,6 +200,8 @@ def initialize_graph(config: Dict[str, Any]) -> CompiledGraph:
                 )
             elif node["type"] == "fake_node":
                 graph_builder.add_node(node["id"], initialize_fake_node(node["data"]))
+            else:
+                continue
 
         dynamic_router = create_tools_router(tool_nodes)
 
@@ -180,10 +215,10 @@ def initialize_graph(config: Dict[str, Any]) -> CompiledGraph:
                 graph_builder.add_edge(edge["source"], edge["target"])
 
         # 设置入口点
-        graph_builder.set_entry_point(config["config"]["entry_point"])
+        graph_builder.set_entry_point(config["metadata"]["entry_point"])
 
         # # 从配置中获取 human-in-the-loop 设置
-        hitl_config = config.get("config", {}).get("human_in_the_loop", {})
+        hitl_config = config.get("metadata", {}).get("human_in_the_loop", {})
         interrupt_before = hitl_config.get("interrupt_before", [])
         interrupt_after = hitl_config.get("interrupt_after", [])
 
@@ -195,58 +230,3 @@ def initialize_graph(config: Dict[str, Any]) -> CompiledGraph:
         raise ValueError(f"Invalid configuration: missing key {e}")
     except Exception as e:
         raise RuntimeError(f"Failed to initialize graph: {e}")
-
-
-if __name__ == "__main__":
-    config = {
-        "id": "1",
-        "name": "Simple LangGraph Example",
-        "nodes": [
-            {
-                "id": "chatbot",
-                "type": "llm",
-                "position": {"x": 250, "y": 100},
-                "data": {
-                    "model": "glm-4",
-                },
-            },
-            {
-                "id": "tools",
-                "type": "tool_node",
-                "position": {"x": 250, "y": 300},
-                "data": {"tools": ["tavilysearch", "calculator"]},  # 添加新工具
-            },
-            {
-                "id": "fake",
-                "type": "fake_node",
-                "position": {"x": 250, "y": 300},
-                "data": {"messages": ["hello world!"]},  # 添加新工具
-            },
-        ],
-        "edges": [
-            {
-                "id": "chatbot-to-tools",
-                "source": "chatbot",
-                "target": "tools",
-                "type": "conditional",
-            },
-            {
-                "id": "tools-to-chatbot",
-                "source": "tools",
-                "target": "chatbot",
-                "type": "default",
-            },
-            {
-                "id": "fake-to-chatbot",
-                "source": "fake",
-                "target": "chatbot",
-                "type": "default",
-            },
-        ],
-        "config": {"entry_point": "fake"},
-    }
-
-    # 使用示例
-
-    graphs = initialize_graph(config)
-    

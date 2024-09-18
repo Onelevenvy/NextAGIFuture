@@ -4,7 +4,7 @@ import React from "react";
 import { Box, Heading } from "@chakra-ui/react";
 import { ReactFlowProvider } from "reactflow";
 import FlowVisualizer from "./components/FlowVisualizer";
-import { nodeTypes } from "./components/CustomNodes";
+import { nodeTypes } from "./components/nodes";
 
 export default function Home() {
   const [isClient, setIsClient] = React.useState(false);
