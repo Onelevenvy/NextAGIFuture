@@ -210,9 +210,11 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
-      const type = event.dataTransfer.getData("application/reactflow") as NodeType;
+      const type = event.dataTransfer.getData(
+        "application/reactflow"
+      ) as NodeType;
       if (typeof type === "undefined" || !type) return;
-  
+
       const position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
@@ -228,7 +230,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           ...nodeConfig[type].initialData,
         },
       };
-  
+
       setNodes((nds) => nds.concat(newNode));
     },
     [nodes, reactFlowInstance, setNodes, onNodeDataChange]
@@ -270,7 +272,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       );
       return sourceNode !== undefined;
     });
-  
+
     const entryPointId = startEdge ? startEdge.target : null;
     const config = {
       id: v4(),
@@ -281,13 +283,13 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         const nodeData: Record<string, any> = {
           label: node.data.label,
         };
-  
+
         Object.keys(initialData).forEach((key) => {
           if (node.data[key as keyof NodeData] !== undefined) {
             nodeData[key] = node.data[key as keyof NodeData];
           }
         });
-  
+
         return {
           id: node.id,
           type: node.type,
@@ -338,7 +340,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const { zoom } = useViewport();
 
   const ZoomDisplay = () => (
-    <Panel position="bottom-left">缩放: {Math.round(zoom * 100)}%</Panel>
+    <Panel position="bottom-right">{Math.round(zoom * 100)}%</Panel>
   );
 
   return (
@@ -378,12 +380,12 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           deleteKeyCode={["Backspace", "Delete"]}
         >
           <Controls />
+
           <Background
             color="#f2f2f2"
             gap={16}
             style={{ background: "#f1f1f1" }}
           />
-
           <MiniMap />
           <ZoomDisplay />
         </ReactFlow>
