@@ -41,35 +41,30 @@ def create_tools_router(tool_nodes: Dict[str, List[BaseTool]]):
     }
 
     def tools_router(state: Dict) -> str:
-        # next_node = tools_condition(state)
-        # # If no tools are invoked, return to the user
-        # if next_node == END:
-        #     return END
-        messages = state.get("all_messages", [])
-        last_message = messages[-1]
-        # 检查是否有工具调用
-        if (
-            not hasattr(last_message, "additional_kwargs")
-            or "tool_calls" not in last_message.additional_kwargs
-        ):
-            return END
-        tool_calls = last_message.additional_kwargs["tool_calls"]
-        if not tool_calls:
-            return END
+        messages = state.get("messages", [])
+        if messages:
+            last_message = messages[-1]
+            # 检查是否有工具调用
+            if (
+                not hasattr(last_message, "additional_kwargs")
+                or "tool_calls" not in last_message.additional_kwargs
+            ):
+                return END
+            tool_calls = last_message.additional_kwargs["tool_calls"]
+            if not tool_calls:
+                return END
 
-        # 获取第一个工具调用（如果需要处理多个工具调用，这里需要修改）
-        first_tool_call = tool_calls[0]
-        tool_name = first_tool_call.get("function", {}).get("name")
+            # 获取第一个工具调用（如果需要处理多个工具调用，这里需要修改）
+            first_tool_call = tool_calls[0]
+            tool_name = first_tool_call.get("function", {}).get("name")
 
-        # 根据工具名称路由到相应的节点
-        if tool_name in tool_to_node:
-            return tool_to_node[tool_name]
+            # 根据工具名称路由到相应的节点
+            if tool_name in tool_to_node:
+                return tool_to_node[tool_name]
+        else:
+            return END
 
     return tools_router
-
-
-# class State(TypedDict):
-#     messages: Annotated[list, add_messages]
 
 
 # 工具注册表
@@ -86,23 +81,6 @@ def get_tool(tool_name: str) -> BaseTool:
     if tool_name in tool_registry:
         return tool_registry[tool_name].tool
     raise ValueError(f"Unknown tool: {tool_name}")
-
-
-# 节点初始化函数
-# def initialize_llm_node(node_data: Dict[str, Any], llm_with_tools, state):
-#     def chatbot(state):
-#         return {"messages": [llm_with_tools.invoke(state["all_messages"])]}
-
-#     return chatbot
-# result: AIMessage = llm_with_tools.invoke(state)  # type: ignore[arg-type]
-# if result.tool_calls:
-#     return {"messages": [result]}
-# else:
-#     return {
-#         "history": [result],
-#         "messages": [],
-#         "all_messages": state["messages"] + [result],
-#     }
 
 
 def initialize_fake_node(node_data: Dict[str, Any]):
@@ -167,21 +145,6 @@ def initialize_graph(
 
         llm_with_tools = llm.bind_tools(all_tools)
 
-        # def chatbot(state: TeamState, config: RunnableConfig):
-
-        #     chain: RunnableSerializable[dict[str, Any], AnyMessage] = (  # type: ignore[no-redef]
-        #         llm_with_tools
-        #     )
-        #     result: AIMessage = chain.invoke(state, config=config)  # type: ignore[arg-type]
-        #     if result.tool_calls:
-        #         return {"messages": [result]}
-        #     else:
-        #         return {
-        #             "history": [result],
-        #             "messages": [],
-        #             "all_messages": state["messages"] + [result],
-        #         }
-
         # 添加节点
         for node in new_configs["nodes"]:
             if node["type"] == "llm":
@@ -189,8 +152,7 @@ def initialize_graph(
                     node["id"],
                     RunnableLambda(
                         LLMNode(
-                            llm=llm_with_tools,
-                            tools=True
+                            llm=llm_with_tools, tools=True
                         ).work  # type: ignore[arg-type]
                     ),
                 )
