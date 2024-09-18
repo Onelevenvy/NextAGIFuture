@@ -14,6 +14,7 @@ interface NodeConfigItem {
     sources: string[];
     targets: string[];
   };
+  initialData?: Record<string, any>;
 }
 
 export const nodeConfig: Record<string, NodeConfigItem> = {
@@ -46,6 +47,10 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       sources: ["left", "right"],
       targets: ["left", "right"],
     },
+    initialData: {
+      model: "gpt-3.5-turbo",
+      temperature: 0.7,
+    },
   },
   tool: {
     display: "Tool",
@@ -55,6 +60,9 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     allowedConnections: {
       sources: ["left", "right"],
       targets: ["left", "right"],
+    },
+    initialData: {
+      tool:["calculator"],
     },
   },
   questionClassifier: {

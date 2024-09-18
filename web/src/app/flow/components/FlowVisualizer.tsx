@@ -37,7 +37,8 @@ interface NodeData {
   onChange: (key: string, value: any) => void;
   model?: string;
   temperature?: number;
-  tool?: string;
+  tool?: string[];
+  [key: string]: any; // 添加索引签名
 }
 
 interface CustomNode extends Node {
@@ -209,9 +210,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
-      const type = event.dataTransfer.getData("application/reactflow");
+      const type = event.dataTransfer.getData("application/reactflow") as NodeType;
       if (typeof type === "undefined" || !type) return;
-
+  
       const position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
@@ -221,22 +222,13 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         type,
         position,
         data: {
-          label: `${type.toUpperCase()}`,
+          label: `${nodeConfig[type].display}`,
           onChange: (key: string, value: any) =>
             onNodeDataChange(`${type}-${nodes.length + 1}`, key, value),
+          ...nodeConfig[type].initialData,
         },
       };
-      // 为不同类型的节点添加特定的初始数据
-      switch (type) {
-        case "llm":
-          newNode.data.model = "gpt-3.5-turbo";
-          newNode.data.temperature = 0.7;
-          break;
-        case "tool":
-          newNode.data.tool = "calculator";
-          break;
-      }
-
+  
       setNodes((nds) => nds.concat(newNode));
     },
     [nodes, reactFlowInstance, setNodes, onNodeDataChange]
@@ -278,20 +270,31 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       );
       return sourceNode !== undefined;
     });
-
-    const entryPointId = startEdge ? startEdge.target : null; // Get the target ID of the first 'start' edge
+  
+    const entryPointId = startEdge ? startEdge.target : null;
     const config = {
       id: v4(),
       name: "Flow Visualization",
-      nodes: nodes.map((node) => ({
-        id: node.id,
-        type: node.type,
-        position: node.position,
-        data: {
+      nodes: nodes.map((node) => {
+        const nodeType = node.type as NodeType;
+        const initialData = nodeConfig[nodeType].initialData || {};
+        const nodeData: Record<string, any> = {
           label: node.data.label,
-          // Add other necessary data fields
-        },
-      })),
+        };
+  
+        Object.keys(initialData).forEach((key) => {
+          if (node.data[key as keyof NodeData] !== undefined) {
+            nodeData[key] = node.data[key as keyof NodeData];
+          }
+        });
+  
+        return {
+          id: node.id,
+          type: node.type,
+          position: node.position,
+          data: nodeData,
+        };
+      }),
       edges: edges.map((edge) => ({
         id: edge.id,
         source: edge.source,
@@ -323,7 +326,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       },
     };
     console.log(JSON.stringify(config, null, 2));
-    // Here you can implement saving the config to a file or sending it to a server
+    // 这里您可以实现将配置保存到文件或发送到服务器的逻辑
   };
 
   // 使用 useMemo 来记忆化 nodeTypes 和 defaultEdgeOptions
