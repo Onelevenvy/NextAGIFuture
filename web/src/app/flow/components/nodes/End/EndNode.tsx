@@ -1,12 +1,15 @@
 import React from "react";
 import { Handle, Position, NodeProps } from "reactflow";
-import { FaStop } from "react-icons/fa";
 import { BaseNode } from "../Base/BaseNode";
+import { nodeConfig } from "../nodeConfig";
 
-const EndNode: React.FC<NodeProps> = (props) => (
-  <BaseNode {...props} icon={<FaStop />} colorScheme="red">
-    <Handle type="target" position={Position.Left} id="left" />
-  </BaseNode>
-);
+const EndNode: React.FC<NodeProps> = (props) => {
+  const { icon: Icon, colorScheme } = nodeConfig.end;
+  return (
+    <BaseNode {...props} icon={<Icon />} colorScheme={colorScheme}>
+      <Handle type="target" position={Position.Left} id="left" />
+    </BaseNode>
+  );
+};
 
 export default React.memo(EndNode);

@@ -1,6 +1,6 @@
 "use client";
 import React, { useCallback, useMemo, useState, KeyboardEvent } from "react";
-
+import { v4 } from "uuid";
 import ReactFlow, {
   Background,
   Controls,
@@ -30,12 +30,7 @@ import {
   MenuList,
   MenuItem,
 } from "@chakra-ui/react";
-import LLMNodeProperties from "./nodes/LLM/Properties";
-import ToolNodeProperties from "./nodes/Tool/Properties";
-import StartNodeProperties from "./nodes/Start/Properties";
-import EndNodeProperties from "./nodes/End/Properties";
-import QuestionClassifierProperties from "./nodes/QuestionClassifier/Properties";
-
+import { nodeConfig, NodeType } from "./nodes/nodeConfig";
 
 interface NodeData {
   label: string;
@@ -77,61 +72,48 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
   const getNodePropertiesComponent = (node: Node | null) => {
     if (!node) return null;
-
-    switch (node.type) {
-      case "llm":
-        return (
-          <LLMNodeProperties node={node} onNodeDataChange={onNodeDataChange} />
-        );
-      case "tool":
-        return (
-          <ToolNodeProperties node={node} onNodeDataChange={onNodeDataChange} />
-        );
-        case "questionClassifier":
-          return (
-            <QuestionClassifierProperties node={node} onNodeDataChange={onNodeDataChange} />
-          );
-      case "start":
-        return (
-          <StartNodeProperties
-            node={node}
-            onNodeDataChange={onNodeDataChange}
-          />
-        );
-      case "end":
-        return (
-          <EndNodeProperties node={node} onNodeDataChange={onNodeDataChange} />
-        );
-      default:
-        return null;
-    }
+  
+    const nodeType = node.type as NodeType;
+    const PropertiesComponent = nodeConfig[nodeType]?.properties;
+  
+    return PropertiesComponent ? (
+      <PropertiesComponent node={node} onNodeDataChange={onNodeDataChange} />
+    ) : null;
   };
 
   const isValidConnection = useCallback(
     (connection: Connection) => {
       const sourceNode = nodes.find((node) => node.id === connection.source);
       const targetNode = nodes.find((node) => node.id === connection.target);
-
+  
       if (!sourceNode || !targetNode) return false;
-
-      // start 节点只能从 right 连出
-      if (sourceNode.type === "start" && connection.sourceHandle !== "right")
+  
+      const sourceType = sourceNode.type as NodeType;
+      const targetType = targetNode.type as NodeType;
+  
+      const sourceAllowedConnections = nodeConfig[sourceType].allowedConnections;
+      const targetAllowedConnections = nodeConfig[targetType].allowedConnections;
+  
+      // 检查源节点是否允许从指定的 handle 连出
+      if (connection.sourceHandle && !sourceAllowedConnections.sources.includes(connection.sourceHandle)) {
         return false;
-
-      // end 节点只能从 left 连入
-      if (targetNode.type === "end" && connection.targetHandle !== "left")
+      }
+  
+      // 检查目标节点是否允许从指定的 handle 连入
+      if (connection.targetHandle && !targetAllowedConnections.targets.includes(connection.targetHandle)) {
         return false;
-
+      }
+  
       // 防止自连接
       if (connection.source === connection.target) return false;
-
+  
       // 防止重复连接
       const existingEdge = edges.find(
         (edge) =>
           edge.source === connection.source && edge.target === connection.target
       );
       if (existingEdge) return false;
-
+  
       // 允许所有其他连接
       return true;
     },
@@ -235,7 +217,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         type,
         position,
         data: {
-          label: `${type.toUpperCase()} `,
+          label: `${type.toUpperCase()}`,
           onChange: (key: string, value: any) =>
             onNodeDataChange(`${type}-${nodes.length + 1}`, key, value),
         },
@@ -295,6 +277,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
     const entryPointId = startEdge ? startEdge.target : null; // Get the target ID of the first 'start' edge
     const config = {
+      id: v4(),
       name: "Flow Visualization",
       nodes: nodes.map((node) => ({
         id: node.id,

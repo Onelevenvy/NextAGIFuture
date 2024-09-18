@@ -28,7 +28,7 @@ calculator = StructuredTool.from_function(
 )
 import os
 
-os.environ["TAVILY_API_KEY"] = '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'
+
 
 
 @tool
@@ -38,7 +38,7 @@ def AskHuman(query: Annotated[str, "query to ask the human"]) -> None:
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
-    required_keys = ['id', 'name', 'nodes', 'edges', 'metadata']
+    required_keys = ["id", "name", "nodes", "edges", "metadata"]
     return all(key in config for key in required_keys)
 
 
@@ -54,7 +54,9 @@ def create_tools_router(tool_nodes: Dict[str, List[BaseTool]]):
     :return: 一个路由函数。
     """
     # 创建一个反向映射，从工具名称到节点ID
-    tool_to_node = {tool.name: node_id for node_id, tools in tool_nodes.items() for tool in tools}
+    tool_to_node = {
+        tool.name: node_id for node_id, tools in tool_nodes.items() for tool in tools
+    }
 
     def tools_router(state: Dict) -> str:
         next_node = tools_condition(state)
@@ -64,9 +66,12 @@ def create_tools_router(tool_nodes: Dict[str, List[BaseTool]]):
         messages = state.get("messages", [])
         last_message = messages[-1]
         # 检查是否有工具调用
-        if not hasattr(last_message, 'additional_kwargs') or 'tool_calls' not in last_message.additional_kwargs:
+        if (
+            not hasattr(last_message, "additional_kwargs")
+            or "tool_calls" not in last_message.additional_kwargs
+        ):
             return END
-        tool_calls = last_message.additional_kwargs['tool_calls']
+        tool_calls = last_message.additional_kwargs["tool_calls"]
         if not tool_calls:
             return END
 
@@ -101,18 +106,15 @@ class ToolsInfo(BaseModel):
 
 
 tool_registry: dict[str, ToolsInfo] = {
-
     "tavilysearch": ToolsInfo(
         description="tavily search useful when searching for information on the internet",
         tool=TavilySearchResults(max_results=1),  # type: ignore[call-arg]
-
     ),
     "calculator": ToolsInfo(
         description=calculator.description,
         tool=calculator,
     ),
     "ask-human": ToolsInfo(description=AskHuman.description, tool=AskHuman),
-
 }
 from functools import lru_cache
 
@@ -143,52 +145,61 @@ def initialize_graph(config: Dict[str, Any]) -> CompiledGraph:
     if not validate_config(config):
         raise ValueError("Invalid configuration structure")
     try:
-        nodes_to_keep = [node for node in config["nodes"] if node["type"] not in ["start", "end"]]
+        nodes_to_keep = [
+            node for node in config["nodes"] if node["type"] not in ["start", "end"]
+        ]
         nodes_to_keep_ids = {node["id"] for node in nodes_to_keep}
 
         # Filter edges
-        edges_to_keep = [edge for edge in config["edges"] if
-                         edge["source"] in nodes_to_keep_ids and edge["target"] in nodes_to_keep_ids]
+        edges_to_keep = [
+            edge
+            for edge in config["edges"]
+            if edge["source"] in nodes_to_keep_ids
+            and edge["target"] in nodes_to_keep_ids
+        ]
 
         new_configs = {
             "id": config["id"],
             "name": config["name"],
             "nodes": nodes_to_keep,
             "edges": edges_to_keep,
-            "metadata": config["metadata"]
+            "metadata": config["metadata"],
         }
 
         config = new_configs
         graph_builder = StateGraph(State)
-        llm_node = next(node for node in config['nodes'] if node['type'] == 'llm')
-        llm_node_id = llm_node['id']
+        llm_node = next(node for node in config["nodes"] if node["type"] == "llm")
+        llm_node_id = llm_node["id"]
         # 初始化 LLM 和工具
-        for node in config['nodes']:
-            if node['type'] == 'llm':
+        for node in config["nodes"]:
+            if node["type"] == "llm":
                 llm = ChatOpenAI(
-                    model=node['data']['model'],
-                    openai_api_key='1a65e1fed7ab7a788ee94d73570e9fcf.5FVs3ceE6POvEnSN',
-                    openai_api_base="https://open.bigmodel.cn/api/paas/v4/"
+                    model=node["data"]["model"],
+                    openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
                 )
 
         # 收集所有工具
         all_tools = []
         tool_nodes = {}
-        for node in config['nodes']:
-            if node['type'] == 'tool':
-                node_tools = [get_tool(tool_name) for tool_name in node['data']['tools']]
+        for node in config["nodes"]:
+            if node["type"] == "tool":
+                node_tools = [
+                    get_tool(tool_name) for tool_name in node["data"]["tools"]
+                ]
                 all_tools.extend(node_tools)
-                tool_nodes[node['id']] = node_tools
-                graph_builder.add_node(node['id'], ToolNode(tools=node_tools))
+                tool_nodes[node["id"]] = node_tools
+                graph_builder.add_node(node["id"], ToolNode(tools=node_tools))
 
         llm_with_tools = llm.bind_tools(all_tools)
 
         # 添加节点
-        for node in config['nodes']:
-            if node['type'] == 'llm':
-                graph_builder.add_node(node['id'], initialize_llm_node(node['data'], llm_with_tools))
-            elif node['type'] == 'fake_node':
-                graph_builder.add_node(node['id'], initialize_fake_node(node['data']))
+        for node in config["nodes"]:
+            if node["type"] == "llm":
+                graph_builder.add_node(
+                    node["id"], initialize_llm_node(node["data"], llm_with_tools)
+                )
+            elif node["type"] == "fake_node":
+                graph_builder.add_node(node["id"], initialize_fake_node(node["data"]))
             else:
                 continue
 
@@ -196,24 +207,24 @@ def initialize_graph(config: Dict[str, Any]) -> CompiledGraph:
 
         graph_builder.add_conditional_edges(
             llm_node_id,
-            dynamic_router, )
+            dynamic_router,
+        )
 
-        for edge in config['edges']:
-            if edge['type'] == "default":
-                graph_builder.add_edge(edge['source'], edge['target'])
+        for edge in config["edges"]:
+            if edge["type"] == "default":
+                graph_builder.add_edge(edge["source"], edge["target"])
 
         # 设置入口点
-        graph_builder.set_entry_point(config['metadata']['entry_point'])
+        graph_builder.set_entry_point(config["metadata"]["entry_point"])
 
         # # 从配置中获取 human-in-the-loop 设置
-        hitl_config = config.get('metadata', {}).get('human_in_the_loop', {})
-        interrupt_before = hitl_config.get('interrupt_before', [])
-        interrupt_after = hitl_config.get('interrupt_after', [])
+        hitl_config = config.get("metadata", {}).get("human_in_the_loop", {})
+        interrupt_before = hitl_config.get("interrupt_before", [])
+        interrupt_after = hitl_config.get("interrupt_after", [])
 
         # # 编译图，包含 human-in-the-loop 设置
         return graph_builder.compile(
-            interrupt_before=interrupt_before,
-            interrupt_after=interrupt_after
+            interrupt_before=interrupt_before, interrupt_after=interrupt_after
         )
     except KeyError as e:
         raise ValueError(f"Invalid configuration: missing key {e}")
