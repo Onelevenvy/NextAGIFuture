@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, VStack, Text, Select } from "@chakra-ui/react";
+import BaseProperties from "../Base/Properties";
 
 interface ToolNodePropertiesProps {
   node: any;
@@ -8,6 +9,7 @@ interface ToolNodePropertiesProps {
 
 const ToolNodeProperties: React.FC<ToolNodePropertiesProps> = ({ node, onNodeDataChange }) => {
   return (
+    <BaseProperties>
     <VStack align="stretch" spacing={4}>
       <Box>
         <Text fontWeight="bold">Tool:</Text>
@@ -20,6 +22,7 @@ const ToolNodeProperties: React.FC<ToolNodePropertiesProps> = ({ node, onNodeDat
         </Select>
       </Box>
     </VStack>
+    </BaseProperties>
   );
 };
 

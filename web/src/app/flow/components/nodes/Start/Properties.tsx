@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, VStack, Text, Input } from "@chakra-ui/react";
+import BaseProperties from "../Base/Properties";
 
 interface StartNodePropertiesProps {
   node: any;
@@ -8,6 +9,7 @@ interface StartNodePropertiesProps {
 
 const StartNodeProperties: React.FC<StartNodePropertiesProps> = ({ node, onNodeDataChange }) => {
   return (
+    <BaseProperties>
     <VStack align="stretch" spacing={4}>
       <Box>
         <Text fontWeight="bold">Initial Input:</Text>
@@ -18,6 +20,7 @@ const StartNodeProperties: React.FC<StartNodePropertiesProps> = ({ node, onNodeD
         />
       </Box>
     </VStack>
+    </BaseProperties>
   );
 };
 

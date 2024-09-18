@@ -72,10 +72,10 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
   const getNodePropertiesComponent = (node: Node | null) => {
     if (!node) return null;
-  
+
     const nodeType = node.type as NodeType;
     const PropertiesComponent = nodeConfig[nodeType]?.properties;
-  
+
     return PropertiesComponent ? (
       <PropertiesComponent node={node} onNodeDataChange={onNodeDataChange} />
     ) : null;
@@ -85,35 +85,39 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     (connection: Connection) => {
       const sourceNode = nodes.find((node) => node.id === connection.source);
       const targetNode = nodes.find((node) => node.id === connection.target);
-  
+
       if (!sourceNode || !targetNode) return false;
-  
+
       const sourceType = sourceNode.type as NodeType;
       const targetType = targetNode.type as NodeType;
-  
-      const sourceAllowedConnections = nodeConfig[sourceType].allowedConnections;
-      const targetAllowedConnections = nodeConfig[targetType].allowedConnections;
-  
+
+      const sourceAllowedConnections =
+        nodeConfig[sourceType].allowedConnections;
+      const targetAllowedConnections =
+        nodeConfig[targetType].allowedConnections;
+
       // 检查源节点是否允许从指定的 handle 连出
-      if (connection.sourceHandle && !sourceAllowedConnections.sources.includes(connection.sourceHandle)) {
+      if (
+        connection.sourceHandle &&
+        !sourceAllowedConnections.sources.includes(connection.sourceHandle)
+      ) {
         return false;
       }
-  
       // 检查目标节点是否允许从指定的 handle 连入
-      if (connection.targetHandle && !targetAllowedConnections.targets.includes(connection.targetHandle)) {
+      if (
+        connection.targetHandle &&
+        !targetAllowedConnections.targets.includes(connection.targetHandle)
+      ) {
         return false;
       }
-  
       // 防止自连接
       if (connection.source === connection.target) return false;
-  
       // 防止重复连接
       const existingEdge = edges.find(
         (edge) =>
           edge.source === connection.source && edge.target === connection.target
       );
       if (existingEdge) return false;
-  
       // 允许所有其他连接
       return true;
     },

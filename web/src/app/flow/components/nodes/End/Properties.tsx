@@ -1,5 +1,7 @@
 import React from "react";
-import { Box, VStack, Text, Textarea } from "@chakra-ui/react";
+import { Box, Text, Textarea } from "@chakra-ui/react";
+import BaseProperties from "../Base/Properties";
+
 
 interface EndNodePropertiesProps {
   node: any;
@@ -8,7 +10,7 @@ interface EndNodePropertiesProps {
 
 const EndNodeProperties: React.FC<EndNodePropertiesProps> = ({ node, onNodeDataChange }) => {
   return (
-    <VStack align="stretch" spacing={4}>
+    <BaseProperties>
       <Box>
         <Text fontWeight="bold">Final Output:</Text>
         <Textarea
@@ -18,7 +20,7 @@ const EndNodeProperties: React.FC<EndNodePropertiesProps> = ({ node, onNodeDataC
           isReadOnly
         />
       </Box>
-    </VStack>
+    </BaseProperties>
   );
 };
 
