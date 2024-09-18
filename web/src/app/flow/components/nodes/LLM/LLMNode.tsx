@@ -3,10 +3,8 @@ import { Handle, Position, NodeProps } from "reactflow";
 import { Box, VStack, Text } from "@chakra-ui/react";
 import { FaRobot } from "react-icons/fa";
 import { BaseNode } from "../Base/BaseNode"; // 假设您创建了一个基础节点组件
-import BaseProperties from "../Base/Properties";
 
 const LLMNode: React.FC<NodeProps> = (props) => (
-  <BaseProperties>
   <BaseNode {...props} icon={<FaRobot />} colorScheme="blue">
     <Handle type="target" position={Position.Left} id="left" />
     <Handle type="target" position={Position.Right} id="right" />
@@ -21,7 +19,6 @@ const LLMNode: React.FC<NodeProps> = (props) => (
       </Box>
     </VStack>
   </BaseNode>
-  </BaseProperties>
 );
 
 export default React.memo(LLMNode);
