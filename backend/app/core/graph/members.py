@@ -367,14 +367,16 @@ class SequentialWorkerNode(WorkerNode):
                 "next": next,
                 "all_messages": state["messages"] + [result],
             }
+
+
 class LLMNode:
     """Perform Sequential Worker actions"""
+
     def __init__(
         self,
-       llm,
-       tools
-    ):  
-        self.tools = tools
+        llm,
+    ):
+
         self.model = llm
         self.worker_prompt = ChatPromptTemplate.from_messages(
             [
@@ -395,6 +397,7 @@ class LLMNode:
                 MessagesPlaceholder(variable_name="messages"),
             ]
         )
+
     def tag_with_name(self, ai_message: AIMessage, name: str) -> AIMessage:
         """Tag a name to the AI message"""
         ai_message.name = name
@@ -418,11 +421,10 @@ class LLMNode:
         prompt = self.worker_prompt.partial(
             persona=member.persona, history_string=format_messages(state["history"])
         )
-  
-       
+
         chain: RunnableSerializable[dict[str, Any], AnyMessage] = (  # type: ignore[no-redef]
-                prompt | self.model
-            )
+            prompt | self.model
+        )
         work_chain: RunnableSerializable[dict[str, Any], Any] = chain | RunnableLambda(
             self.tag_with_name  # type: ignore[arg-type]
         ).bind(name=member.name)
@@ -441,6 +443,7 @@ class LLMNode:
                 "next": next,
                 "all_messages": state["messages"] + [result],
             }
+
 
 class LeaderNode(BaseNode):
     leader_prompt = ChatPromptTemplate.from_messages(

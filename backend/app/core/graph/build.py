@@ -37,6 +37,7 @@ from app.core.graph.members import (
 from app.core.graph.messages import ChatResponse, event_to_response
 from app.models import ChatMessage, Interrupt, InterruptDecision, Member, Team
 from app.core.workflow.init_graph import initialize_graph
+from app.core.workflow.config import config_with_2_tool_router, config_with_tools,config_with_no_tools
 
 
 def convert_hierarchical_team_to_dict(
@@ -690,82 +691,9 @@ async def generator(
                 )
 
                 # root = create_chatbot_ragbot_graph(member_dict, checkpointer)
-                config = {
-                    "id": "b136b7fe-3ddb-4ced-8b64-cc8065c566a2",
-                    "name": "Flow Visualization",
-                    "nodes": [
-                        {
-                            "id": "llm-1",
-                            "type": "llm",
-                            "position": {"x": 361, "y": 178},
-                            "data": {
-                                "label": "LLM",
-                                "model": "glm-4",
-                                "temperature": 0.7,
-                            },
-                        },
-                        {
-                            "id": "tool-2",
-                            "type": "tool",
-                            "position": {"x": 558, "y": 368},
-                            "data": {
-                                "label": "Tool",
-                                "tools": ["calculator", "tavilysearch"],
-                            },
-                        },
-                        {
-                            "id": "start-3",
-                            "type": "start",
-                            "position": {"x": 117, "y": 233},
-                            "data": {"label": "Start"},
-                        },
-                        {
-                            "id": "end-4",
-                            "type": "end",
-                            "position": {"x": 775, "y": 133},
-                            "data": {"label": "End"},
-                        },
-                    ],
-                    "edges": [
-                        {
-                            "id": "reactflow__edge-start-3right-llm-1left",
-                            "source": "start-3",
-                            "target": "llm-1",
-                            "sourceHandle": "right",
-                            "targetHandle": "left",
-                            "type": "default",
-                        },
-                        {
-                            "id": "reactflow__edge-llm-1right-tool-2left",
-                            "source": "llm-1",
-                            "target": "tool-2",
-                            "sourceHandle": "right",
-                            "targetHandle": "left",
-                            "type": "smoothstep",
-                        },
-                        {
-                            "id": "reactflow__edge-llm-1right-end-4left",
-                            "source": "llm-1",
-                            "target": "end-4",
-                            "sourceHandle": "right",
-                            "targetHandle": "left",
-                            "type": "smoothstep",
-                        },
-                        {
-                            "id": "reactflow__edge-tool-2right-llm-1right",
-                            "source": "tool-2",
-                            "target": "llm-1",
-                            "sourceHandle": "right",
-                            "targetHandle": "right",
-                            "type": "default",
-                        },
-                    ],
-                    "metadata": {
-                        "entry_point": "llm-1",
-                        "start_connections": [{"target": "llm-1", "type": "default"}],
-                        "end_connections": [{"source": "llm-1", "type": "smoothstep"}],
-                    },
-                }
+
+                # config =_config_with_2_tool_router
+                config = config_with_no_tools
                 root = initialize_graph(config, checkpointer)
                 first_member = list(member_dict.values())[0]
                 state = {

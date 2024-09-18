@@ -4,27 +4,20 @@ from typing import Dict, Any, List, Dict, Any
 from functools import lru_cache
 from langgraph.graph.graph import CompiledGraph
 from langchain_openai import ChatOpenAI
-from langgraph.graph import StateGraph
-from langgraph.prebuilt import ToolNode, tools_condition
-from langchain_core.messages import HumanMessage, AIMessage, AnyMessage
+from langgraph.prebuilt import ToolNode
+from langchain_core.messages import HumanMessage, AnyMessage
 from app.core.graph.skills import managed_skills
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langchain_core.tools import BaseTool
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, StateGraph
-from langgraph.graph.graph import CompiledGraph
-from langgraph.prebuilt import ToolNode
-from app.core.graph.members import LLMNode, SequentialWorkerNode, TeamState
-from langchain_core.runnables.config import RunnableConfig
+from app.core.graph.members import LLMNode, TeamState
 from langchain_core.runnables import RunnableLambda
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
     required_keys = ["id", "name", "nodes", "edges", "metadata"]
     return all(key in config for key in required_keys)
-
-
-from langgraph.graph import StateGraph, START, END
 
 
 def create_tools_router(tool_nodes: Dict[str, List[BaseTool]]):
@@ -44,7 +37,7 @@ def create_tools_router(tool_nodes: Dict[str, List[BaseTool]]):
         messages = state.get("messages", [])
         if messages:
             last_message = messages[-1]
-            # 检查是否有工具调用
+
             if (
                 not hasattr(last_message, "additional_kwargs")
                 or "tool_calls" not in last_message.additional_kwargs
@@ -58,7 +51,6 @@ def create_tools_router(tool_nodes: Dict[str, List[BaseTool]]):
             first_tool_call = tool_calls[0]
             tool_name = first_tool_call.get("function", {}).get("name")
 
-            # 根据工具名称路由到相应的节点
             if tool_name in tool_to_node:
                 return tool_to_node[tool_name]
         else:
@@ -151,9 +143,7 @@ def initialize_graph(
                 graph_builder.add_node(
                     node["id"],
                     RunnableLambda(
-                        LLMNode(
-                            llm=llm_with_tools, tools=True
-                        ).work  # type: ignore[arg-type]
+                        LLMNode(llm=llm_with_tools).work  # type: ignore[arg-type]
                     ),
                 )
             elif node["type"] == "fake_node":
@@ -262,4 +252,5 @@ if __name__ == "main":
             "end_connections": [{"source": "llm-1", "type": "smoothstep"}],
         },
     }
-    graph4 = initialize_graph(config4)
+
+ 
