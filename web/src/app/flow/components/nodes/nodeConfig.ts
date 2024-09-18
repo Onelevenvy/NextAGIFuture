@@ -48,7 +48,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       targets: ["left", "right"],
     },
     initialData: {
-      model: "gpt-3.5-turbo",
+      model: "glm-4",
       temperature: 0.7,
     },
   },
@@ -62,7 +62,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       targets: ["left", "right"],
     },
     initialData: {
-      tool:["calculator"],
+      tools: ["calculator"],
     },
   },
   questionClassifier: {

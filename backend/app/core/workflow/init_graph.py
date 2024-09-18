@@ -1,40 +1,22 @@
-from langchain.pydantic_v1 import BaseModel, Field
-from langchain.tools import StructuredTool, BaseTool
-from typing import Dict, Any, List
-
+from langchain.pydantic_v1 import BaseModel
+from langchain.tools import BaseTool
+from typing import Dict, Any, List, Dict, Any
+from functools import lru_cache
 from langgraph.graph.graph import CompiledGraph
-from typing_extensions import TypedDict
-from langgraph.graph.message import add_messages
-from langchain_core.tools import tool
-from typing import Annotated
-
-
-class CalculatorInput(BaseModel):
-    a: int = Field(description="first number")
-    b: int = Field(description="second number")
-
-
-def multiply(a: int, b: int) -> int:
-    """Multiply two numbers."""
-    return a * b
-
-
-calculator = StructuredTool.from_function(
-    func=multiply,
-    name="Calculator",
-    description="Useful for when you need to multiply two numbers.",
-    args_schema=CalculatorInput,
-    return_direct=True,
-)
-import os
-
-
-
-
-@tool
-def AskHuman(query: Annotated[str, "query to ask the human"]) -> None:
-    """Ask the human a question to gather additional inputs"""
-    pass
+from langchain_openai import ChatOpenAI
+from langgraph.graph import StateGraph
+from langgraph.prebuilt import ToolNode, tools_condition
+from langchain_core.messages import HumanMessage, AIMessage, AnyMessage
+from app.core.graph.skills import managed_skills
+from langgraph.checkpoint.base import BaseCheckpointSaver
+from langchain_core.tools import BaseTool
+from langgraph.checkpoint.base import BaseCheckpointSaver
+from langgraph.graph import END, StateGraph
+from langgraph.graph.graph import CompiledGraph
+from langgraph.prebuilt import ToolNode
+from app.core.graph.members import LLMNode, SequentialWorkerNode, TeamState
+from langchain_core.runnables.config import RunnableConfig
+from langchain_core.runnables import RunnableLambda
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
@@ -59,11 +41,11 @@ def create_tools_router(tool_nodes: Dict[str, List[BaseTool]]):
     }
 
     def tools_router(state: Dict) -> str:
-        next_node = tools_condition(state)
-        # If no tools are invoked, return to the user
-        if next_node == END:
-            return END
-        messages = state.get("messages", [])
+        # next_node = tools_condition(state)
+        # # If no tools are invoked, return to the user
+        # if next_node == END:
+        #     return END
+        messages = state.get("all_messages", [])
         last_message = messages[-1]
         # 检查是否有工具调用
         if (
@@ -86,17 +68,8 @@ def create_tools_router(tool_nodes: Dict[str, List[BaseTool]]):
     return tools_router
 
 
-from typing import Annotated, Dict, Any
-from langchain_openai import ChatOpenAI
-from langchain_community.tools.tavily_search import TavilySearchResults
-from langgraph.graph import StateGraph
-from langgraph.prebuilt import ToolNode, tools_condition
-from langchain_core.tools import Tool
-from langchain_core.messages import HumanMessage, ToolMessage, AIMessage
-
-
-class State(TypedDict):
-    messages: Annotated[list, add_messages]
+# class State(TypedDict):
+#     messages: Annotated[list, add_messages]
 
 
 # 工具注册表
@@ -105,18 +78,7 @@ class ToolsInfo(BaseModel):
     tool: BaseTool
 
 
-tool_registry: dict[str, ToolsInfo] = {
-    "tavilysearch": ToolsInfo(
-        description="tavily search useful when searching for information on the internet",
-        tool=TavilySearchResults(max_results=1),  # type: ignore[call-arg]
-    ),
-    "calculator": ToolsInfo(
-        description=calculator.description,
-        tool=calculator,
-    ),
-    "ask-human": ToolsInfo(description=AskHuman.description, tool=AskHuman),
-}
-from functools import lru_cache
+tool_registry: dict[str, ToolsInfo] = managed_skills
 
 
 @lru_cache(maxsize=None)
@@ -127,11 +89,20 @@ def get_tool(tool_name: str) -> BaseTool:
 
 
 # 节点初始化函数
-def initialize_llm_node(node_data: Dict[str, Any], llm_with_tools):
-    def chatbot(state):
-        return {"messages": [llm_with_tools.invoke(state["messages"])]}
+# def initialize_llm_node(node_data: Dict[str, Any], llm_with_tools, state):
+#     def chatbot(state):
+#         return {"messages": [llm_with_tools.invoke(state["all_messages"])]}
 
-    return chatbot
+#     return chatbot
+# result: AIMessage = llm_with_tools.invoke(state)  # type: ignore[arg-type]
+# if result.tool_calls:
+#     return {"messages": [result]}
+# else:
+#     return {
+#         "history": [result],
+#         "messages": [],
+#         "all_messages": state["messages"] + [result],
+#     }
 
 
 def initialize_fake_node(node_data: Dict[str, Any]):
@@ -141,47 +112,51 @@ def initialize_fake_node(node_data: Dict[str, Any]):
     return chatbot
 
 
-def initialize_graph(config: Dict[str, Any]) -> CompiledGraph:
-    if not validate_config(config):
+def initialize_graph(
+    build_config: Dict[str, Any], checkpointer: BaseCheckpointSaver
+) -> CompiledGraph:
+    if not validate_config(build_config):
         raise ValueError("Invalid configuration structure")
     try:
         nodes_to_keep = [
-            node for node in config["nodes"] if node["type"] not in ["start", "end"]
+            node
+            for node in build_config["nodes"]
+            if node["type"] not in ["start", "end"]
         ]
         nodes_to_keep_ids = {node["id"] for node in nodes_to_keep}
 
         # Filter edges
         edges_to_keep = [
             edge
-            for edge in config["edges"]
+            for edge in build_config["edges"]
             if edge["source"] in nodes_to_keep_ids
             and edge["target"] in nodes_to_keep_ids
         ]
 
         new_configs = {
-            "id": config["id"],
-            "name": config["name"],
+            "id": build_config["id"],
+            "name": build_config["name"],
             "nodes": nodes_to_keep,
             "edges": edges_to_keep,
-            "metadata": config["metadata"],
+            "metadata": build_config["metadata"],
         }
 
-        config = new_configs
-        graph_builder = StateGraph(State)
-        llm_node = next(node for node in config["nodes"] if node["type"] == "llm")
+        graph_builder = StateGraph(TeamState)
+        llm_node = next(node for node in new_configs["nodes"] if node["type"] == "llm")
         llm_node_id = llm_node["id"]
         # 初始化 LLM 和工具
-        for node in config["nodes"]:
+        for node in new_configs["nodes"]:
             if node["type"] == "llm":
                 llm = ChatOpenAI(
                     model=node["data"]["model"],
+                    openai_api_key="1a65e1fed7ab7a788ee94d73570e9fcf.5FVs3ceE6POvEnSN",
                     openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
                 )
 
         # 收集所有工具
         all_tools = []
         tool_nodes = {}
-        for node in config["nodes"]:
+        for node in new_configs["nodes"]:
             if node["type"] == "tool":
                 node_tools = [
                     get_tool(tool_name) for tool_name in node["data"]["tools"]
@@ -192,11 +167,32 @@ def initialize_graph(config: Dict[str, Any]) -> CompiledGraph:
 
         llm_with_tools = llm.bind_tools(all_tools)
 
+        # def chatbot(state: TeamState, config: RunnableConfig):
+
+        #     chain: RunnableSerializable[dict[str, Any], AnyMessage] = (  # type: ignore[no-redef]
+        #         llm_with_tools
+        #     )
+        #     result: AIMessage = chain.invoke(state, config=config)  # type: ignore[arg-type]
+        #     if result.tool_calls:
+        #         return {"messages": [result]}
+        #     else:
+        #         return {
+        #             "history": [result],
+        #             "messages": [],
+        #             "all_messages": state["messages"] + [result],
+        #         }
+
         # 添加节点
-        for node in config["nodes"]:
+        for node in new_configs["nodes"]:
             if node["type"] == "llm":
                 graph_builder.add_node(
-                    node["id"], initialize_llm_node(node["data"], llm_with_tools)
+                    node["id"],
+                    RunnableLambda(
+                        LLMNode(
+                            llm=llm_with_tools,
+                            tools=True
+                        ).work  # type: ignore[arg-type]
+                    ),
                 )
             elif node["type"] == "fake_node":
                 graph_builder.add_node(node["id"], initialize_fake_node(node["data"]))
@@ -210,23 +206,98 @@ def initialize_graph(config: Dict[str, Any]) -> CompiledGraph:
             dynamic_router,
         )
 
-        for edge in config["edges"]:
+        for edge in new_configs["edges"]:
             if edge["type"] == "default":
                 graph_builder.add_edge(edge["source"], edge["target"])
 
         # 设置入口点
-        graph_builder.set_entry_point(config["metadata"]["entry_point"])
+        graph_builder.set_entry_point(new_configs["metadata"]["entry_point"])
 
         # # 从配置中获取 human-in-the-loop 设置
-        hitl_config = config.get("metadata", {}).get("human_in_the_loop", {})
+        hitl_config = new_configs.get("metadata", {}).get("human_in_the_loop", {})
         interrupt_before = hitl_config.get("interrupt_before", [])
         interrupt_after = hitl_config.get("interrupt_after", [])
 
         # # 编译图，包含 human-in-the-loop 设置
         return graph_builder.compile(
-            interrupt_before=interrupt_before, interrupt_after=interrupt_after
+            checkpointer=checkpointer,
+            interrupt_before=interrupt_before,
+            interrupt_after=interrupt_after,
         )
     except KeyError as e:
         raise ValueError(f"Invalid configuration: missing key {e}")
     except Exception as e:
         raise RuntimeError(f"Failed to initialize graph: {e}")
+
+
+if __name__ == "main":
+    config4 = {
+        "id": "b136b7fe-3ddb-4ced-8b64-cc8065c566a2",
+        "name": "Flow Visualization",
+        "nodes": [
+            {
+                "id": "llm-1",
+                "type": "llm",
+                "position": {"x": 361, "y": 178},
+                "data": {"label": "LLM", "model": "glm-4", "temperature": 0.7},
+            },
+            {
+                "id": "tool-2",
+                "type": "tool",
+                "position": {"x": 558, "y": 368},
+                "data": {"label": "Tool", "tools": ["calculator"]},
+            },
+            {
+                "id": "start-3",
+                "type": "start",
+                "position": {"x": 117, "y": 233},
+                "data": {"label": "Start"},
+            },
+            {
+                "id": "end-4",
+                "type": "end",
+                "position": {"x": 775, "y": 133},
+                "data": {"label": "End"},
+            },
+        ],
+        "edges": [
+            {
+                "id": "reactflow__edge-start-3right-llm-1left",
+                "source": "start-3",
+                "target": "llm-1",
+                "sourceHandle": "right",
+                "targetHandle": "left",
+                "type": "default",
+            },
+            {
+                "id": "reactflow__edge-llm-1right-tool-2left",
+                "source": "llm-1",
+                "target": "tool-2",
+                "sourceHandle": "right",
+                "targetHandle": "left",
+                "type": "smoothstep",
+            },
+            {
+                "id": "reactflow__edge-llm-1right-end-4left",
+                "source": "llm-1",
+                "target": "end-4",
+                "sourceHandle": "right",
+                "targetHandle": "left",
+                "type": "smoothstep",
+            },
+            {
+                "id": "reactflow__edge-tool-2right-llm-1right",
+                "source": "tool-2",
+                "target": "llm-1",
+                "sourceHandle": "right",
+                "targetHandle": "right",
+                "type": "default",
+            },
+        ],
+        "metadata": {
+            "entry_point": "llm-1",
+            "start_connections": [{"target": "llm-1", "type": "default"}],
+            "end_connections": [{"source": "llm-1", "type": "smoothstep"}],
+        },
+    }
+    graph4 = initialize_graph(config4)

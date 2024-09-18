@@ -15,9 +15,6 @@ export default function Home() {
 
   return (
     <Box h="100vh" w="100vw">
-      <Heading as="h2" size="xl" textAlign="center" py={4}>
-        Flow Visualization
-      </Heading>
       <Box h="calc(100vh - 68px)">
         {isClient && (
           <ReactFlowProvider>

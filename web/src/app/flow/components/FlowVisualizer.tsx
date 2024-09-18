@@ -169,13 +169,13 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       setEdges((eds) =>
         eds.map((e) => {
           if (e.id === edge.id) {
-            const newType = e.type === "default" ? "bezier" : "default";
+            const newType = e.type === "default" ? "smoothstep" : "default";
             return {
               ...e,
               type: newType,
-              animated: newType === "bezier",
+              animated: newType === "smoothstep",
               style: {
-                strokeDasharray: newType === "bezier" ? "5,5" : "none",
+                strokeDasharray: newType === "smoothstep" ? "5,5" : "none",
               },
             };
           }
