@@ -34,7 +34,7 @@ import { nodeConfig, NodeType } from "./nodes/nodeConfig";
 
 interface NodeData {
   label: string;
-  onChange: (key: string, value: any) => void;
+  onChange?: (key: string, value: any) => void;
   model?: string;
   temperature?: number;
   tool?: string[];
