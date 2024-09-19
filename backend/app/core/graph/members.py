@@ -374,10 +374,14 @@ class LLMNode:
 
     def __init__(
         self,
-        llm,
+        provider,
+        model,
+        openai_api_key="",
+        openai_api_base="",
+        temperature=0.1,
     ):
 
-        self.model = llm
+        self.model = model
         self.worker_prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -558,6 +562,10 @@ class LeaderNode(BaseNode):
             result["task"] = tasks
             result["all_messages"] = tasks
             return result
+
+    async def work(self, state: TeamState, config: RunnableConfig) -> ReturnTeamState:
+        # 这个方法应该包含 delegate 方法的逻辑
+        return await self.delegate(state, config)
 
 
 class SummariserNode(BaseNode):

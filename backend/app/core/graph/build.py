@@ -37,7 +37,15 @@ from app.core.graph.members import (
 from app.core.graph.messages import ChatResponse, event_to_response
 from app.models import ChatMessage, Interrupt, InterruptDecision, Member, Team
 from app.core.workflow.init_graph import initialize_graph
-from app.core.workflow.config import config_with_2_tool_router, config_with_tools,config_with_no_tools,config_with_3_llm
+from app.core.workflow.config import (
+    config_with_2_tool_router,
+    config_with_tools,
+    config_with_no_tools,
+    config_with_3_llm,
+    config_sequential_with_tools,
+    config_hierarchical,
+    config_n_new
+)
 
 
 def convert_hierarchical_team_to_dict(
@@ -454,6 +462,18 @@ def create_hierarchical_graph(
     graph = build.compile(
         checkpointer=checkpointer, interrupt_before=interrupt_member_names
     )
+
+    # try:
+    #     # 获取图像数据
+    #     img_data = graph.get_graph().draw_mermaid_png()
+
+    #     # 保存图像到文件
+    #     with open("hierarchical_graph_image.png", "wb") as f:
+    #         f.write(img_data)
+    # except Exception:
+    #     # 处理可能的异常
+    #     pass
+
     return graph
 
 
@@ -535,10 +555,21 @@ def create_sequential_graph(
         graph.add_edge(final_member.name, END)
 
     graph.set_entry_point(members[0].name)
-    return graph.compile(
+    graph = graph.compile(
         checkpointer=checkpointer,
         interrupt_before=interrupt_member_names,
     )
+    # try:
+    #     # 获取图像数据
+    #     img_data = graph.get_graph().draw_mermaid_png()
+
+    #     # 保存图像到文件
+    #     with open("seq_graph_image.png", "wb") as f:
+    #         f.write(img_data)
+    # except Exception:
+    #     # 处理可能的异常
+    #     pass
+    return graph
 
 
 def create_chatbot_ragbot_graph(
@@ -692,9 +723,12 @@ async def generator(
 
                 # root = create_chatbot_ragbot_graph(member_dict, checkpointer)
 
-                # config =_config_with_2_tool_router
+                # config = config_with_2_tool_router
+                # config = config_hierarchical
+                config =config_n_new
                 # config = config_with_no_tools
-                config = config_with_3_llm
+                # config = config_with_3_llm
+                # config = config_sequential_with_tools
                 root = initialize_graph(config, checkpointer)
                 first_member = list(member_dict.values())[0]
                 state = {

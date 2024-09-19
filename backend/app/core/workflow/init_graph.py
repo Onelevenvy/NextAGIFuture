@@ -1,18 +1,22 @@
 from langchain.pydantic_v1 import BaseModel
 from langchain.tools import BaseTool
-from typing import Dict, Any, List, Dict, Any
+from typing import Dict, Any, List
 from functools import lru_cache
 from langgraph.graph.graph import CompiledGraph
-from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import ToolNode
-from langchain_core.messages import HumanMessage, AnyMessage
+from langchain_core.messages import AnyMessage, AIMessage
 from app.core.graph.skills import managed_skills
 from langgraph.checkpoint.base import BaseCheckpointSaver
-from langchain_core.tools import BaseTool
-from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, StateGraph
-from app.core.graph.members import LLMNode, TeamState
 from langchain_core.runnables import RunnableLambda
+from app.core.graph.members import (
+    WorkerNode,
+    SequentialWorkerNode,
+    LeaderNode,
+    SummariserNode,
+    LLMNode,
+    TeamState,
+)
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
@@ -20,46 +24,6 @@ def validate_config(config: Dict[str, Any]) -> bool:
     return all(key in config for key in required_keys)
 
 
-def create_tools_router(tool_nodes: Dict[str, List[BaseTool]]):
-    """
-    创建一个动态的工具路由器。
-
-    :param tool_nodes: 一个字典，键是工具节点的ID，值是该节点包含的工具列表。
-    :param default_node: 默认返回的节点ID（通常是LLM节点）。
-    :return: 一个路由函数。
-    """
-    # 创建一个反向映射，从工具名称到节点ID
-    tool_to_node = {
-        tool.name: node_id for node_id, tools in tool_nodes.items() for tool in tools
-    }
-
-    def tools_router(state: Dict) -> str:
-        messages = state.get("messages", [])
-        if messages:
-            last_message = messages[-1]
-
-            if (
-                not hasattr(last_message, "additional_kwargs")
-                or "tool_calls" not in last_message.additional_kwargs
-            ):
-                return END
-            tool_calls = last_message.additional_kwargs["tool_calls"]
-            if not tool_calls:
-                return END
-
-            # 获取第一个工具调用（如果需要处理多个工具调用，这里需要修改）
-            first_tool_call = tool_calls[0]
-            tool_name = first_tool_call.get("function", {}).get("name")
-
-            if tool_name in tool_to_node:
-                return tool_to_node[tool_name]
-        else:
-            return END
-
-    return tools_router
-
-
-# 工具注册表
 class ToolsInfo(BaseModel):
     description: str
     tool: BaseTool
@@ -75,11 +39,29 @@ def get_tool(tool_name: str) -> BaseTool:
     raise ValueError(f"Unknown tool: {tool_name}")
 
 
-def initialize_fake_node(node_data: Dict[str, Any]):
-    def chatbot(state):
-        return {"messages": [HumanMessage(content="this is a fake msg,请忽略他")]}
+def should_continue(state: TeamState) -> str:
+    messages: list[AnyMessage] = state["messages"]
+    if messages and isinstance(messages[-1], AIMessage) and messages[-1].tool_calls:
+        for tool_call in messages[-1].tool_calls:
+            if tool_call["name"] == "AskHuman":
+                return "call_human"
+        return "call_tools"
+    return "continue"
 
-    return chatbot
+
+def create_tools_condition(
+    current_node: str, next_node: str, tools: List[str]
+) -> Dict[str, str]:
+    mapping = {"continue": next_node}
+    if "ask-human" in tools:
+        mapping["call_human"] = f"{current_node}_askHuman_tool"
+    if any(tool != "ask-human" for tool in tools):
+        mapping["call_tools"] = f"{current_node}_tools"
+    return mapping
+
+
+def ask_human(state: TeamState) -> None:
+    pass
 
 
 def initialize_graph(
@@ -87,6 +69,7 @@ def initialize_graph(
 ) -> CompiledGraph:
     if not validate_config(build_config):
         raise ValueError("Invalid configuration structure")
+
     try:
         nodes_to_keep = [
             node
@@ -95,7 +78,6 @@ def initialize_graph(
         ]
         nodes_to_keep_ids = {node["id"] for node in nodes_to_keep}
 
-        # Filter edges
         edges_to_keep = [
             edge
             for edge in build_config["edges"]
@@ -110,147 +92,155 @@ def initialize_graph(
             "edges": edges_to_keep,
             "metadata": build_config["metadata"],
         }
-
         graph_builder = StateGraph(TeamState)
-        llm_node = next(node for node in new_configs["nodes"] if node["type"] == "llm")
-        llm_node_id = llm_node["id"]
-        # 初始化 LLM 和工具
-        for node in new_configs["nodes"]:
-            if node["type"] == "llm":
-                llm = ChatOpenAI(
-                    model=node["data"]["model"],
-                    openai_api_key="1a65e1fed7ab7a788ee94d73570e9fcf.5FVs3ceE6POvEnSN",
-                    openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
-                )
 
-        # 收集所有工具
-        all_tools = []
-        tool_nodes = {}
-        for node in new_configs["nodes"]:
-            if node["type"] == "tool":
-                node_tools = [
-                    get_tool(tool_name) for tool_name in node["data"]["tools"]
-                ]
-                all_tools.extend(node_tools)
-                tool_nodes[node["id"]] = node_tools
-                graph_builder.add_node(node["id"], ToolNode(tools=node_tools))
+        nodes = new_configs["nodes"]
+        edges = new_configs["edges"]
+        metadata = new_configs["metadata"]
 
-        llm_with_tools = llm.bind_tools(all_tools)
+        # Determine graph type based on configuration structure
+        llm_nodes = [node for node in nodes if node["type"] == "llm"]
+        is_sequential = len(llm_nodes) > 1 and all(
+            any(
+                edge["source"] == node["id"] and edge["target"] == next_node["id"]
+                for edge in edges
+            )
+            for node, next_node in zip(llm_nodes[:-1], llm_nodes[1:])
+        )
+        is_hierarchical = len(llm_nodes) > 1 and not is_sequential
 
-        # 添加节点
-        for node in new_configs["nodes"]:
-            if node["type"] == "llm":
+        # Add nodes
+        for node in nodes:
+            node_id = node["id"]
+            node_type = node["type"]
+            node_data = node["data"]
+
+            if node_type == "llm":
+                if is_sequential:
+                    node_class = SequentialWorkerNode
+                elif is_hierarchical:
+                    if node_id == metadata["entry_point"]:
+                        node_class = LeaderNode
+                    else:
+                        node_class = WorkerNode
+                else:
+                    node_class = LLMNode
+
                 graph_builder.add_node(
-                    node["id"],
+                    node_id,
                     RunnableLambda(
-                        LLMNode(llm=llm_with_tools).work  # type: ignore[arg-type]
+                        node_class(
+                            provider=node_data.get("provider", "openai"),
+                            model=node_data["model"],
+                            openai_api_key="",
+                            openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
+                            temperature=node_data["temperature"],
+                        ).work
                     ),
                 )
-            elif node["type"] == "fake_node":
-                graph_builder.add_node(node["id"], initialize_fake_node(node["data"]))
-            else:
-                continue
+            elif node_type == "tool":
+                tools = [get_tool(tool_name) for tool_name in node_data["tools"]]
+                graph_builder.add_node(node_id, ToolNode(tools))
 
-        dynamic_router = create_tools_router(tool_nodes)
+            elif node_type == "summariser":
+                graph_builder.add_node(
+                    node_id,
+                    RunnableLambda(
+                        SummariserNode(
+                            provider=node_data.get("provider", "openai"),
+                            model=node_data["model"],
+                            openai_api_key="",
+                            openai_api_base="",
+                            temperature=node_data["temperature"],
+                        ).summarise
+                    ),
+                )
 
-        graph_builder.add_conditional_edges(
-            llm_node_id,
-            dynamic_router,
-        )
+        # Add edges
+        conditional_edges = {}
+        for edge in edges:
+            source_node = next(node for node in nodes if node["id"] == edge["source"])
+            target_node = next(node for node in nodes if node["id"] == edge["target"])
 
-        for edge in new_configs["edges"]:
-            if edge["type"] == "default":
+            if source_node["type"] == "llm":
+                if source_node["id"] not in conditional_edges:
+                    conditional_edges[source_node["id"]] = {
+                        "continue": {},
+                        "call_tools": {},
+                    }
+
+                if target_node["type"] == "tool":
+                    conditional_edges[source_node["id"]]["call_tools"][
+                        target_node["id"]
+                    ] = target_node["id"]
+                elif edge["type"] == "default":
+                    graph_builder.add_edge(edge["source"], edge["target"])
+                else:
+                    conditional_edges[source_node["id"]]["continue"][
+                        target_node["id"]
+                    ] = target_node["id"]
+
+            elif source_node["type"] == "tool" and target_node["type"] == "llm":
+                # Tool to LLM edge
                 graph_builder.add_edge(edge["source"], edge["target"])
 
-        # 设置入口点
-        graph_builder.set_entry_point(new_configs["metadata"]["entry_point"])
+        # Add conditional edges for LLM nodes
+        for llm_id, conditions in conditional_edges.items():
+            if conditions["continue"] or conditions["call_tools"]:
+                graph_builder.add_conditional_edges(
+                    llm_id,
+                    should_continue,
+                    {**conditions["continue"], **conditions["call_tools"]},
+                )
 
-        # # 从配置中获取 human-in-the-loop 设置
+        # Set entry and exit points
+        graph_builder.set_entry_point(metadata["entry_point"])
+        if "end_connections" in metadata:
+            for end_connection in metadata["end_connections"]:
+                graph_builder.add_edge(end_connection["source"], END)
+
+        # Add SummariserNode if it's a hierarchical graph
+        # if is_hierarchical:
+        #     summariser_id = "summariser"
+        #     graph_builder.add_node(
+        #         summariser_id,
+        #         RunnableLambda(
+        #             SummariserNode(
+        #                 provider=metadata.get("provider", "openai"),
+        #                 model=metadata.get("model", "gpt-3.5-turbo"),
+        #                 openai_api_key="",
+        #                 openai_api_base="",
+        #                 temperature=metadata.get("temperature", 0.7),
+        #             ).summarise
+        #         ),
+        #     )
+        #     graph_builder.add_edge(metadata["entry_point"], summariser_id)
+        #     graph_builder.add_edge(summariser_id, END)
+
+        # Compile graph
+        interrupt_before = []
         hitl_config = new_configs.get("metadata", {}).get("human_in_the_loop", {})
         interrupt_before = hitl_config.get("interrupt_before", [])
         interrupt_after = hitl_config.get("interrupt_after", [])
 
-        # # 编译图，包含 human-in-the-loop 设置
-        return graph_builder.compile(
+        graph = graph_builder.compile(
             checkpointer=checkpointer,
             interrupt_before=interrupt_before,
             interrupt_after=interrupt_after,
         )
+        try:
+            # 获取图像数据
+            img_data = graph.get_graph().draw_mermaid_png()
+
+            # 保存图像到文件
+            with open("sumer_new-_graph_image.png", "wb") as f:
+                f.write(img_data)
+        except Exception:
+            # 处理可能的异常
+            pass
+        return graph
+
     except KeyError as e:
         raise ValueError(f"Invalid configuration: missing key {e}")
     except Exception as e:
         raise RuntimeError(f"Failed to initialize graph: {e}")
-
-
-if __name__ == "main":
-    config4 = {
-        "id": "b136b7fe-3ddb-4ced-8b64-cc8065c566a2",
-        "name": "Flow Visualization",
-        "nodes": [
-            {
-                "id": "llm-1",
-                "type": "llm",
-                "position": {"x": 361, "y": 178},
-                "data": {"label": "LLM", "model": "glm-4", "temperature": 0.7},
-            },
-            {
-                "id": "tool-2",
-                "type": "tool",
-                "position": {"x": 558, "y": 368},
-                "data": {"label": "Tool", "tools": ["calculator"]},
-            },
-            {
-                "id": "start-3",
-                "type": "start",
-                "position": {"x": 117, "y": 233},
-                "data": {"label": "Start"},
-            },
-            {
-                "id": "end-4",
-                "type": "end",
-                "position": {"x": 775, "y": 133},
-                "data": {"label": "End"},
-            },
-        ],
-        "edges": [
-            {
-                "id": "reactflow__edge-start-3right-llm-1left",
-                "source": "start-3",
-                "target": "llm-1",
-                "sourceHandle": "right",
-                "targetHandle": "left",
-                "type": "default",
-            },
-            {
-                "id": "reactflow__edge-llm-1right-tool-2left",
-                "source": "llm-1",
-                "target": "tool-2",
-                "sourceHandle": "right",
-                "targetHandle": "left",
-                "type": "smoothstep",
-            },
-            {
-                "id": "reactflow__edge-llm-1right-end-4left",
-                "source": "llm-1",
-                "target": "end-4",
-                "sourceHandle": "right",
-                "targetHandle": "left",
-                "type": "smoothstep",
-            },
-            {
-                "id": "reactflow__edge-tool-2right-llm-1right",
-                "source": "tool-2",
-                "target": "llm-1",
-                "sourceHandle": "right",
-                "targetHandle": "right",
-                "type": "default",
-            },
-        ],
-        "metadata": {
-            "entry_point": "llm-1",
-            "start_connections": [{"target": "llm-1", "type": "default"}],
-            "end_connections": [{"source": "llm-1", "type": "smoothstep"}],
-        },
-    }
-
- 
