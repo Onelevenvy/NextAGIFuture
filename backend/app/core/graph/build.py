@@ -37,6 +37,15 @@ from app.core.graph.members import (
 from app.core.graph.messages import ChatResponse, event_to_response
 from app.models import ChatMessage, Interrupt, InterruptDecision, Member, Team
 from app.core.workflow.init_graph import initialize_graph
+from app.core.workflow.config import (
+    config_with_2_tool_router,
+    config_with_tools,
+    config_with_no_tools,
+    config_with_3_llm,
+    config_sequential_with_tools,
+    config_hierarchical,
+    config_n_new
+)
 
 
 def convert_hierarchical_team_to_dict(
@@ -453,6 +462,18 @@ def create_hierarchical_graph(
     graph = build.compile(
         checkpointer=checkpointer, interrupt_before=interrupt_member_names
     )
+
+    # try:
+    #     # 获取图像数据
+    #     img_data = graph.get_graph().draw_mermaid_png()
+
+    #     # 保存图像到文件
+    #     with open("hierarchical_graph_image.png", "wb") as f:
+    #         f.write(img_data)
+    # except Exception:
+    #     # 处理可能的异常
+    #     pass
+
     return graph
 
 
@@ -534,10 +555,21 @@ def create_sequential_graph(
         graph.add_edge(final_member.name, END)
 
     graph.set_entry_point(members[0].name)
-    return graph.compile(
+    graph = graph.compile(
         checkpointer=checkpointer,
         interrupt_before=interrupt_member_names,
     )
+    # try:
+    #     # 获取图像数据
+    #     img_data = graph.get_graph().draw_mermaid_png()
+
+    #     # 保存图像到文件
+    #     with open("seq_graph_image.png", "wb") as f:
+    #         f.write(img_data)
+    # except Exception:
+    #     # 处理可能的异常
+    #     pass
+    return graph
 
 
 def create_chatbot_ragbot_graph(
@@ -684,53 +716,20 @@ async def generator(
                     "all_messages": formatted_messages,
                 }
 
-            elif team.workflow in ["chatbot", "ragbot"]:
+            elif team.workflow in ["ragbot"]:
                 member_dict = convert_chatbot_chatrag_team_to_dict(
                     members, workflow_type=team.workflow
                 )
 
-                root = create_chatbot_ragbot_graph(member_dict, checkpointer)
-                # config = {
-                #     "id": "1",
-                #     "name": "Simple LangGraph Example",
-                #     "nodes": [
-                #         {
-                #             "id": "chatbot",
-                #             "type": "llm",
-                #             "position": {"x": 250, "y": 100},
-                #             "data": {
-                #                 "model": "glm-4",
-                #             },
-                #         },
-                #         {
-                #             "id": "tools",
-                #             "type": "tool_node",
-                #             "position": {"x": 250, "y": 300},
-                #             "data": {
-                #                 "tools": ["tavilysearch", "calculator"]
-                #             },  # 添加新工具
-                #         },
-                #     ],
-                #     "edges": [
-                #         {
-                #             "id": "chatbot-to-tools",
-                #             "source": "chatbot",
-                #             "target": "tools",
-                #             "type": "conditional",
-                #         },
-                #         {
-                #             "id": "tools-to-chatbot",
-                #             "source": "tools",
-                #             "target": "chatbot",
-                #             "type": "default",
-                #         },
-                #     ],
-                #     "config": {"entry_point": "chatbot"},
-                # }
+                # root = create_chatbot_ragbot_graph(member_dict, checkpointer)
 
-                # # 使用示例
-
-                # root = initialize_graph(config, checkpointer)
+                # config = config_with_2_tool_router
+                # config = config_hierarchical
+                config =config_n_new
+                # config = config_with_no_tools
+                # config = config_with_3_llm
+                # config = config_sequential_with_tools
+                root = initialize_graph(config, checkpointer)
                 first_member = list(member_dict.values())[0]
                 state = {
                     "history": formatted_messages,
@@ -749,7 +748,31 @@ async def generator(
                     "next": first_member.name,
                     "all_messages": formatted_messages,
                 }
+            elif team.workflow in ["chatbot"]:
+                member_dict = convert_chatbot_chatrag_team_to_dict(
+                    members, workflow_type=team.workflow
+                )
 
+                root = create_chatbot_ragbot_graph(member_dict, checkpointer)
+
+                first_member = list(member_dict.values())[0]
+                state = {
+                    "history": formatted_messages,
+                    "team": GraphTeam(
+                        name=first_member.name,
+                        role=first_member.role,
+                        backstory=first_member.backstory,
+                        members=member_dict,  # type: ignore[arg-type]
+                        provider=first_member.provider,
+                        model=first_member.model,
+                        temperature=first_member.temperature,
+                        openai_api_key=first_member.openai_api_key,
+                        openai_api_base=first_member.openai_api_base,
+                    ),
+                    "messages": [],
+                    "next": first_member.name,
+                    "all_messages": formatted_messages,
+                }
             else:
                 raise ValueError("Unsupported graph type ")
 

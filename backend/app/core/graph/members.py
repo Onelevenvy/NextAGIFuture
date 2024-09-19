@@ -369,6 +369,86 @@ class SequentialWorkerNode(WorkerNode):
             }
 
 
+class LLMNode:
+    """Perform Sequential Worker actions"""
+
+    def __init__(
+        self,
+        provider,
+        model,
+        openai_api_key="",
+        openai_api_base="",
+        temperature=0.1,
+    ):
+
+        self.model = model
+        self.worker_prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    (
+                        "Perform the task given to you.\n"
+                        "If you are unable to perform the task, that's OK, another member with different tools "
+                        "will help where you left off. Do not attempt to communicate with other members. "
+                        "Execute what you can to make progress. "
+                        "Stay true to your persona and role:\n{persona}\n\n"
+                    ),
+                ),
+                (
+                    "human",
+                    "Here is the previous conversation: \n\n {history_string} \n\n Provide your response.",
+                ),
+                MessagesPlaceholder(variable_name="messages"),
+            ]
+        )
+
+    def tag_with_name(self, ai_message: AIMessage, name: str) -> AIMessage:
+        """Tag a name to the AI message"""
+        ai_message.name = name
+        return ai_message
+
+    def get_next_member_in_sequence(
+        self, members: Mapping[str, GraphMember | GraphLeader], current_name: str
+    ) -> str | None:
+        member_names = list(members.keys())
+        next_index = member_names.index(current_name) + 1
+        if next_index < len(members):
+            return member_names[member_names.index(current_name) + 1]
+        else:
+            return None
+
+    async def work(self, state: TeamState, config: RunnableConfig) -> ReturnTeamState:
+        team = state["team"]  # This is actually the first member masked as a team.
+        name = state["next"]
+        member = team.members[name]
+        assert isinstance(member, GraphMember), "member is unexpectedly not a Member"
+        prompt = self.worker_prompt.partial(
+            persona=member.persona, history_string=format_messages(state["history"])
+        )
+
+        chain: RunnableSerializable[dict[str, Any], AnyMessage] = (  # type: ignore[no-redef]
+            prompt | self.model
+        )
+        work_chain: RunnableSerializable[dict[str, Any], Any] = chain | RunnableLambda(
+            self.tag_with_name  # type: ignore[arg-type]
+        ).bind(name=member.name)
+        result: AIMessage = await work_chain.ainvoke(state, config)  # type: ignore[arg-type]
+        # if agent is calling a tool, set the next member_name to be itself. This is so that when an agent triggers a
+        # tool and the tool returns the response back, the next value will be the agent's name
+        next: str | None
+        if result.tool_calls:
+            next = name
+            return {"messages": [result], "next": name}
+        else:
+            next = self.get_next_member_in_sequence(team.members, name)
+            return {
+                "history": [result],
+                "messages": [],
+                "next": next,
+                "all_messages": state["messages"] + [result],
+            }
+
+
 class LeaderNode(BaseNode):
     leader_prompt = ChatPromptTemplate.from_messages(
         [
@@ -482,6 +562,10 @@ class LeaderNode(BaseNode):
             result["task"] = tasks
             result["all_messages"] = tasks
             return result
+
+    async def work(self, state: TeamState, config: RunnableConfig) -> ReturnTeamState:
+        # 这个方法应该包含 delegate 方法的逻辑
+        return await self.delegate(state, config)
 
 
 class SummariserNode(BaseNode):
