@@ -37,7 +37,7 @@ from app.core.graph.members import (
 from app.core.graph.messages import ChatResponse, event_to_response
 from app.models import ChatMessage, Interrupt, InterruptDecision, Member, Team
 from app.core.workflow.init_graph import initialize_graph
-from app.core.workflow.config import config_with_2_tool_router, config_with_tools,config_with_no_tools
+from app.core.workflow.config import config_with_2_tool_router, config_with_tools,config_with_no_tools,config_with_3_llm
 
 
 def convert_hierarchical_team_to_dict(
@@ -693,7 +693,8 @@ async def generator(
                 # root = create_chatbot_ragbot_graph(member_dict, checkpointer)
 
                 # config =_config_with_2_tool_router
-                config = config_with_no_tools
+                # config = config_with_no_tools
+                config = config_with_3_llm
                 root = initialize_graph(config, checkpointer)
                 first_member = list(member_dict.values())[0]
                 state = {
