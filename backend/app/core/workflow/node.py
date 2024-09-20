@@ -190,7 +190,8 @@ class BaseNode:
                 openai_api_key="1a65e1fed7ab7a788ee94d73570e9fcf.5FVs3ceE6POvEnSN",
                 openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
             )
-            self.model = self.model.bind_tools(tools)
+            if len(tools)>=1:
+                self.model = self.model.bind_tools(tools)
             self.final_answer_model = self.model
 
         elif provider in ["openai"] and openai_api_base:
