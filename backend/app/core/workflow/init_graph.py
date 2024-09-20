@@ -1,7 +1,8 @@
 from langchain.pydantic_v1 import BaseModel
 from langchain.tools import BaseTool
-from typing import Dict, Any, List, Set, Hashable
+from typing import Dict, Any,  Set
 from functools import lru_cache
+import time
 from langgraph.graph.graph import CompiledGraph
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import AnyMessage, AIMessage
@@ -58,7 +59,7 @@ def should_continue(state: TeamState) -> str:
 
 
 def initialize_graph(
-    build_config: Dict[str, Any], checkpointer: BaseCheckpointSaver
+    build_config: Dict[str, Any], checkpointer: BaseCheckpointSaver,save_graph_img=False
 ) -> CompiledGraph:
     global tool_name_to_node_id
 
@@ -106,7 +107,11 @@ def initialize_graph(
                     llm_children[source].add(target)
 
         # Create a dictionary to store conditional edges
-        conditional_edges = {}
+        conditional_edges = {
+            node["id"]: {"default": {}, "call_tools": {}, "call_human": {}}
+            for node in nodes
+            if node["type"] == "llm"
+        }
 
         # Add nodes
         for node in nodes:
@@ -184,10 +189,9 @@ def initialize_graph(
 
             if source_node["type"] == "llm":
                 if target_node["type"] == "tool":
-                    for tool_name in target_node["data"]["tools"]:
-                        conditional_edges[source_node["id"]]["call_tools"][
-                            target_node["id"]
-                        ] = target_node["id"]
+                    conditional_edges[source_node["id"]]["call_tools"][
+                        target_node["id"]
+                    ] = target_node["id"]
                 elif target_node["type"] == "end":
                     conditional_edges[source_node["id"]]["default"][END] = END
                 else:
@@ -223,17 +227,17 @@ def initialize_graph(
             interrupt_before=interrupt_before,
             interrupt_after=interrupt_after,
         )
+        if save_graph_img:
+            try:
+                # 获取图像数据
+                img_data = graph.get_graph().draw_mermaid_png()
 
-        # try:
-        #     # 获取图像数据
-        #     img_data = graph.get_graph().draw_mermaid_png()
-
-        #     # 保存图像到文件
-        #     with open("h-aaa.png", "wb") as f:
-        #         f.write(img_data)
-        # except Exception:
-        #     # 处理可能的异常
-        #     pass
+                # 保存图像到文件
+                with open(f"save_graph_{time.time()}.png", "wb") as f:
+                    f.write(img_data)
+            except Exception:
+                # 处理可能的异常
+                pass
 
         return graph
 
