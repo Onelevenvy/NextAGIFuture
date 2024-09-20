@@ -9,7 +9,7 @@ from app.core.graph.skills import managed_skills
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, StateGraph
 from langchain_core.runnables import RunnableLambda
-from app.core.graph.members import (
+from .node import (
     WorkerNode,
     SequentialWorkerNode,
     LeaderNode,
@@ -46,7 +46,7 @@ def should_continue(state: TeamState) -> str:
             if tool_call["name"] == "AskHuman":
                 return "call_human"
         return "call_tools"
-    return "continue"
+    return "default"  # 将 "continue" 改为 "default"
 
 
 def create_tools_condition(
@@ -71,32 +71,11 @@ def initialize_graph(
         raise ValueError("Invalid configuration structure")
 
     try:
-        nodes_to_keep = [
-            node
-            for node in build_config["nodes"]
-            if node["type"] not in ["start", "end"]
-        ]
-        nodes_to_keep_ids = {node["id"] for node in nodes_to_keep}
-
-        edges_to_keep = [
-            edge
-            for edge in build_config["edges"]
-            if edge["source"] in nodes_to_keep_ids
-            and edge["target"] in nodes_to_keep_ids
-        ]
-
-        new_configs = {
-            "id": build_config["id"],
-            "name": build_config["name"],
-            "nodes": nodes_to_keep,
-            "edges": edges_to_keep,
-            "metadata": build_config["metadata"],
-        }
         graph_builder = StateGraph(TeamState)
 
-        nodes = new_configs["nodes"]
-        edges = new_configs["edges"]
-        metadata = new_configs["metadata"]
+        nodes = build_config["nodes"]
+        edges = build_config["edges"]
+        metadata = build_config["metadata"]
 
         # Determine graph type based on configuration structure
         llm_nodes = [node for node in nodes if node["type"] == "llm"]
@@ -141,7 +120,6 @@ def initialize_graph(
             elif node_type == "tool":
                 tools = [get_tool(tool_name) for tool_name in node_data["tools"]]
                 graph_builder.add_node(node_id, ToolNode(tools))
-
             elif node_type == "summariser":
                 graph_builder.add_node(
                     node_id,
@@ -173,6 +151,12 @@ def initialize_graph(
                     conditional_edges[source_node["id"]]["call_tools"][
                         target_node["id"]
                     ] = target_node["id"]
+                elif target_node["type"] == "end":
+                    # Handle end nodes
+                    if edge["type"] == "default":
+                        graph_builder.add_edge(edge["source"], END)
+                    else:
+                        conditional_edges[source_node["id"]]["continue"][END] = END
                 elif edge["type"] == "default":
                     graph_builder.add_edge(edge["source"], edge["target"])
                 else:
@@ -187,39 +171,24 @@ def initialize_graph(
         # Add conditional edges for LLM nodes
         for llm_id, conditions in conditional_edges.items():
             if conditions["continue"] or conditions["call_tools"]:
+                edges_dict = {
+                    "default": next(iter(conditions["continue"].values()), END),
+                    **conditions["call_tools"]
+                }
+                if "call_human" in conditions:
+                    edges_dict["call_human"] = conditions["call_human"]
                 graph_builder.add_conditional_edges(
                     llm_id,
                     should_continue,
-                    {**conditions["continue"], **conditions["call_tools"]},
+                    edges_dict
                 )
 
-        # Set entry and exit points
+        # Set entry point
         graph_builder.set_entry_point(metadata["entry_point"])
-        if "end_connections" in metadata:
-            for end_connection in metadata["end_connections"]:
-                graph_builder.add_edge(end_connection["source"], END)
-
-        # Add SummariserNode if it's a hierarchical graph
-        # if is_hierarchical:
-        #     summariser_id = "summariser"
-        #     graph_builder.add_node(
-        #         summariser_id,
-        #         RunnableLambda(
-        #             SummariserNode(
-        #                 provider=metadata.get("provider", "openai"),
-        #                 model=metadata.get("model", "gpt-3.5-turbo"),
-        #                 openai_api_key="",
-        #                 openai_api_base="",
-        #                 temperature=metadata.get("temperature", 0.7),
-        #             ).summarise
-        #         ),
-        #     )
-        #     graph_builder.add_edge(metadata["entry_point"], summariser_id)
-        #     graph_builder.add_edge(summariser_id, END)
 
         # Compile graph
         interrupt_before = []
-        hitl_config = new_configs.get("metadata", {}).get("human_in_the_loop", {})
+        hitl_config = build_config.get("metadata", {}).get("human_in_the_loop", {})
         interrupt_before = hitl_config.get("interrupt_before", [])
         interrupt_after = hitl_config.get("interrupt_after", [])
 
@@ -228,16 +197,18 @@ def initialize_graph(
             interrupt_before=interrupt_before,
             interrupt_after=interrupt_after,
         )
-        try:
-            # 获取图像数据
-            img_data = graph.get_graph().draw_mermaid_png()
 
-            # 保存图像到文件
-            with open("sumer_new-_graph_image.png", "wb") as f:
-                f.write(img_data)
-        except Exception:
-            # 处理可能的异常
-            pass
+        # try:
+        #     # 获取图像数据
+        #     img_data = graph.get_graph().draw_mermaid_png()
+
+        #     # 保存图像到文件
+        #     with open("aaaab-_graph_image.png", "wb") as f:
+        #         f.write(img_data)
+        # except Exception:
+        #     # 处理可能的异常
+        #     pass
+
         return graph
 
     except KeyError as e:
