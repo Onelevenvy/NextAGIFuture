@@ -158,6 +158,7 @@ class BaseNode:
         self,
         provider: str,
         model: str,
+        tools:Sequence[BaseTool],
         openai_api_key: str,
         openai_api_base: str,
         temperature: float,
@@ -179,6 +180,7 @@ class BaseNode:
             #     openai_api_base=openai_api_base,
             #     temperature=0,
             # )
+
             self.model = ChatOpenAI(
                 # model="chatglm_turbo",
                 model="glm-4-flash",
@@ -188,6 +190,7 @@ class BaseNode:
                 openai_api_key="1a65e1fed7ab7a788ee94d73570e9fcf.5FVs3ceE6POvEnSN",
                 openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
             )
+            self.model = self.model.bind_tools(tools)
             self.final_answer_model = self.model
 
         elif provider in ["openai"] and openai_api_base:

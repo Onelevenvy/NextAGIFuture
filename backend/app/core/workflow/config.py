@@ -28,7 +28,7 @@ config_with_2_tool_router = {
             "id": "tool-4",
             "type": "tool",
             "position": {"x": 847, "y": 116},
-            "data": {"label": "Tool", "tools": ["tavilysearch"]},
+            "data": {"label": "Tool", "tools": ["tavilysearch","wikipedia"]},
         },
         {
             "id": "end-5",
@@ -605,7 +605,7 @@ config_sequential_with_tools = {
             "id": "tool-5",
             "type": "tool",
             "position": {"x": 707, "y": 520},
-            "data": {"label": "Tool", "tools": ["calculator"]},
+            "data": {"label": "Tool", "tools": ["calculator","openweathersearchtool"]},
         },
         {
             "id": "tool-6",
