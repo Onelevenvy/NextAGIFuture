@@ -8,17 +8,15 @@ import config from "./graphConfig";
 
 export default function ShowFlow() {
   return (
-    <Box h="100vh" w="100vw">
-      <Box h="calc(100vh - 68px)">
-        <ReactFlowProvider>
-          <FlowVisualizer
-            initialNodes={config.nodes}
-            initialEdges={config.edges}
-            nodeTypes={nodeTypes}
-            defaultEdgeOptions={{ type: "default" }}
-          />
-        </ReactFlowProvider>
-      </Box>
+    <Box h="full" w="full">
+      <ReactFlowProvider>
+        <FlowVisualizer
+          initialNodes={config.nodes}
+          initialEdges={config.edges}
+          nodeTypes={nodeTypes}
+          defaultEdgeOptions={{ type: "default" }}
+        />
+      </ReactFlowProvider>
     </Box>
   );
 }

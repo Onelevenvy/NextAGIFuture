@@ -45,6 +45,7 @@ from app.core.workflow.config import (
     config_sequential_with_tools,
     config_hierarchical,
     config_n_new,
+    new_config,
 )
 
 
@@ -234,9 +235,9 @@ def convert_chatbot_chatrag_team_to_dict(
 
     member = members[0]
     assert member.id is not None, "member.id is unexpectedly None"
-
-    if workflow_type == "ragbot":
-        tools: list[GraphUpload] = [
+    tools: list[GraphSkill | GraphUpload]
+    if workflow_type == "ragbot" or workflow_type == "chatbot":
+        tools = [
             GraphUpload(
                 name=upload.name,
                 description=upload.description,
@@ -247,7 +248,7 @@ def convert_chatbot_chatrag_team_to_dict(
             if upload.owner_id is not None
         ]
     elif workflow_type == "chatbot":
-        tools: list[GraphSkill] = [
+        tools += [
             GraphSkill(
                 name=skill.name,
                 managed=skill.managed,
@@ -720,16 +721,7 @@ async def generator(
                 member_dict = convert_chatbot_chatrag_team_to_dict(
                     members, workflow_type=team.workflow
                 )
-
-                # root = create_chatbot_ragbot_graph(member_dict, checkpointer)
-
-                # config = config_with_2_tool_router
-                # config = config_hierarchical
-                # config =config_n_new
-                # config = config_with_no_tools
-                # config = config_with_3_llm
-                config = config_sequential_with_tools
-                root = initialize_graph(config, checkpointer,save_graph_img=False)
+                root = create_chatbot_ragbot_graph(member_dict, checkpointer)
                 first_member = list(member_dict.values())[0]
                 state = {
                     "history": formatted_messages,
@@ -771,6 +763,18 @@ async def generator(
                     ),
                     "messages": [],
                     "next": first_member.name,
+                    "all_messages": formatted_messages,
+                }
+            elif team.workflow in ["workflow"]:
+
+                # config = config_with_2_tool_router
+                config = new_config
+
+                root = initialize_graph(config, checkpointer, save_graph_img=False)
+
+                state = {
+                    "history": formatted_messages,
+                    "messages": [],
                     "all_messages": formatted_messages,
                 }
             else:

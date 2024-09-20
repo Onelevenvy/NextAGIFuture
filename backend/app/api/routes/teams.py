@@ -95,7 +95,7 @@ def create_team(
     Create new team and it's team leader
     """
     team = Team.model_validate(team_in, update={"owner_id": current_user.id})
-    if team.workflow not in ["hierarchical", "sequential", "chatbot", "ragbot"]:
+    if team.workflow not in ["hierarchical", "sequential", "chatbot", "ragbot","workflow"]:
         raise HTTPException(status_code=400, detail="Invalid workflow")
     session.add(team)
     session.commit()
@@ -140,6 +140,17 @@ def create_team(
             name="RagBot",
             type="ragbot",
             role="Answer the user's question use knowledge base.",
+            owner_of=None,
+            position_x=0,
+            position_y=0,
+            belongs_to=team.id,
+        )
+    elif team.workflow == "workflow":
+        # Create a freelancer head
+        member = Member(
+            name="Workflow",
+            type="workflow",
+            role="Answer the user's question.",
             owner_of=None,
             position_x=0,
             position_y=0,

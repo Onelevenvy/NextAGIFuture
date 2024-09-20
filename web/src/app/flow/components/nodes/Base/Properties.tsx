@@ -7,14 +7,9 @@ interface BasePropertiesProps {
 
 const BaseProperties: React.FC<BasePropertiesProps> = ({ children }) => {
   return (
-    <Box  w="200px" maxW={"200px"} minW={"200px"} h="full" p="2"  border={"1px solid red"} >
-    
-    
+    <Box w="200px" maxW={"200px"} minW={"200px"} h="full" p="2">
       {children}
-
-   
     </Box>
-    
   );
 };
 

@@ -17,6 +17,10 @@ const translation = {
       title: "知识库问答",
       description: "RAG应用，每次对话时可以从知识库中检索信息",
     },
+    workflow: {
+      title: "工作流应用",
+      description: "以工作流的形式编排生成型应用，提供更多的自定义能力",
+    },
     hagent: {
       title: "Hierarchical Muti-Agent",
       description:
