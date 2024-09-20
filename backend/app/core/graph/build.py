@@ -44,7 +44,7 @@ from app.core.workflow.config import (
     config_with_3_llm,
     config_sequential_with_tools,
     config_hierarchical,
-    config_n_new
+    config_n_new,
 )
 
 

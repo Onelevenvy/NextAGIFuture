@@ -310,7 +310,7 @@ class WorkerNode(BaseNode):
             }
 
 
-class SequentialWorkerNode(WorkerNode):
+class SequentialWorkerNode(BaseNode):
     """Perform Sequential Worker actions"""
 
     worker_prompt = ChatPromptTemplate.from_messages(
@@ -322,7 +322,7 @@ class SequentialWorkerNode(WorkerNode):
                     "If you are unable to perform the task, that's OK, another member with different tools "
                     "will help where you left off. Do not attempt to communicate with other members. "
                     "Execute what you can to make progress. "
-                    "Stay true to your persona and role:\n{persona}\n\n"
+                    "Stay true to your role and use your tools if necessary.\n\n"
                 ),
             ),
             (
@@ -333,56 +333,25 @@ class SequentialWorkerNode(WorkerNode):
         ]
     )
 
-    def get_next_member_in_sequence(
-        self, members: Mapping[str, GraphMember | GraphLeader], current_name: str
-    ) -> str | None:
-        member_names = list(members.keys())
-        next_index = member_names.index(current_name) + 1
-        if next_index < len(members):
-            return member_names[member_names.index(current_name) + 1]
-        else:
-            return None
-
     async def work(self, state: TeamState, config: RunnableConfig) -> ReturnTeamState:
-        team = state["team"]  # This is actually the first member masked as a team.
-        name = state["next"]
-        member = team.members[name]
-        assert isinstance(member, GraphMember), "member is unexpectedly not a Member"
-        prompt = self.worker_prompt.partial(
-            persona=member.persona, history_string=format_messages(state["history"])
-        )
-        # If member has no tools, then use a regular model instead of an agent
-        if len(member.tools) >= 1:
-            tools: Sequence[BaseTool] = [tool.tool for tool in member.tools]
-            chain = prompt | self.model.bind_tools(tools)
-        else:
-            chain: RunnableSerializable[dict[str, Any], AnyMessage] = (  # type: ignore[no-redef]
-                prompt | self.model
-            )
-        work_chain: RunnableSerializable[dict[str, Any], Any] = chain | RunnableLambda(
-            self.tag_with_name  # type: ignore[arg-type]
-        ).bind(name=member.name)
-        result: AIMessage = await work_chain.ainvoke(state, config)  # type: ignore[arg-type]
-        # if agent is calling a tool, set the next member_name to be itself. This is so that when an agent triggers a
-        # tool and the tool returns the response back, the next value will be the agent's name
-        next: str | None
-        if result.tool_calls:
-            next = name
-            return {"messages": [result], "next": name}
-        else:
-            next = self.get_next_member_in_sequence(team.members, name)
-            return {
-                "history": [result],
-                "messages": [],
-                "next": next,
-                "all_messages": state["messages"] + [result],
-            }
+        history = state.get("history", [])
+        messages = state.get("messages", [])
+        prompt = self.worker_prompt.partial(history_string=format_messages(history))
+        chain: RunnableSerializable[dict[str, Any], AnyMessage] = prompt | self.model
+        work_chain = chain
+        result: AIMessage = await work_chain.ainvoke(state, config)
+
+        return_state: ReturnTeamState = {
+            "history": history + [result],
+            "messages": [result] if result.tool_calls else [],
+            "all_messages": messages + [result],
+        }
+        return return_state
 
 
 class LLMNode(BaseNode):
     """Perform Sequential Worker actions"""
 
-   
     worker_prompt = ChatPromptTemplate.from_messages(
         [
             (
@@ -402,7 +371,7 @@ class LLMNode(BaseNode):
             MessagesPlaceholder(variable_name="messages"),
         ]
     )
-    
+
     def tag_with_name(self, ai_message: AIMessage, name: str) -> AIMessage:
         """Tag a name to the AI message"""
         ai_message.name = name

@@ -109,7 +109,7 @@ def initialize_graph(
                     node_id,
                     RunnableLambda(
                         node_class(
-                            provider=node_data.get("provider", "openai"),
+                            provider=node_data.get("provider", "zhipuai"),
                             model=node_data["model"],
                             openai_api_key="",
                             openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
@@ -125,7 +125,7 @@ def initialize_graph(
                     node_id,
                     RunnableLambda(
                         SummariserNode(
-                            provider=node_data.get("provider", "openai"),
+                            provider=node_data.get("provider", "zhipuai"),
                             model=node_data["model"],
                             openai_api_key="",
                             openai_api_base="",
@@ -173,15 +173,11 @@ def initialize_graph(
             if conditions["continue"] or conditions["call_tools"]:
                 edges_dict = {
                     "default": next(iter(conditions["continue"].values()), END),
-                    **conditions["call_tools"]
+                    **conditions["call_tools"],
                 }
                 if "call_human" in conditions:
                     edges_dict["call_human"] = conditions["call_human"]
-                graph_builder.add_conditional_edges(
-                    llm_id,
-                    should_continue,
-                    edges_dict
-                )
+                graph_builder.add_conditional_edges(llm_id, should_continue, edges_dict)
 
         # Set entry point
         graph_builder.set_entry_point(metadata["entry_point"])
@@ -203,7 +199,7 @@ def initialize_graph(
         #     img_data = graph.get_graph().draw_mermaid_png()
 
         #     # 保存图像到文件
-        #     with open("aaaab-_graph_image.png", "wb") as f:
+        #     with open("h-agent.png", "wb") as f:
         #         f.write(img_data)
         # except Exception:
         #     # 处理可能的异常
