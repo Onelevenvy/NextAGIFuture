@@ -129,8 +129,8 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
       colorScheme: "red",
       backgroundColor: "#ff5722",
       icon: <GiTeamIdea size="24" />,
-      title: t(`team.teamcard.hagent.title`),
-      descripthion: t(`team.teamcard.hagent.description`),
+      title: t(`team.teamcard.sagent.title`),
+      descripthion: t(`team.teamcard.sagent.description`),
     },
   };
 
