@@ -29,11 +29,14 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  IconButton,
 } from "@chakra-ui/react";
+import { CloseIcon } from "@chakra-ui/icons";
 import { nodeConfig, NodeType } from "./nodes/nodeConfig";
 
 interface NodeData {
   label: string;
+  customName: string; // 新增：用于存储自定义名称
   onChange?: (key: string, value: any) => void;
   model?: string;
   temperature?: number;
@@ -61,15 +64,27 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const reactFlowInstance = useReactFlow();
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
     nodeId: string | null;
   }>({ x: 0, y: 0, nodeId: null });
+
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    setSelectedNode(node);
+    setSelectedNodeId(node.id);
   }, []);
+
+  const nodesWithSelection = useMemo(() => {
+    return nodes.map((node) => ({
+      ...node,
+      style: {
+        ...node.style,
+        border: node.id === selectedNodeId ? "2px solid #2970ff" : "none",
+        borderRadius: "8px",
+      },
+    }));
+  }, [nodes, selectedNodeId]);
 
   const getNodePropertiesComponent = (node: Node | null) => {
     if (!node) return null;
@@ -129,6 +144,17 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       setNodes((nds) =>
         nds.map((node) => {
           if (node.id === nodeId) {
+            if (key === "customName") {
+              // 检查新名称是否已存在
+              const isNameExists = nds.some(
+                (n) => n.id !== nodeId && n.data.customName === value
+              );
+              if (isNameExists) {
+                // 如果名称已存在，不更新并可能显示一个错误消息
+                console.error("节点名称已存在");
+                return node;
+              }
+            }
             return {
               ...node,
               data: {
@@ -207,6 +233,20 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     event.dataTransfer.dropEffect = "move";
   }, []);
 
+  const generateUniqueName = useCallback(
+    (baseLabel: string) => {
+      const existingNames = nodes.map((node) => node.data.customName);
+      let counter = 1;
+      let newName = baseLabel;
+      while (existingNames.includes(newName)) {
+        counter++;
+        newName = `${baseLabel}${counter}`;
+      }
+      return newName;
+    },
+    [nodes]
+  );
+
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
@@ -219,12 +259,15 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         x: event.clientX,
         y: event.clientY,
       });
+      const baseLabel = `${nodeConfig[type].display}`;
+      const uniqueName = generateUniqueName(baseLabel);
       const newNode: CustomNode = {
         id: `${type}-${nodes.length + 1}`,
         type,
         position,
         data: {
-          label: `${nodeConfig[type].display}`,
+          label: baseLabel,
+          customName: uniqueName,
           onChange: (key: string, value: any) =>
             onNodeDataChange(`${type}-${nodes.length + 1}`, key, value),
           ...nodeConfig[type].initialData,
@@ -233,7 +276,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [nodes, reactFlowInstance, setNodes, onNodeDataChange]
+    [nodes, reactFlowInstance, setNodes, onNodeDataChange, generateUniqueName]
   );
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -343,6 +386,10 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     <Panel position="bottom-right">{Math.round(zoom * 100)}%</Panel>
   );
 
+  const closePropertiesPanel = useCallback(() => {
+    setSelectedNodeId(null);
+  }, []);
+
   return (
     <Box
       display="flex"
@@ -355,8 +402,8 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       <Box flex={1} position="relative">
         <ReactFlow
           onNodeClick={onNodeClick}
-          nodes={nodes}
-          edges={edges.map(edge => ({
+          nodes={nodesWithSelection}
+          edges={edges.map((edge) => ({
             ...edge,
             style: {
               ...edge.style,
@@ -411,7 +458,27 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           </Menu>
         )}
       </Box>
-      {getNodePropertiesComponent(selectedNode)}
+      {selectedNodeId && (
+        <Box
+          position="relative"
+          width="250px"
+          borderLeft="1px solid #ccc"
+          p={4}
+        >
+          <IconButton
+            aria-label="Close properties panel"
+            icon={<CloseIcon />}
+            size="sm"
+            position="absolute"
+            right={2}
+            top={2}
+            onClick={closePropertiesPanel}
+          />
+          {getNodePropertiesComponent(
+            nodes.find((n) => n.id === selectedNodeId) || null
+          )}
+        </Box>
+      )}
       <Button onClick={saveConfig} position="absolute" top={4} right={4}>
         保存配置
       </Button>
