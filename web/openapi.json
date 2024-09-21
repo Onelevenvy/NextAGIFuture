@@ -2615,13 +2615,13 @@
         }
       }
     },
-    "/api/v1/graphs/": {
+    "/api/v1/teams/{team_id}/graphs/": {
       "get": {
         "tags": [
           "graphs"
         ],
         "summary": "Read Graphs",
-        "description": "Retrieve graphs",
+        "description": "Retrieve graphs from team.",
         "operationId": "read_graphs",
         "security": [
           {
@@ -2629,6 +2629,15 @@
           }
         ],
         "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Team Id"
+            }
+          },
           {
             "name": "skip",
             "in": "query",
@@ -2678,11 +2687,22 @@
           "graphs"
         ],
         "summary": "Create Graph",
-        "description": "Create new graph",
+        "description": "Create new graph.",
         "operationId": "create_graph",
         "security": [
           {
             "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Team Id"
+            }
           }
         ],
         "requestBody": {
@@ -2719,7 +2739,7 @@
         }
       }
     },
-    "/api/v1/graphs/{id}": {
+    "/api/v1/teams/{team_id}/graphs/{id}": {
       "get": {
         "tags": [
           "graphs"
@@ -2733,6 +2753,15 @@
           }
         ],
         "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Team Id"
+            }
+          },
           {
             "name": "id",
             "in": "path",
@@ -2771,7 +2800,7 @@
           "graphs"
         ],
         "summary": "Update Graph",
-        "description": "Update a graph.",
+        "description": "Update graph by ID.",
         "operationId": "update_graph",
         "security": [
           {
@@ -2779,6 +2808,15 @@
           }
         ],
         "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Team Id"
+            }
+          },
           {
             "name": "id",
             "in": "path",
@@ -2827,7 +2865,7 @@
           "graphs"
         ],
         "summary": "Delete Graph",
-        "description": "Delete a graph.",
+        "description": "Delete graph by ID.",
         "operationId": "delete_graph",
         "security": [
           {
@@ -2835,6 +2873,15 @@
           }
         ],
         "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Team Id"
+            }
+          },
           {
             "name": "id",
             "in": "path",
@@ -2850,9 +2897,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  "title": "Response Graphs-Delete Graph"
-                }
+                "schema": {}
               }
             }
           },
@@ -3161,17 +3206,6 @@
             "type": "object",
             "title": "Metadata "
           },
-          "owner_id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Owner Id"
-          },
           "created_at": {
             "anyOf": [
               {
@@ -3230,17 +3264,6 @@
           "metadata_": {
             "type": "object",
             "title": "Metadata "
-          },
-          "owner_id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Owner Id"
           },
           "created_at": {
             "anyOf": [
@@ -3305,17 +3328,6 @@
           "metadata_": {
             "type": "object",
             "title": "Metadata "
-          },
-          "owner_id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Owner Id"
           },
           "created_at": {
             "anyOf": [

@@ -15,20 +15,25 @@ export class GraphsService {
 
     /**
      * Read Graphs
-     * Retrieve graphs
+     * Retrieve graphs from team.
      * @returns GraphsOut Successful Response
      * @throws ApiError
      */
     public static readGraphs({
+        teamId,
         skip,
         limit = 100,
     }: {
+        teamId: number,
         skip?: number,
         limit?: number,
     }): CancelablePromise<GraphsOut> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/graphs/',
+            url: '/api/v1/teams/{team_id}/graphs/',
+            path: {
+                'team_id': teamId,
+            },
             query: {
                 'skip': skip,
                 'limit': limit,
@@ -41,18 +46,23 @@ export class GraphsService {
 
     /**
      * Create Graph
-     * Create new graph
+     * Create new graph.
      * @returns GraphOut Successful Response
      * @throws ApiError
      */
     public static createGraph({
+        teamId,
         requestBody,
     }: {
+        teamId: number,
         requestBody: GraphCreate,
     }): CancelablePromise<GraphOut> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/graphs/',
+            url: '/api/v1/teams/{team_id}/graphs/',
+            path: {
+                'team_id': teamId,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -68,14 +78,17 @@ export class GraphsService {
      * @throws ApiError
      */
     public static readGraph({
+        teamId,
         id,
     }: {
+        teamId: number,
         id: number,
     }): CancelablePromise<GraphOut> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/graphs/{id}',
+            url: '/api/v1/teams/{team_id}/graphs/{id}',
             path: {
+                'team_id': teamId,
                 'id': id,
             },
             errors: {
@@ -86,21 +99,24 @@ export class GraphsService {
 
     /**
      * Update Graph
-     * Update a graph.
+     * Update graph by ID.
      * @returns GraphOut Successful Response
      * @throws ApiError
      */
     public static updateGraph({
+        teamId,
         id,
         requestBody,
     }: {
+        teamId: number,
         id: number,
         requestBody: GraphUpdate,
     }): CancelablePromise<GraphOut> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/api/v1/graphs/{id}',
+            url: '/api/v1/teams/{team_id}/graphs/{id}',
             path: {
+                'team_id': teamId,
                 'id': id,
             },
             body: requestBody,
@@ -113,19 +129,22 @@ export class GraphsService {
 
     /**
      * Delete Graph
-     * Delete a graph.
+     * Delete graph by ID.
      * @returns any Successful Response
      * @throws ApiError
      */
     public static deleteGraph({
+        teamId,
         id,
     }: {
+        teamId: number,
         id: number,
     }): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/api/v1/graphs/{id}',
+            url: '/api/v1/teams/{team_id}/graphs/{id}',
             path: {
+                'team_id': teamId,
                 'id': id,
             },
             errors: {

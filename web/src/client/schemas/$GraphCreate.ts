@@ -31,14 +31,6 @@ export const $GraphCreate = {
                 },
             },
         },
-        owner_id: {
-            type: 'any-of',
-            contains: [{
-                type: 'number',
-            }, {
-                type: 'null',
-            }],
-        },
         created_at: {
             type: 'any-of',
             contains: [{

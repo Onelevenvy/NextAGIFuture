@@ -8,7 +8,6 @@ export type GraphOut = {
     description?: (string | null);
     config?: Record<string, any>;
     metadata_?: Record<string, any>;
-    owner_id?: (number | null);
     created_at: (string | null);
     updated_at: (string | null);
     id: number;
