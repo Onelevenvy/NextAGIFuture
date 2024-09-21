@@ -11,7 +11,9 @@ from app.api.routes import (
     utils,
     provider,
     providermodel,
+    graphs
 )
+
 
 
 api_router = APIRouter()
@@ -32,3 +34,4 @@ api_router.include_router(uploads.router, prefix="/uploads", tags=["uploads"])
 api_router.include_router(provider.router, prefix="/provider", tags=["provider"])
 
 api_router.include_router(providermodel.router, prefix="/model", tags=["model"])
+api_router.include_router(graphs.router, prefix="/graphs", tags=["graphs"])  
