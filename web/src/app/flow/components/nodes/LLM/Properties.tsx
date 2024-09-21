@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Box, VStack, Text, Select, Input } from "@chakra-ui/react";
 import BaseProperties from "../Base/Properties";
+import ModelSelect from "@/components/Common/ModelProvider";
+import { useModelQuery } from "@/hooks/useModelQuery";
+import { useForm } from "react-hook-form";
 
 interface LLMNodePropertiesProps {
   node: any;
@@ -18,18 +21,44 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
       setTemperatureInput(node.data.temperature.toString());
     }
   }, [node]);
+
+  const {
+    control,
+    setValue,
+  } = useForm({
+    mode: "onBlur",
+    criteriaMode: "all",
+  });
+
+  const {
+    data: models,
+    isLoading: isLoadingModel,
+  } = useModelQuery();
+
+  const onModelSelect = (modelName: string) => {
+    onNodeDataChange(node.id, "model", modelName);
+    const selectedModel = models?.data.find(
+      (model) => model.ai_model_name === modelName
+    );
+    if (selectedModel) {
+      onNodeDataChange(node.id, "openai_api_key", selectedModel.provider.api_key);
+      onNodeDataChange(node.id, "provider", selectedModel.provider.provider_name);
+      onNodeDataChange(node.id, "openai_api_base", selectedModel.provider.base_url);
+    }
+  };
+
   return (
     <BaseProperties>
       <VStack align="stretch" spacing={4}>
         <Box>
           <Text fontWeight="bold">Model:</Text>
-          <Select
+          <ModelSelect
+            models={models}
+            control={control}
+            onModelSelect={onModelSelect}
+            isLoading={isLoadingModel}
             value={node.data.model}
-            onChange={(e) => onNodeDataChange(node.id, "model", e.target.value)}
-          >
-            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-            <option value="gpt-4">GPT-4</option>
-          </Select>
+          />
         </Box>
         <Box>
           <Text fontWeight="bold">Temperature:</Text>

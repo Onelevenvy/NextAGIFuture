@@ -370,7 +370,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
               type: MarkerType.ArrowClosed,
               width: 20,
               height: 20,
-              color: "#000",
+              color: "#2970ff",
             },
           }}
           // fitView

@@ -29,15 +29,15 @@ import {
   type TeamUpdate,
   type MemberOut,
   type MemberUpdate,
-  SkillsService,
-  UploadsService,
-  ModelService,
 } from "../../client";
 import { type SubmitHandler, useForm, Controller } from "react-hook-form";
 import { Select as MultiSelect, chakraComponents } from "chakra-react-select";
 import { forwardRef, Ref, useState } from "react";
 import ModelSelect from "../Common/ModelProvider";
 import { useTranslation } from "react-i18next";
+import { useSkillsQuery } from "@/hooks/useSkillsQuery";
+import { useUploadsQuery } from "@/hooks/useUploadsQuery";
+import { useModelQuery } from "@/hooks/useModelQuery";
 
 interface EditTeamMemberProps {
   member: MemberOut;
@@ -55,7 +55,7 @@ type MemberTypes =
   | "freelancer_root"
   | "chatbot"
   | "ragbot"
-  | "workflow"
+  | "workflow";
 
 interface MemberConfigs {
   selection: MemberTypes[];
@@ -134,7 +134,7 @@ const ALLOWED_MEMBER_CONFIGS: Record<MemberTypes, MemberConfigs> = {
 
 const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
   ({ member, teamId, isOpen, onClose }, ref) => {
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const queryClient = useQueryClient();
     const showToast = useCustomToast();
     const [showTooltip, setShowTooltip] = useState(false);
@@ -143,22 +143,20 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
       isLoading: isLoadingSkills,
       isError: isErrorSkills,
       error: errorSkills,
-    } = useQuery("skills", () => SkillsService.readSkills({}));
+    } = useSkillsQuery();
     const {
       data: uploads,
       isLoading: isLoadingUploads,
       isError: isErrorUploads,
       error: errorUploads,
-    } = useQuery("uploads", () =>
-      UploadsService.readUploads({ status: "Completed" })
-    );
+    } = useUploadsQuery();
 
     const {
       data: models,
       isLoading: isLoadingModel,
       isError: isErrorModel,
       error: errorModel,
-    } = useQuery("model", () => ModelService.readModels());
+    } = useModelQuery();
 
     if (isErrorSkills || isErrorUploads || isErrorModel) {
       const error = errorSkills || errorUploads || errorModel;
@@ -279,7 +277,9 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
               overflow={"auto"}
             >
               <FormControl mt={4} isRequired isInvalid={!!errors.name} px="6">
-                <FormLabel htmlFor="name">{t("team.teamsetting.name")}</FormLabel>
+                <FormLabel htmlFor="name">
+                  {t("team.teamsetting.name")}
+                </FormLabel>
                 <Input
                   id="name"
                   {...register("name", {
@@ -298,7 +298,9 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
                 )}
               </FormControl>
               <FormControl mt={4} isRequired isInvalid={!!errors.role} px="6">
-                <FormLabel htmlFor="role">{t("team.teamsetting.role")}</FormLabel>
+                <FormLabel htmlFor="role">
+                  {t("team.teamsetting.role")}
+                </FormLabel>
                 <Textarea
                   id="role"
                   {...register("role", { required: "Role is required." })}
@@ -310,21 +312,27 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
                 )}
               </FormControl>
               <FormControl mt={4} px="6">
-                <FormLabel htmlFor="backstory">{t("team.teamsetting.backstory")}</FormLabel>
+                <FormLabel htmlFor="backstory">
+                  {t("team.teamsetting.backstory")}
+                </FormLabel>
                 <Textarea
                   id="backstory"
                   {...register("backstory")}
                   className="nodrag nopan"
                 />
               </FormControl>
-              <Box px={6} mt={4}>
+
+              <FormControl px={6} mt={4}>
+                <FormLabel htmlFor="model">
+                  {t("team.teamsetting.model")}
+                </FormLabel>
                 <ModelSelect
                   models={models}
                   control={control}
                   onModelSelect={onModelSelect}
                   isLoading={isLoadingModel}
                 />
-              </Box>
+              </FormControl>
               {memberConfig.enableSkillTools && (
                 <Controller
                   control={control}
@@ -498,14 +506,17 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
                     className="nodrag nopan"
                   />
                 </FormControl>
-                <Box mt={4}>
+                <FormControl mt={4}>
+                  <FormLabel htmlFor="model">
+                    {t("team.teamsetting.model")}
+                  </FormLabel>
                   <ModelSelect
                     models={models}
                     control={control}
                     onModelSelect={onModelSelect}
                     isLoading={isLoadingModel}
                   />
-                </Box>
+                </FormControl>
                 {memberConfig.enableSkillTools && (
                   <Controller
                     control={control}

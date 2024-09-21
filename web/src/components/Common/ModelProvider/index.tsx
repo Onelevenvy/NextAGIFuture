@@ -23,11 +23,13 @@ const ModelSelect = ({
   control,
   onModelSelect,
   isLoading,
+  value,
 }: {
   models: ModelsOut | undefined;
   control: Control<MemberUpdate, any>;
   onModelSelect: (selectData: string) => void;
   isLoading: Boolean;
+  value?: string;
 }) => {
   const { t } = useTranslation();
   const groupedModels = models?.data.reduce(
@@ -60,7 +62,7 @@ const ModelSelect = ({
   return (
     <Box>
       <FormControl>
-        <FormLabel htmlFor="model">{t("team.teamsetting.model")}</FormLabel>
+        {/* <FormLabel htmlFor="model">{t("team.teamsetting.model")}</FormLabel> */}
         {isLoading ? (
           <Spinner size="md" />
         ) : (
@@ -84,7 +86,7 @@ const ModelSelect = ({
                     w="full"
                     textAlign={"left"}
                   >
-                    {field.value || "选择一个模型"}
+                    {field.value || value || "选择一个模型"}
                   </MenuButton>
                   <MenuList>
                     {Object.keys(groupedModels || {}).map((providerName) => (

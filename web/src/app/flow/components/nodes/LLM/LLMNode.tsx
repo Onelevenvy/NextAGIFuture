@@ -2,7 +2,7 @@ import React from "react";
 import { Handle, Position, NodeProps } from "reactflow";
 import { Box, VStack, Text } from "@chakra-ui/react";
 import { FaRobot } from "react-icons/fa";
-import { BaseNode } from "../Base/BaseNode"; // 假设您创建了一个基础节点组件
+import { BaseNode } from "../Base/BaseNode"; 
 
 const LLMNode: React.FC<NodeProps> = (props) => (
   <BaseNode {...props} icon={<FaRobot />} colorScheme="blue">
