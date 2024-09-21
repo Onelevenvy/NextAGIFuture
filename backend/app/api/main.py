@@ -34,4 +34,4 @@ api_router.include_router(uploads.router, prefix="/uploads", tags=["uploads"])
 api_router.include_router(provider.router, prefix="/provider", tags=["provider"])
 
 api_router.include_router(providermodel.router, prefix="/model", tags=["model"])
-api_router.include_router(graphs.router, prefix="/graphs", tags=["graphs"])  
+api_router.include_router(graphs.router, prefix="/teams/{team_id}/graphs", tags=["graphs"])  

@@ -95,6 +95,7 @@ class User(UserBase, table=True):
     teams: list["Team"] = Relationship(back_populates="owner")
     skills: list["Skill"] = Relationship(back_populates="owner")
     uploads: list["Upload"] = Relationship(back_populates="owner")
+    graphs: list["Graph"] = Relationship(back_populates="owner")
     language: str = Field(default="en-US")
 
 
@@ -605,7 +606,7 @@ class GraphBase(SQLModel):
         default_factory=dict,
         sa_column=Column("metadata", JSONB, nullable=False, server_default="{}"),
     )
-    owner_id: int | None = Field(default=None, foreign_key="user.id", nullable=False)
+
     created_at: datetime | None = Field(
         sa_column=Column(
             DateTime(timezone=True),
@@ -640,6 +641,8 @@ class GraphUpdate(GraphBase):
 
 class Graph(GraphBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    owner_id: int | None = Field(default=None, foreign_key="user.id", nullable=False)
+    owner: User | None = Relationship(back_populates="graphs")
     team_id: int = Field(foreign_key="team.id", nullable=False)
     team: Team = Relationship(back_populates="graphs")
 

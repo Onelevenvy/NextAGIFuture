@@ -10,11 +10,11 @@ from app.models import (
     GraphOut,
     GraphsOut,
     GraphUpdate,
-    Message,
     Team,
 )
 
 router = APIRouter()
+
 
 async def validate_name_on_create(session: SessionDep, graph_in: GraphCreate) -> None:
     """Validate that graph name is unique"""
@@ -22,6 +22,7 @@ async def validate_name_on_create(session: SessionDep, graph_in: GraphCreate) ->
     graph = session.exec(statement).first()
     if graph:
         raise HTTPException(status_code=400, detail="Graph name already exists")
+
 
 async def validate_name_on_update(
     session: SessionDep, graph_in: GraphUpdate, id: int
@@ -32,109 +33,147 @@ async def validate_name_on_update(
     if graph:
         raise HTTPException(status_code=400, detail="Graph name already exists")
 
+
 @router.get("/", response_model=GraphsOut)
 def read_graphs(
-    session: SessionDep, current_user: CurrentUser, skip: int = 0, limit: int = 100
+    session: SessionDep,
+    current_user: CurrentUser,
+    team_id: int,
+    skip: int = 0,
+    limit: int = 100,
 ) -> Any:
     """
-    Retrieve graphs
+    Retrieve graphs from team.
     """
     if current_user.is_superuser:
         count_statement = select(func.count()).select_from(Graph)
         count = session.exec(count_statement).one()
-        statement = select(Graph).offset(skip).limit(limit).order_by(col(Graph.id).desc())
+        statement = (
+            select(Graph).where(Graph.team_id == team_id).offset(skip).limit(limit)
+        )
         graphs = session.exec(statement).all()
     else:
         count_statement = (
             select(func.count())
             .select_from(Graph)
             .join(Team)
-            .where(Team.owner_id == current_user.id)
+            .where(Team.owner_id == current_user.id, Graph.team_id == team_id)
         )
         count = session.exec(count_statement).one()
         statement = (
             select(Graph)
             .join(Team)
-            .where(Team.owner_id == current_user.id)
+            .where(Team.owner_id == current_user.id, Graph.team_id == team_id)
             .offset(skip)
             .limit(limit)
-            .order_by(col(Graph.id).desc())
         )
         graphs = session.exec(statement).all()
+
     return GraphsOut(data=graphs, count=count)
 
+
 @router.get("/{id}", response_model=GraphOut)
-def read_graph(session: SessionDep, current_user: CurrentUser, id: int) -> Any:
+def read_graph(
+    session: SessionDep,
+    current_user: CurrentUser,
+    team_id: int,
+    id: int,
+) -> Any:
     """
     Get graph by ID.
     """
-    graph = session.get(Graph, id)
+    if current_user.is_superuser:
+        statement = select(Graph).where(Graph.id == id, Graph.team_id == team_id)
+        graph = session.exec(statement).first()
+    else:
+        statement = (
+            select(Graph)
+            .join(Team)
+            .where(
+                Graph.id == id,
+                Graph.team_id == team_id,
+                Team.owner_id == current_user.id,
+            )
+        )
+        graph = session.exec(statement).first()
+
     if not graph:
         raise HTTPException(status_code=404, detail="Graph not found")
-    team = session.get(Team, graph.team_id)
-    if not current_user.is_superuser and (team.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail="Not enough permissions")
     return graph
+
 
 @router.post("/", response_model=GraphOut)
 def create_graph(
     *,
     session: SessionDep,
     current_user: CurrentUser,
+    team_id: int,
     graph_in: GraphCreate,
     _: bool = Depends(validate_name_on_create),
 ) -> Any:
     """
-    Create new graph
+    Create new graph.
     """
-    team = session.get(Team, graph_in.team_id)
-    if not team:
-        raise HTTPException(status_code=404, detail="Team not found")
-    if not current_user.is_superuser and (team.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail="Not enough permissions")
-    
-    graph = Graph.model_validate(graph_in, update={"owner_id": current_user.id})
+    if not current_user.is_superuser:
+        team = session.get(Team, team_id)
+        if not team:
+            raise HTTPException(status_code=404, detail="Team not found.")
+        if team.owner_id != current_user.id:
+            raise HTTPException(status_code=400, detail="Not enough permissions")
+    graph = Graph.model_validate(
+        graph_in, update={"team_id": team_id, "owner_id": current_user.id}
+    )
     session.add(graph)
     session.commit()
     session.refresh(graph)
     return graph
+
 
 @router.put("/{id}", response_model=GraphOut)
 def update_graph(
     *,
     session: SessionDep,
     current_user: CurrentUser,
+    team_id: int,
     id: int,
     graph_in: GraphUpdate,
-    _: bool = Depends(validate_name_on_update),
 ) -> Any:
     """
-    Update a graph.
+    Update graph by ID.
     """
+    if not current_user.is_superuser:
+        team = session.get(Team, team_id)
+        if not team:
+            raise HTTPException(status_code=404, detail="Team not found.")
+        if team.owner_id != current_user.id:
+            raise HTTPException(status_code=400, detail="Not enough permissions")
     graph = session.get(Graph, id)
     if not graph:
         raise HTTPException(status_code=404, detail="Graph not found")
-    team = session.get(Team, graph.team_id)
-    if not current_user.is_superuser and (team.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail="Not enough permissions")
-    update_dict = graph_in.model_dump(exclude_unset=True)
-    graph.sqlmodel_update(update_dict)
-    session.add(graph)
+    graph.model_update(graph_in)
     session.commit()
     session.refresh(graph)
     return graph
 
+
 @router.delete("/{id}")
-def delete_graph(session: SessionDep, current_user: CurrentUser, id: int) -> Any:
+def delete_graph(
+    session: SessionDep,
+    current_user: CurrentUser,
+    team_id: int,
+    id: int,
+) -> None:
     """
-    Delete a graph.
+    Delete graph by ID.
     """
+    if not current_user.is_superuser:
+        team = session.get(Team, team_id)
+        if not team:
+            raise HTTPException(status_code=404, detail="Team not found.")
+        if team.owner_id != current_user.id:
+            raise HTTPException(status_code=400, detail="Not enough permissions")
     graph = session.get(Graph, id)
     if not graph:
         raise HTTPException(status_code=404, detail="Graph not found")
-    team = session.get(Team, graph.team_id)
-    if not current_user.is_superuser and (team.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail="Not enough permissions")
     session.delete(graph)
     session.commit()
-    return Message(message="Graph deleted successfully")
