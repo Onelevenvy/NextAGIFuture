@@ -173,9 +173,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
             return {
               ...e,
               type: newType,
-              animated: newType === "smoothstep",
+              animated: newType !== "default",
               style: {
-                strokeDasharray: newType === "smoothstep" ? "5,5" : "none",
+                strokeDasharray: newType === "default" ? "none" : "5,5",
               },
             };
           }
@@ -356,7 +356,13 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         <ReactFlow
           onNodeClick={onNodeClick}
           nodes={nodes}
-          edges={edges}
+          edges={edges.map(edge => ({
+            ...edge,
+            style: {
+              ...edge.style,
+              strokeDasharray: edge.type === "default" ? "none" : "5,5",
+            },
+          }))}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
@@ -372,6 +378,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
               height: 20,
               color: "#2970ff",
             },
+            style: { strokeWidth: 2 },
           }}
           // fitView
           connectionLineType={ConnectionLineType.SmoothStep}

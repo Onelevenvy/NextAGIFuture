@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, VStack, Text, Select, Input } from "@chakra-ui/react";
+import { Box, VStack, Text, Input } from "@chakra-ui/react";
 import BaseProperties from "../Base/Properties";
 import ModelSelect from "@/components/Common/ModelProvider";
 import { useModelQuery } from "@/hooks/useModelQuery";
@@ -22,18 +22,12 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
     }
   }, [node]);
 
-  const {
-    control,
-    setValue,
-  } = useForm({
+  const { control, setValue } = useForm({
     mode: "onBlur",
     criteriaMode: "all",
   });
 
-  const {
-    data: models,
-    isLoading: isLoadingModel,
-  } = useModelQuery();
+  const { data: models, isLoading: isLoadingModel } = useModelQuery();
 
   const onModelSelect = (modelName: string) => {
     onNodeDataChange(node.id, "model", modelName);
@@ -41,10 +35,26 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
       (model) => model.ai_model_name === modelName
     );
     if (selectedModel) {
-      onNodeDataChange(node.id, "openai_api_key", selectedModel.provider.api_key);
-      onNodeDataChange(node.id, "provider", selectedModel.provider.provider_name);
-      onNodeDataChange(node.id, "openai_api_base", selectedModel.provider.base_url);
+      onNodeDataChange(
+        node.id,
+        "openai_api_key",
+        selectedModel.provider.api_key
+      );
+      onNodeDataChange(
+        node.id,
+        "provider",
+        selectedModel.provider.provider_name
+      );
+      onNodeDataChange(
+        node.id,
+        "openai_api_base",
+        selectedModel.provider.base_url
+      );
     }
+    setValue("model", modelName);
+    setValue("openai_api_key", selectedModel?.provider.api_key);
+    setValue("provider", selectedModel?.provider.provider_name);
+    setValue("openai_api_base", selectedModel?.provider.base_url);
   };
 
   return (
