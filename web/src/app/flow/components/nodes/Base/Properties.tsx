@@ -1,15 +1,26 @@
 import React from "react";
-import { Box, Text } from "@chakra-ui/react";
+import { Text, Input, VStack, FormControl, FormErrorMessage } from "@chakra-ui/react";
 
 interface BasePropertiesProps {
   children: React.ReactNode;
+  nodeName: string;
+  onNameChange: (newName: string) => void;
+  nameError: string | null;
 }
 
-const BaseProperties: React.FC<BasePropertiesProps> = ({ children }) => {
+const BaseProperties: React.FC<BasePropertiesProps> = ({ children, nodeName, onNameChange, nameError }) => {
   return (
-    <Box w="200px" maxW={"200px"} minW={"200px"} h="full" p="2">
+    <VStack spacing={4} align="stretch">
+      <FormControl isInvalid={!!nameError}>
+        <Text fontWeight="bold" mb={2}>Node Name:</Text>
+        <Input 
+          value={nodeName} 
+          onChange={(e) => onNameChange(e.target.value)}
+        />
+        <FormErrorMessage>{nameError}</FormErrorMessage>
+      </FormControl>
       {children}
-    </Box>
+    </VStack>
   );
 };
 

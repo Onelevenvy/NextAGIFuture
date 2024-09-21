@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Box, VStack, Text, Input } from "@chakra-ui/react";
-import BaseProperties from "../Base/Properties";
 import ModelSelect from "@/components/Common/ModelProvider";
 import { useModelQuery } from "@/hooks/useModelQuery";
 import { useForm } from "react-hook-form";
@@ -58,36 +57,34 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
   };
 
   return (
-    <BaseProperties>
-      <VStack align="stretch" spacing={4}>
-        <Box>
-          <Text fontWeight="bold">Model:</Text>
-          <ModelSelect
-            models={models}
-            control={control}
-            onModelSelect={onModelSelect}
-            isLoading={isLoadingModel}
-            value={node.data.model}
-          />
-        </Box>
-        <Box>
-          <Text fontWeight="bold">Temperature:</Text>
-          <Input
-            type="number"
-            value={temperatureInput}
-            onChange={(e) => {
-              setTemperatureInput(e.target.value);
-              const numValue =
-                e.target.value === "" ? 0 : parseFloat(e.target.value);
-              onNodeDataChange(node.id, "temperature", numValue);
-            }}
-            step={0.1}
-            min={0}
-            max={1}
-          />
-        </Box>
-      </VStack>
-    </BaseProperties>
+    <VStack align="stretch" spacing={4}>
+      <Box>
+        <Text fontWeight="bold">Model:</Text>
+        <ModelSelect
+          models={models}
+          control={control}
+          onModelSelect={onModelSelect}
+          isLoading={isLoadingModel}
+          value={node.data.model}
+        />
+      </Box>
+      <Box>
+        <Text fontWeight="bold">Temperature:</Text>
+        <Input
+          type="number"
+          value={temperatureInput}
+          onChange={(e) => {
+            setTemperatureInput(e.target.value);
+            const numValue =
+              e.target.value === "" ? 0 : parseFloat(e.target.value);
+            onNodeDataChange(node.id, "temperature", numValue);
+          }}
+          step={0.1}
+          min={0}
+          max={1}
+        />
+      </Box>
+    </VStack>
   );
 };
 

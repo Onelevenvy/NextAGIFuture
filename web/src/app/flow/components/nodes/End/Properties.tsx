@@ -1,27 +1,27 @@
 import React from "react";
-import { Box, Text, Textarea } from "@chakra-ui/react";
-import BaseProperties from "../Base/Properties";
+import { Text, Input, VStack, FormControl, FormErrorMessage } from "@chakra-ui/react";
 
-
-interface EndNodePropertiesProps {
-  node: any;
-  onNodeDataChange: (nodeId: string, key: string, value: any) => void;
+interface BasePropertiesProps {
+  children: React.ReactNode;
+  nodeName: string;
+  onNameChange: (newName: string) => void;
+  nameError: string | null;
 }
 
-const EndNodeProperties: React.FC<EndNodePropertiesProps> = ({ node, onNodeDataChange }) => {
+const BaseProperties: React.FC<BasePropertiesProps> = ({ children, nodeName, onNameChange, nameError }) => {
   return (
-    <BaseProperties>
-      <Box>
-        <Text fontWeight="bold">Final Output:</Text>
-        <Textarea
-          value={node.data.finalOutput}
-          onChange={(e) => onNodeDataChange(node.id, 'finalOutput', e.target.value)}
-          placeholder="Final output will be displayed here"
-          isReadOnly
+    <VStack spacing={4} align="stretch">
+      <FormControl isInvalid={!!nameError}>
+        <Text fontWeight="bold" mb={2}>Node Name:</Text>
+        <Input 
+          value={nodeName} 
+          onChange={(e) => onNameChange(e.target.value)}
         />
-      </Box>
-    </BaseProperties>
+        <FormErrorMessage>{nameError}</FormErrorMessage>
+      </FormControl>
+      {children}
+    </VStack>
   );
 };
 
-export default EndNodeProperties;
+export default BaseProperties;

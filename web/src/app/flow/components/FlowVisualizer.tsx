@@ -30,9 +30,11 @@ import {
   MenuList,
   MenuItem,
   IconButton,
+  useToast,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { nodeConfig, NodeType } from "./nodes/nodeConfig";
+import BaseProperties from "./nodes/Base/Properties";
 
 interface NodeData {
   label: string;
@@ -70,6 +72,8 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     y: number;
     nodeId: string | null;
   }>({ x: 0, y: 0, nodeId: null });
+  const toast = useToast();
+  const [nameError, setNameError] = useState<string | null>(null);
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
@@ -88,13 +92,24 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
   const getNodePropertiesComponent = (node: Node | null) => {
     if (!node) return null;
-
+  
     const nodeType = node.type as NodeType;
     const PropertiesComponent = nodeConfig[nodeType]?.properties;
-
-    return PropertiesComponent ? (
-      <PropertiesComponent node={node} onNodeDataChange={onNodeDataChange} />
-    ) : null;
+  
+    return (
+      <BaseProperties 
+        nodeName={node.data.label}
+        onNameChange={(newName: string) => onNodeDataChange(node.id, 'label', newName)}
+        nameError={nameError}
+      >
+        {PropertiesComponent && (
+          <PropertiesComponent 
+            node={node} 
+            onNodeDataChange={onNodeDataChange}
+          />
+        )}
+      </BaseProperties>
+    );
   };
 
   const isValidConnection = useCallback(
@@ -144,16 +159,16 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       setNodes((nds) =>
         nds.map((node) => {
           if (node.id === nodeId) {
-            if (key === "customName") {
-              // 检查新名称是否已存在
+            if (key === "label") {
+              // Check if the new name already exists
               const isNameExists = nds.some(
-                (n) => n.id !== nodeId && n.data.customName === value
+                (n) => n.id !== nodeId && n.data.label === value
               );
               if (isNameExists) {
-                // 如果名称已存在，不更新并可能显示一个错误消息
-                console.error("节点名称已存在");
+                setNameError("Node name already exists");
                 return node;
               }
+              setNameError(null);
             }
             return {
               ...node,
@@ -235,7 +250,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
   const generateUniqueName = useCallback(
     (baseLabel: string) => {
-      const existingNames = nodes.map((node) => node.data.customName);
+      const existingNames = nodes.map((node) => node.data.label);
       let counter = 1;
       let newName = baseLabel;
       while (existingNames.includes(newName)) {
@@ -266,7 +281,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         type,
         position,
         data: {
-          label: baseLabel,
+          label: uniqueName, // 使用生成的唯一名称
           customName: uniqueName,
           onChange: (key: string, value: any) =>
             onNodeDataChange(`${type}-${nodes.length + 1}`, key, value),
