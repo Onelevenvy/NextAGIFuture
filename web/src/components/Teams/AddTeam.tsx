@@ -85,7 +85,7 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
   };
 
   // 任务类型列表
-  const taskTypes = ["chatbot", "ragbot", "hierarchical", "sequential"];
+  const taskTypes = ["chatbot", "ragbot", "hierarchical", "sequential","workflow"];
 
   const cardIcons: Record<
     string,
@@ -111,6 +111,13 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
       title: t(`team.teamcard.ragbot.title`),
       descripthion: t(`team.teamcard.ragbot.description`),
     },
+    workflow: {
+      colorScheme: "green",
+      backgroundColor: "#4caf50",
+      icon: <TbDatabaseSearch size="24" />,
+      title: t(`team.teamcard.workflow.title`),
+      descripthion: t(`team.teamcard.workflow.description`),
+    },
     hierarchical: {
       colorScheme: "yellow",
       backgroundColor: "#ffc107",
@@ -122,8 +129,8 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
       colorScheme: "red",
       backgroundColor: "#ff5722",
       icon: <GiTeamIdea size="24" />,
-      title: t(`team.teamcard.hagent.title`),
-      descripthion: t(`team.teamcard.hagent.description`),
+      title: t(`team.teamcard.sagent.title`),
+      descripthion: t(`team.teamcard.sagent.description`),
     },
   };
 

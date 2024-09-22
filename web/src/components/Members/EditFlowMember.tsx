@@ -43,6 +43,8 @@ import {
 } from "chakra-react-select";
 import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { useSkillsQuery } from "@/hooks/useSkillsQuery";
+import { useUploadsQuery } from "@/hooks/useUploadsQuery";
 
 interface EditMemberProps {
   member: MemberOut;
@@ -163,15 +165,13 @@ export function EditFlowMember({
     isLoading: isLoadingSkills,
     isError: isErrorSkills,
     error: errorSkills,
-  } = useQuery("skills", () => SkillsService.readSkills({}));
+  } = useSkillsQuery();
   const {
     data: uploads,
     isLoading: isLoadingUploads,
     isError: isErrorUploads,
     error: errorUploads,
-  } = useQuery("uploads", () =>
-    UploadsService.readUploads({ status: "Completed" })
-  );
+  } = useUploadsQuery();
 
   if (isErrorSkills || isErrorUploads) {
     const error = errorSkills || errorUploads;

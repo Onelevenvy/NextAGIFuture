@@ -19,6 +19,8 @@ import NormalTeamSettings from "@/components/Teams/NormalTeamSettings";
 import DebugPreview from "@/components/Teams/DebugPreview";
 import { useRef } from "react";
 import { color } from "framer-motion";
+import ShowFlow from "@/app/flow/show/ShowFlow";
+import WorkflowTeamSettings from "@/components/Teams/WorkflowTeamSettings";
 
 function Team() {
   const showToast = useCustomToast();
@@ -102,6 +104,19 @@ function Team() {
                       triggerSubmit={triggerSubmit}
                     />
                   </Box>
+                </Box>
+              ) : team.workflow === "workflow" ? (
+                <Box
+                  h="full"
+                  display={"flex"}
+                  flexDirection={"row"}
+                  maxH={"full"}
+                  p="2"
+                >
+                  <WorkflowTeamSettings
+                    teamId={teamId}
+                    triggerSubmit={triggerSubmit}
+                  />
                 </Box>
               ) : (
                 <Box h="full" maxH={"full"} borderRadius="md">

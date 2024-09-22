@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Box, VStack, Text, Select, Input } from "@chakra-ui/react";
-import BaseProperties from "../Base/Properties";
 
 interface LLMNodePropertiesProps {
   node: any;
@@ -19,7 +18,6 @@ const QuestionClassifierProperties: React.FC<LLMNodePropertiesProps> = ({
     }
   }, [node]);
   return (
-    <BaseProperties>
     <VStack align="stretch" spacing={4}>
       <Box>
         <Text fontWeight="bold">QC:</Text>
@@ -48,7 +46,6 @@ const QuestionClassifierProperties: React.FC<LLMNodePropertiesProps> = ({
         />
       </Box>
     </VStack>
-    </BaseProperties>
   );
 };
 

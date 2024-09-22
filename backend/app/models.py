@@ -95,6 +95,7 @@ class User(UserBase, table=True):
     teams: list["Team"] = Relationship(back_populates="owner")
     skills: list["Skill"] = Relationship(back_populates="owner")
     uploads: list["Upload"] = Relationship(back_populates="owner")
+    graphs: list["Graph"] = Relationship(back_populates="owner")
     language: str = Field(default="en-US")
 
 
@@ -160,8 +161,11 @@ class Team(TeamBase, table=True):
     members: list["Member"] = Relationship(
         back_populates="belongs", sa_relationship_kwargs={"cascade": "delete"}
     )
-    workflow: str  # TODO: This should be an enum 'sequential' and 'hierarchical'
+    workflow: str  # TODO:
     threads: list["Thread"] = Relationship(
+        back_populates="team", sa_relationship_kwargs={"cascade": "delete"}
+    )
+    graphs: list["Graph"] = Relationship(
         back_populates="team", sa_relationship_kwargs={"cascade": "delete"}
     )
 
@@ -599,12 +603,12 @@ class ProvidersListWithModelsOut(SQLModel):
 class GraphBase(SQLModel):
     name: str = PydanticField(pattern=r"^[a-zA-Z0-9_-]{1,64}$")
     description: str | None = None
-    config:  dict[Any, Any] = Field(default_factory=dict, sa_column=Column(JSONB))
+    config: dict[Any, Any] = Field(default_factory=dict, sa_column=Column(JSONB))
     metadata_: dict[Any, Any] = Field(
         default_factory=dict,
         sa_column=Column("metadata", JSONB, nullable=False, server_default="{}"),
     )
-    owner_id: int | None = Field(default=None, foreign_key="user.id", nullable=False)
+
     created_at: datetime | None = Field(
         sa_column=Column(
             DateTime(timezone=True),
@@ -629,15 +633,20 @@ class GraphCreate(GraphBase):
 
 
 class GraphUpdate(GraphBase):
-    config:  dict[Any, Any] = Field(default_factory=dict, sa_column=Column(JSONB))
+    config: dict[Any, Any] = Field(default_factory=dict, sa_column=Column(JSONB))
     metadata_: dict[Any, Any] = Field(
         default_factory=dict,
         sa_column=Column("metadata", JSONB, nullable=False, server_default="{}"),
     )
     updated_at: datetime | None = None
 
+
 class Graph(GraphBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    owner_id: int | None = Field(default=None, foreign_key="user.id", nullable=False)
+    owner: User | None = Relationship(back_populates="graphs")
+    team_id: int = Field(foreign_key="team.id", nullable=False)
+    team: Team = Relationship(back_populates="graphs")
 
 
 class GraphOut(GraphBase):

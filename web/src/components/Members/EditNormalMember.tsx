@@ -28,6 +28,9 @@ import { type SubmitHandler, useForm, Controller } from "react-hook-form";
 import { Select as MultiSelect, chakraComponents } from "chakra-react-select";
 import { forwardRef, Ref, useState } from "react";
 import ModelSelect from "../Common/ModelProvider";
+import { useModelQuery } from "@/hooks/useModelQuery";
+import { useUploadsQuery } from "@/hooks/useUploadsQuery";
+import { useSkillsQuery } from "@/hooks/useSkillsQuery";
 
 interface EditAgentProps {
   member: MemberOut;
@@ -53,22 +56,19 @@ const EditNormalMember = forwardRef<HTMLFormElement, EditAgentProps>(
       isLoading: isLoadingSkills,
       isError: isErrorSkills,
       error: errorSkills,
-    } = useQuery("skills", () => SkillsService.readSkills({}));
+    } = useSkillsQuery();
     const {
       data: uploads,
       isLoading: isLoadingUploads,
       isError: isErrorUploads,
       error: errorUploads,
-    } = useQuery("uploads", () =>
-      UploadsService.readUploads({ status: "Completed" })
-    );
-
+    } = useUploadsQuery();
     const {
       data: models,
       isLoading: isLoadingModel,
       isError: isErrorModel,
       error: errorModel,
-    } = useQuery("model", () => ModelService.readModels());
+    } = useModelQuery();
 
     if (isErrorSkills || isErrorUploads || isErrorModel) {
       const error = errorSkills || errorUploads || errorModel;

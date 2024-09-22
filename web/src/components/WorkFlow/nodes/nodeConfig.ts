@@ -48,8 +48,8 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       targets: ["left", "right"],
     },
     initialData: {
-      model: "glm-4",
-      temperature: 0.7,
+      model: "glm-4-flash",
+      temperature: 0.1,
     },
   },
   tool: {

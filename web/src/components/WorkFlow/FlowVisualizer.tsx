@@ -29,11 +29,22 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  IconButton,
+  useToast,
 } from "@chakra-ui/react";
+import { CloseIcon } from "@chakra-ui/icons";
 import { nodeConfig, NodeType } from "./nodes/nodeConfig";
+import BaseProperties from "./nodes/Base/Properties";
+import { GraphsService } from "@/client/services/GraphsService";
+import { GraphUpdate } from "@/client/models/GraphUpdate";
+import { useMutation } from "react-query";
+import { ApiError } from "@/client";
+import { SubmitHandler } from "react-hook-form";
+import configsss from "@/app/flow/show/graphConfig";
 
 interface NodeData {
   label: string;
+  customName?: string; // 新增：用于存储自定义名称
   onChange?: (key: string, value: any) => void;
   model?: string;
   temperature?: number;
@@ -60,16 +71,30 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
   const reactFlowInstance = useReactFlow();
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
     nodeId: string | null;
   }>({ x: 0, y: 0, nodeId: null });
+
+  const [nameError, setNameError] = useState<string | null>(null);
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    setSelectedNode(node);
+    setSelectedNodeId(node.id);
   }, []);
+
+  const nodesWithSelection = useMemo(() => {
+    return nodes?.map((node) => ({
+      ...node,
+      style: {
+        ...node.style,
+        border: node.id === selectedNodeId ? "2px solid #2970ff" : "none",
+        borderRadius: "8px",
+      },
+    }));
+  }, [nodes, selectedNodeId]);
 
   const getNodePropertiesComponent = (node: Node | null) => {
     if (!node) return null;
@@ -77,9 +102,22 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     const nodeType = node.type as NodeType;
     const PropertiesComponent = nodeConfig[nodeType]?.properties;
 
-    return PropertiesComponent ? (
-      <PropertiesComponent node={node} onNodeDataChange={onNodeDataChange} />
-    ) : null;
+    return (
+      <BaseProperties
+        nodeName={node.data.label}
+        onNameChange={(newName: string) =>
+          onNodeDataChange(node.id, "label", newName)
+        }
+        nameError={nameError}
+      >
+        {PropertiesComponent && (
+          <PropertiesComponent
+            node={node}
+            onNodeDataChange={onNodeDataChange}
+          />
+        )}
+      </BaseProperties>
+    );
   };
 
   const isValidConnection = useCallback(
@@ -129,6 +167,17 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       setNodes((nds) =>
         nds.map((node) => {
           if (node.id === nodeId) {
+            if (key === "label") {
+              // Check if the new name already exists
+              const isNameExists = nds.some(
+                (n) => n.id !== nodeId && n.data.label === value
+              );
+              if (isNameExists) {
+                setNameError("Node name already exists");
+                return node;
+              }
+              setNameError(null);
+            }
             return {
               ...node,
               data: {
@@ -173,9 +222,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
             return {
               ...e,
               type: newType,
-              animated: newType === "smoothstep",
+              animated: newType !== "default",
               style: {
-                strokeDasharray: newType === "smoothstep" ? "5,5" : "none",
+                strokeDasharray: newType === "default" ? "none" : "5,5",
               },
             };
           }
@@ -207,6 +256,20 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     event.dataTransfer.dropEffect = "move";
   }, []);
 
+  const generateUniqueName = useCallback(
+    (baseLabel: string) => {
+      const existingNames = nodes.map((node) => node.data.label);
+      let counter = 1;
+      let newName = baseLabel;
+      while (existingNames.includes(newName)) {
+        counter++;
+        newName = `${baseLabel}${counter}`;
+      }
+      return newName;
+    },
+    [nodes]
+  );
+
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
@@ -219,12 +282,15 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         x: event.clientX,
         y: event.clientY,
       });
+      const baseLabel = `${nodeConfig[type].display}`;
+      const uniqueName = generateUniqueName(baseLabel);
       const newNode: CustomNode = {
         id: `${type}-${nodes.length + 1}`,
         type,
         position,
         data: {
-          label: `${nodeConfig[type].display}`,
+          label: uniqueName, // 使用生成的唯一名称
+          customName: uniqueName,
           onChange: (key: string, value: any) =>
             onNodeDataChange(`${type}-${nodes.length + 1}`, key, value),
           ...nodeConfig[type].initialData,
@@ -233,7 +299,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [nodes, reactFlowInstance, setNodes, onNodeDataChange]
+    [nodes, reactFlowInstance, setNodes, onNodeDataChange, generateUniqueName]
   );
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -327,10 +393,54 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           })),
       },
     };
+
     console.log(JSON.stringify(config, null, 2));
+    return config;
     // 这里您可以实现将配置保存到文件或发送到服务器的逻辑
   };
 
+  const config = saveConfig();
+  const updateTeam = async (data: GraphUpdate) => {
+    return await GraphsService.updateGraph({
+      teamId: 39,
+      id: 6,
+      requestBody: data,
+    });
+  };
+
+  const mutation = useMutation(updateTeam, {
+    onSuccess: (data) => {
+      console.log("Success!", "Team updated successfully.", "success");
+      // reset(data); // reset isDirty after updating
+      // onClose();
+    },
+    onError: (err: ApiError) => {
+      const errDetail = err.body?.detail;
+      console.log("Something went wrong.", `${errDetail}`, "error");
+    },
+    // onSettled: () => {
+    //   queryClient.invalidateQueries("teams");
+    // },
+  });
+
+  const onSubmit: SubmitHandler<GraphUpdate> = async (data) => {
+    mutation.mutate(data);
+  };
+
+  const onSave = () => {
+    GraphsService.updateGraph({
+      teamId: 39,
+      id: 6,
+      requestBody: {
+        name: "8oPYnLP9tUWtAgiPgiH3orqIxD90ws1RA3wG0X9kiDqexK",
+        description: "string",
+        config: config,
+        metadata_: {},
+        created_at: "2024-09-22T03:54:15.172000Z",
+        updated_at: "2024-09-22T03:54:15.172000Z",
+      },
+    });
+  };
   // 使用 useMemo 来记忆化 nodeTypes 和 defaultEdgeOptions
   const memoizedNodeTypes = useMemo(() => nodeTypes, [nodeTypes]);
   const memoizedDefaultEdgeOptions = useMemo(
@@ -342,6 +452,10 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const ZoomDisplay = () => (
     <Panel position="bottom-right">{Math.round(zoom * 100)}%</Panel>
   );
+
+  const closePropertiesPanel = useCallback(() => {
+    setSelectedNodeId(null);
+  }, []);
 
   return (
     <Box
@@ -355,8 +469,14 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       <Box flex={1} position="relative">
         <ReactFlow
           onNodeClick={onNodeClick}
-          nodes={nodes}
-          edges={edges}
+          nodes={nodesWithSelection}
+          edges={edges?.map((edge) => ({
+            ...edge,
+            style: {
+              ...edge.style,
+              strokeDasharray: edge.type === "default" ? "none" : "5,5",
+            },
+          }))}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
@@ -370,8 +490,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
               type: MarkerType.ArrowClosed,
               width: 20,
               height: 20,
-              color: "#000",
+              color: "#2970ff",
             },
+            style: { strokeWidth: 2 },
           }}
           // fitView
           connectionLineType={ConnectionLineType.SmoothStep}
@@ -404,8 +525,28 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           </Menu>
         )}
       </Box>
-      {getNodePropertiesComponent(selectedNode)}
-      <Button onClick={saveConfig} position="absolute" top={4} right={4}>
+      {selectedNodeId && (
+        <Box
+          position="relative"
+          width="250px"
+          borderLeft="1px solid #ccc"
+          p={4}
+        >
+          <IconButton
+            aria-label="Close properties panel"
+            icon={<CloseIcon />}
+            size="sm"
+            position="absolute"
+            right={2}
+            top={2}
+            onClick={closePropertiesPanel}
+          />
+          {getNodePropertiesComponent(
+            nodes.find((n) => n.id === selectedNodeId) || null
+          )}
+        </Box>
+      )}
+      <Button onClick={onSave} position="absolute" top={4} right={4}>
         保存配置
       </Button>
     </Box>

@@ -18,6 +18,11 @@ const translation = {
       description:
         "RAG app, retrieves information from knowledge base during each conversation",
     },
+    workflow: {
+      title: "work flow",
+      description:
+        "Organize generative applications in a workflow format to provide more customization capabilities.",
+    },
     hagent: {
       title: "Hierarchical Multi-Agent",
       description:
