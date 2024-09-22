@@ -38,7 +38,7 @@ import BaseProperties from "./nodes/Base/Properties";
 
 interface NodeData {
   label: string;
-  customName: string; // 新增：用于存储自定义名称
+  customName?: string; // 新增：用于存储自定义名称
   onChange?: (key: string, value: any) => void;
   model?: string;
   temperature?: number;
@@ -65,6 +65,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
   const reactFlowInstance = useReactFlow();
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{
@@ -72,15 +73,14 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     y: number;
     nodeId: string | null;
   }>({ x: 0, y: 0, nodeId: null });
-  const toast = useToast();
-  const [nameError, setNameError] = useState<string | null>(null);
 
+  const [nameError, setNameError] = useState<string | null>(null);
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
   }, []);
 
   const nodesWithSelection = useMemo(() => {
-    return nodes.map((node) => ({
+    return nodes?.map((node) => ({
       ...node,
       style: {
         ...node.style,
@@ -92,19 +92,21 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
   const getNodePropertiesComponent = (node: Node | null) => {
     if (!node) return null;
-  
+
     const nodeType = node.type as NodeType;
     const PropertiesComponent = nodeConfig[nodeType]?.properties;
-  
+
     return (
-      <BaseProperties 
+      <BaseProperties
         nodeName={node.data.label}
-        onNameChange={(newName: string) => onNodeDataChange(node.id, 'label', newName)}
+        onNameChange={(newName: string) =>
+          onNodeDataChange(node.id, "label", newName)
+        }
         nameError={nameError}
       >
         {PropertiesComponent && (
-          <PropertiesComponent 
-            node={node} 
+          <PropertiesComponent
+            node={node}
             onNodeDataChange={onNodeDataChange}
           />
         )}
@@ -418,7 +420,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         <ReactFlow
           onNodeClick={onNodeClick}
           nodes={nodesWithSelection}
-          edges={edges.map((edge) => ({
+          edges={edges?.map((edge) => ({
             ...edge,
             style: {
               ...edge.style,
