@@ -7,7 +7,7 @@ import useCustomToast from "@/hooks/useCustomToast";
 import EditTeamMember from "../Members";
 import DebugPreview from "./DebugPreview";
 import TeamInforCard from "./TeamInfo";
-import TqxWorkflow from "@/app/flow/components/TqxWorkflow";
+import TqxWorkflow from "@/app/flow/WorkFlow/TqxWorkflow";
 import { useGraphsQuery } from "@/hooks/useGraphsQuery";
 
 interface WorkflowSettingProps {
