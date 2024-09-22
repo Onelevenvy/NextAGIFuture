@@ -1,14 +1,9 @@
-import { useParams } from "next/navigation";
-import { useQuery } from "react-query";
-import { ApiError, GraphsService, MembersService, TeamOut } from "@/client";
-import { Box, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
-import { useRef } from "react";
+import { ApiError, TeamOut } from "@/client";
+import { Box, Flex, Spinner } from "@chakra-ui/react";
 import useCustomToast from "@/hooks/useCustomToast";
-import EditTeamMember from "../Members";
 import DebugPreview from "./DebugPreview";
-import TeamInforCard from "./TeamInfo";
-import TqxWorkflow from "@/app/flow/WorkFlow/TqxWorkflow";
 import { useGraphsQuery } from "@/hooks/useGraphsQuery";
+import TqxWorkflow from "../WorkFlow/TqxWorkflow";
 
 interface WorkflowSettingProps {
   teamData?: TeamOut;
@@ -39,12 +34,10 @@ function WorkflowTeamSettings({
         <>
           <Box w="80%" maxH={"full"} bg={"#f6f8fa"} mr="2">
             <TqxWorkflow buildConfig={graphs?.data[0].config} />
-            {/* <TqxWorkflow teamId={teamId} /> */}
           </Box>
           <Box w="20%">
             <DebugPreview teamId={teamId} triggerSubmit={triggerSubmit} />
           </Box>
-          ){" "}
         </>
       )}
     </>
