@@ -10,8 +10,8 @@ export default function TqxWorkflow({ buildConfig }: { buildConfig: any }) {
     <Box h="full" w="full">
       <ReactFlowProvider>
         <FlowVisualizer
-          initialNodes={buildConfig?.nodes}
-          initialEdges={buildConfig?.edges}
+          initialNodes={buildConfig?.nodes || []}
+          initialEdges={buildConfig?.edges || []}
           nodeTypes={nodeTypes}
           defaultEdgeOptions={{ type: "default" }}
         />

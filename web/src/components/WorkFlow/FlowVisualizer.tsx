@@ -35,6 +35,12 @@ import {
 import { CloseIcon } from "@chakra-ui/icons";
 import { nodeConfig, NodeType } from "./nodes/nodeConfig";
 import BaseProperties from "./nodes/Base/Properties";
+import { GraphsService } from "@/client/services/GraphsService";
+import { GraphUpdate } from "@/client/models/GraphUpdate";
+import { useMutation } from "react-query";
+import { ApiError } from "@/client";
+import { SubmitHandler } from "react-hook-form";
+import configsss from "@/app/flow/show/graphConfig";
 
 interface NodeData {
   label: string;
@@ -387,10 +393,54 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           })),
       },
     };
+
     console.log(JSON.stringify(config, null, 2));
+    return config;
     // 这里您可以实现将配置保存到文件或发送到服务器的逻辑
   };
 
+  const config = saveConfig();
+  const updateTeam = async (data: GraphUpdate) => {
+    return await GraphsService.updateGraph({
+      teamId: 39,
+      id: 6,
+      requestBody: data,
+    });
+  };
+
+  const mutation = useMutation(updateTeam, {
+    onSuccess: (data) => {
+      console.log("Success!", "Team updated successfully.", "success");
+      // reset(data); // reset isDirty after updating
+      // onClose();
+    },
+    onError: (err: ApiError) => {
+      const errDetail = err.body?.detail;
+      console.log("Something went wrong.", `${errDetail}`, "error");
+    },
+    // onSettled: () => {
+    //   queryClient.invalidateQueries("teams");
+    // },
+  });
+
+  const onSubmit: SubmitHandler<GraphUpdate> = async (data) => {
+    mutation.mutate(data);
+  };
+
+  const onSave = () => {
+    GraphsService.updateGraph({
+      teamId: 39,
+      id: 6,
+      requestBody: {
+        name: "8oPYnLP9tUWtAgiPgiH3orqIxD90ws1RA3wG0X9kiDqexK",
+        description: "string",
+        config: config,
+        metadata_: {},
+        created_at: "2024-09-22T03:54:15.172000Z",
+        updated_at: "2024-09-22T03:54:15.172000Z",
+      },
+    });
+  };
   // 使用 useMemo 来记忆化 nodeTypes 和 defaultEdgeOptions
   const memoizedNodeTypes = useMemo(() => nodeTypes, [nodeTypes]);
   const memoizedDefaultEdgeOptions = useMemo(
@@ -496,7 +546,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           )}
         </Box>
       )}
-      <Button onClick={saveConfig} position="absolute" top={4} right={4}>
+      <Button onClick={onSave} position="absolute" top={4} right={4}>
         保存配置
       </Button>
     </Box>

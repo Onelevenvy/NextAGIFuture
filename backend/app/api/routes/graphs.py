@@ -141,6 +141,7 @@ def update_graph(
     """
     Update graph by ID.
     """
+
     if not current_user.is_superuser:
         team = session.get(Team, team_id)
         if not team:
@@ -150,7 +151,7 @@ def update_graph(
     graph = session.get(Graph, id)
     if not graph:
         raise HTTPException(status_code=404, detail="Graph not found")
-    graph.model_update(graph_in)
+    graph.sqlmodel_update(graph_in)
     session.commit()
     session.refresh(graph)
     return graph
