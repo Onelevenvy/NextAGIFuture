@@ -365,7 +365,7 @@ class LLMNode(BaseNode):
                     "If you are unable to perform the task, that's OK, another member with different tools "
                     "will help where you left off. Do not attempt to communicate with other members. "
                     "Execute what you can to make progress. "
-                    "Stay true to your persona and role:\n{persona}\n\n"
+                    "Stay true to your role and use your tools if necessary.\n\n"
                 ),
             ),
             (
@@ -392,33 +392,19 @@ class LLMNode(BaseNode):
             return None
 
     async def work(self, state: TeamState, config: RunnableConfig) -> ReturnTeamState:
-        name = state["next"]
-        member = state["team"].members[name]
-        # assert isinstance(member, GraphMember), "member is unexpectedly not a Member"
+        history = state.get("history", [])
+        messages = state.get("messages", [])
+        prompt = self.worker_prompt.partial(history_string=format_messages(history))
+        chain: RunnableSerializable[dict[str, Any], AnyMessage] = prompt | self.model
+        work_chain = chain
+        result: AIMessage = await work_chain.ainvoke(state, config)
 
-        prompt = self.worker_prompt.partial(
-            persona=member.persona, history_string=format_messages(state["history"])
-        )
-        # If member has no tools, then use a regular model instead of an agent
-        if len(member.tools) >= 1:
-            tools: Sequence[BaseTool] = [tool.tool for tool in member.tools]
-            chain = prompt | self.model.bind_tools(tools)
-        else:
-            chain: RunnableSerializable[dict[str, Any], AnyMessage] = (  # type: ignore[no-redef]
-                prompt | self.model
-            )
-        work_chain: RunnableSerializable[dict[str, Any], Any] = chain | RunnableLambda(
-            self.tag_with_name  # type: ignore[arg-type]
-        ).bind(name=member.name)
-        result: AIMessage = await work_chain.ainvoke(state, config)  # type: ignore[arg-type]
-        if result.tool_calls:
-            return {"messages": [result]}
-        else:
-            return {
-                "history": [result],
-                "messages": [],
-                "all_messages": state["messages"] + [result],
-            }
+        return_state: ReturnTeamState = {
+            "history": history + [result],
+            "messages": [result] if result.tool_calls else [],
+            "all_messages": messages + [result],
+        }
+        return return_state
 
 
 class LeaderNode(BaseNode):

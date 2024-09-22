@@ -95,7 +95,13 @@ def create_team(
     Create new team and it's team leader
     """
     team = Team.model_validate(team_in, update={"owner_id": current_user.id})
-    if team.workflow not in ["hierarchical", "sequential", "chatbot", "ragbot","workflow"]:
+    if team.workflow not in [
+        "hierarchical",
+        "sequential",
+        "chatbot",
+        "ragbot",
+        "workflow",
+    ]:
         raise HTTPException(status_code=400, detail="Invalid workflow")
     session.add(team)
     session.commit()
@@ -236,7 +242,9 @@ async def stream(
     for member in members:
         member.skills = member.skills
         member.uploads = member.uploads
-
+    graphs = team.graphs
+    for graph in graphs:
+        graph.config = graph.config
     return StreamingResponse(
         generator(team, members, team_chat.messages, thread_id, team_chat.interrupt),
         media_type="text/event-stream",

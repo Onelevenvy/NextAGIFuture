@@ -165,7 +165,9 @@ class Team(TeamBase, table=True):
     threads: list["Thread"] = Relationship(
         back_populates="team", sa_relationship_kwargs={"cascade": "delete"}
     )
-    graphs: list["Graph"] = Relationship(back_populates="team")
+    graphs: list["Graph"] = Relationship(
+        back_populates="team", sa_relationship_kwargs={"cascade": "delete"}
+    )
 
 
 # Properties to return via API, id is always required

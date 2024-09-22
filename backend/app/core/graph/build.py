@@ -768,7 +768,7 @@ async def generator(
             elif team.workflow in ["workflow"]:
 
                 # config = config_with_2_tool_router
-                config = new_config
+                config = team.graphs[0].config
 
                 root = initialize_graph(config, checkpointer, save_graph_img=False)
 
