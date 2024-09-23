@@ -5,9 +5,12 @@
 export const $GraphUpdate = {
     properties: {
         name: {
-            type: 'string',
-            isRequired: true,
-            pattern: '^[a-zA-Z0-9_-]{1,64}$',
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
         },
         description: {
             type: 'any-of',
@@ -31,24 +34,10 @@ export const $GraphUpdate = {
                 },
             },
         },
-        created_at: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-                format: 'date-time',
-            }, {
-                type: 'null',
-            }],
-            isRequired: true,
-        },
         updated_at: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-                format: 'date-time',
-            }, {
-                type: 'null',
-            }],
+            type: 'string',
+            isRequired: true,
+            format: 'date-time',
         },
     },
 } as const;

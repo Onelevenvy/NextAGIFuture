@@ -30,17 +30,15 @@ import {
   MenuList,
   MenuItem,
   IconButton,
-  useToast,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { nodeConfig, NodeType } from "./nodes/nodeConfig";
 import BaseProperties from "./nodes/Base/Properties";
 import { GraphsService } from "@/client/services/GraphsService";
 import { GraphUpdate } from "@/client/models/GraphUpdate";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { ApiError } from "@/client";
-import { SubmitHandler } from "react-hook-form";
-import configsss from "@/app/flow/show/graphConfig";
+import useCustomToast from "@/hooks/useCustomToast";
 
 interface NodeData {
   label: string;
@@ -61,6 +59,7 @@ export interface FlowVisualizerProps {
   initialEdges: Edge[];
   nodeTypes: NodeTypes;
   defaultEdgeOptions?: DefaultEdgeOptions;
+  teamId: number; // 新增：从props接收teamId
 }
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
@@ -68,6 +67,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   initialEdges,
   nodeTypes,
   defaultEdgeOptions,
+  teamId, // 新增：接收teamId
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -79,7 +79,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     y: number;
     nodeId: string | null;
   }>({ x: 0, y: 0, nodeId: null });
-
+  const showToast = useCustomToast();
   const [nameError, setNameError] = useState<string | null>(null);
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
@@ -331,7 +331,23 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     closeContextMenu();
   }, [contextMenu.nodeId, setNodes, setEdges, closeContextMenu]);
 
-  const saveConfig = () => {
+  // 获取当前team的graph
+  const { data: graphData, isLoading: isGraphLoading } = useQuery(
+    ["graph", teamId],
+    () => GraphsService.readGraphs({ teamId }),
+    {
+      enabled: !!teamId,
+      onError: (error: ApiError) => {
+        showToast("Something went wrong.", `${error}`, "error");
+      },
+    }
+  );
+
+  const graphId = graphData?.data[0]?.id;
+  const graphName = graphData?.data[0]?.name;
+  const graphDescription = graphData?.data[0]?.description;
+
+  const saveConfig = (): Record<string, any> => {
     const startEdge = edges.find((edge) => {
       const sourceNode = nodes.find(
         (node) => node.id === edge.source && node.type === "start"
@@ -340,7 +356,8 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     });
 
     const entryPointId = startEdge ? startEdge.target : null;
-    const config = {
+
+    return {
       id: v4(),
       name: "Flow Visualization",
       nodes: nodes.map((node) => {
@@ -393,54 +410,52 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           })),
       },
     };
-
-    console.log(JSON.stringify(config, null, 2));
-    return config;
-    // 这里您可以实现将配置保存到文件或发送到服务器的逻辑
   };
 
-  const config = saveConfig();
-  const updateTeam = async (data: GraphUpdate) => {
+  const updateGraph = async (data: GraphUpdate) => {
+    if (!graphId) {
+      throw new Error("No graph found for this team");
+    }
     return await GraphsService.updateGraph({
-      teamId: 39,
-      id: 6,
+      teamId,
+      id: graphId,
       requestBody: data,
     });
   };
 
-  const mutation = useMutation(updateTeam, {
+  const mutation = useMutation(updateGraph, {
     onSuccess: (data) => {
-      console.log("Success!", "Team updated successfully.", "success");
-      // reset(data); // reset isDirty after updating
-      // onClose();
+      showToast("Success!", "Graph updated.", "success");
     },
     onError: (err: ApiError) => {
-      const errDetail = err.body?.detail;
-      console.log("Something went wrong.", `${errDetail}`, "error");
+      const errDetail = err.body?.detail || "An error occurred";
+      showToast("Something went wrong.", `${errDetail}`, "error");
     },
-    // onSettled: () => {
-    //   queryClient.invalidateQueries("teams");
-    // },
   });
 
-  const onSubmit: SubmitHandler<GraphUpdate> = async (data) => {
-    mutation.mutate(data);
+  const onSave = () => {
+    if (!graphId) {
+      showToast(
+        "Something went wrong.",
+        "No graph found for this team",
+        "error"
+      );
+      return;
+    }
+
+    const config = saveConfig();
+    const currentDate = new Date().toISOString();
+
+    const updateData: GraphUpdate = {
+      name: graphName,
+      description: graphDescription,
+      config: config,
+      updated_at: currentDate,
+    };
+
+    mutation.mutate(updateData);
   };
 
-  const onSave = () => {
-    GraphsService.updateGraph({
-      teamId: 39,
-      id: 6,
-      requestBody: {
-        name: "8oPYnLP9tUWtAgiPgiH3orqIxD90ws1RA3wG0X9kiDqexK",
-        description: "string",
-        config: config,
-        metadata_: {},
-        created_at: "2024-09-22T03:54:15.172000Z",
-        updated_at: "2024-09-22T03:54:15.172000Z",
-      },
-    });
-  };
   // 使用 useMemo 来记忆化 nodeTypes 和 defaultEdgeOptions
   const memoizedNodeTypes = useMemo(() => nodeTypes, [nodeTypes]);
   const memoizedDefaultEdgeOptions = useMemo(
@@ -546,7 +561,14 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           )}
         </Box>
       )}
-      <Button onClick={onSave} position="absolute" top={4} right={4}>
+      <Button
+        onClick={onSave}
+        position="absolute"
+        top={4}
+        right={4}
+        isLoading={mutation.isLoading}
+        loadingText="Saving..."
+      >
         保存配置
       </Button>
     </Box>

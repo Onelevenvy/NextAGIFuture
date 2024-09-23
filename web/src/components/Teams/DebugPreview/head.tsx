@@ -23,7 +23,7 @@ function DebugPreviewHead({
   teamId,
   triggerSubmit,
 }: {
-  teamId: string;
+  teamId: number;
   triggerSubmit: () => void;
 }) {
   const bgColor = useColorModeValue("ui.bgMain", "ui.bgMainDark");

@@ -6,7 +6,7 @@ function DebugPreview({
   teamId,
   triggerSubmit,
 }: {
-  teamId: string;
+  teamId: number;
   triggerSubmit: () => void;
 }) {
   return (

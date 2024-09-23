@@ -5,11 +5,12 @@ import { ReactFlowProvider } from "reactflow";
 import FlowVisualizer from "./FlowVisualizer";
 import { nodeTypes } from "./nodes";
 
-export default function TqxWorkflow({ buildConfig }: { buildConfig: any }) {
+export default function TqxWorkflow({ buildConfig,teamId }: { buildConfig: any,teamId: number }) {
   return (
     <Box h="full" w="full">
       <ReactFlowProvider>
         <FlowVisualizer
+        teamId={teamId}
           initialNodes={buildConfig?.nodes || []}
           initialEdges={buildConfig?.edges || []}
           nodeTypes={nodeTypes}

@@ -609,6 +609,22 @@ class GraphBase(SQLModel):
         sa_column=Column("metadata", JSONB, nullable=False, server_default="{}"),
     )
 
+
+class GraphCreate(GraphBase):
+    created_at: datetime
+
+
+class GraphUpdate(GraphBase):
+    name: str | None = None
+    updated_at: datetime
+
+
+class Graph(GraphBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    owner_id: int | None = Field(default=None, foreign_key="user.id", nullable=False)
+    owner: User | None = Relationship(back_populates="graphs")
+    team_id: int = Field(foreign_key="team.id", nullable=False)
+    team: Team = Relationship(back_populates="graphs")
     created_at: datetime | None = Field(
         sa_column=Column(
             DateTime(timezone=True),
@@ -626,27 +642,6 @@ class GraphBase(SQLModel):
             server_default=func.now(),
         )
     )
-
-
-class GraphCreate(GraphBase):
-    pass
-
-
-class GraphUpdate(GraphBase):
-    config: dict[Any, Any] = Field(default_factory=dict, sa_column=Column(JSONB))
-    metadata_: dict[Any, Any] = Field(
-        default_factory=dict,
-        sa_column=Column("metadata", JSONB, nullable=False, server_default="{}"),
-    )
-    updated_at: datetime | None = None
-
-
-class Graph(GraphBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    owner_id: int | None = Field(default=None, foreign_key="user.id", nullable=False)
-    owner: User | None = Relationship(back_populates="graphs")
-    team_id: int = Field(foreign_key="team.id", nullable=False)
-    team: Team = Relationship(back_populates="graphs")
 
 
 class GraphOut(GraphBase):
