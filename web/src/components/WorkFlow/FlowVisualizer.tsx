@@ -24,6 +24,8 @@ import {
   MenuItem,
   CloseButton,
   Kbd,
+  useColorModeValue,
+  Text,
 } from "@chakra-ui/react";
 import { nodeConfig, NodeType } from "./nodes/nodeConfig";
 import BaseProperties from "./nodes/Base/Properties";
@@ -31,7 +33,7 @@ import { CustomNode, FlowVisualizerProps } from "./types";
 import { useFlowState } from "@/hooks/graphs/useFlowState";
 import { useContextMenu } from "@/hooks/graphs/useContextMenu";
 import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
-import { MdOutlineHelp } from "react-icons/md";
+import { MdBuild, MdOutlineHelp } from "react-icons/md";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -57,7 +59,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   );
 
   const { contextMenu, onNodeContextMenu, closeContextMenu } = useContextMenu();
-
+  const buttonColor = useColorModeValue("ui.main", "ui.main");
   const reactFlowInstance = useReactFlow();
 
   const onNodeClick = useCallback(
@@ -344,15 +346,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
             style={{ background: "#f1f1f1" }}
           />
           <MiniMap />
-          <Panel position="top-right">
-            <Button
-              onClick={onSave}
-              isLoading={isSaving}
-              loadingText="Saving..."
-            >
-              Save Graph
-            </Button>
-          </Panel>
+
           <Panel position="top-left">
             <MdOutlineHelp
               onMouseEnter={toggleShortcutPanel}
@@ -385,11 +379,27 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
                 top: `${contextMenu.y}px`,
               }}
             >
-              <MenuItem onClick={deleteNode}>删除节点</MenuItem>
+              <MenuItem onClick={deleteNode}>Delete Node</MenuItem>
             </MenuList>
           </Menu>
         )}
       </Box>
+      {/* <Panel position="top-right" > */}
+      <Button
+        bg={buttonColor}
+        borderRadius={"md"}
+        onClick={onSave}
+        isLoading={isSaving}
+        loadingText="Saving..."
+        _hover={{ backgroundColor: "#1c86ee" }}
+        rightIcon={<MdBuild color={"white"} />}
+        position={"absolute"}
+        right={"20px"}
+        top={"8px"}
+      >
+        <Text color={"white"}>Deploy</Text>
+      </Button>
+      {/* </Panel> */}
       {selectedNodeId && (
         <Box
           position="relative"
