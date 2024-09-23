@@ -1,11 +1,10 @@
-import { Box, Button, Flex, IconButton, Spinner } from "@chakra-ui/react";
+import { Box, Button, CloseButton, Flex, Spinner } from "@chakra-ui/react";
 import useCustomToast from "@/hooks/useCustomToast";
 import DebugPreview from "./DebugPreview";
 import TqxWorkflow from "../WorkFlow";
 import { useEffect, useState } from "react";
 import { ApiError, GraphsService } from "@/client";
 import { useQuery, useQueryClient } from "react-query";
-import { CloseIcon } from "@chakra-ui/icons";
 
 interface WorkflowSettingProps {
   teamId: number;
@@ -132,6 +131,13 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
           )
         )}
       </Box>
+
+      {!showDebugPreview && (
+        <Button onClick={() => setShowDebugPreview(true)}>
+          Show Debug Preview
+        </Button>
+      )}
+
       {showDebugPreview && (
         <Box
           width="20%"
@@ -139,31 +145,20 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
           borderLeft="1px solid"
           borderColor="gray.200"
         >
-          <IconButton
-            aria-label="Close Debug Preview"
-            icon={<CloseIcon />}
-            size="sm"
+          <CloseButton
             position="absolute"
             top={2}
             right={2}
             onClick={() => setShowDebugPreview(false)}
+            size={"lg"}
           />
+
           <DebugPreview
             teamId={currentTeamId}
             triggerSubmit={triggerSubmit}
             useDeployButton={false}
           />
         </Box>
-      )}
-      {!showDebugPreview && (
-        <Button
-          position="fixed"
-          bottom={4}
-          right={4}
-          onClick={() => setShowDebugPreview(true)}
-        >
-          Show Debug Preview
-        </Button>
       )}
     </Flex>
   );
