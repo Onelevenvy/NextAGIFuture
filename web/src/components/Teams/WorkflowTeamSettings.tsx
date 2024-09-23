@@ -21,9 +21,13 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
     isLoading,
     isError,
     error,
-  } = useQuery(["graphs", currentTeamId], () => GraphsService.readGraphs({ teamId: currentTeamId }), {
-    keepPreviousData: true,
-  });
+  } = useQuery(
+    ["graphs", currentTeamId],
+    () => GraphsService.readGraphs({ teamId: currentTeamId }),
+    {
+      keepPreviousData: true,
+    }
+  );
 
   const createDefaultGraph = async (teamId: number) => {
     try {
@@ -125,7 +129,11 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
                 <TqxWorkflow teamId={currentTeamId} graphData={graphs} />
               </Box>
               <Box w="20%">
-                <DebugPreview teamId={currentTeamId} triggerSubmit={triggerSubmit} />
+                <DebugPreview
+                  teamId={currentTeamId}
+                  triggerSubmit={triggerSubmit}
+                  useDeployButton={false}
+                />
               </Box>
             </>
           )}

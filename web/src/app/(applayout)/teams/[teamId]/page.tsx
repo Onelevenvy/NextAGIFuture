@@ -102,6 +102,7 @@ function Team() {
                     <DebugPreview
                       teamId={Number.parseInt(teamId)}
                       triggerSubmit={triggerSubmit}
+                      useDeployButton={true}
                     />
                   </Box>
                 </Box>
@@ -116,6 +117,7 @@ function Team() {
                   <WorkflowTeamSettings
                     teamId={Number.parseInt(teamId)}
                     triggerSubmit={triggerSubmit}
+                    
                   />
                 </Box>
               ) : (

@@ -23,14 +23,15 @@ import {
   MenuList,
   MenuItem,
   CloseButton,
+  Kbd,
 } from "@chakra-ui/react";
 import { nodeConfig, NodeType } from "./nodes/nodeConfig";
 import BaseProperties from "./nodes/Base/Properties";
-
 import { CustomNode, FlowVisualizerProps } from "./types";
 import { useFlowState } from "@/hooks/graphs/useFlowState";
 import { useContextMenu } from "@/hooks/graphs/useContextMenu";
 import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
+import { MdOutlineHelp } from "react-icons/md";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -234,7 +235,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     },
     [nodes, reactFlowInstance, setNodes, onNodeDataChange, generateUniqueName]
   );
-
+  const closePropertiesPanel = useCallback(() => {
+    setSelectedNodeId(null);
+  }, [setSelectedNodeId]);
   const deleteNode = useCallback(() => {
     if (contextMenu.nodeId) {
       setNodes((nds) => nds.filter((node) => node.id !== contextMenu.nodeId));
@@ -247,8 +250,15 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       );
     }
     closeContextMenu();
-  }, [contextMenu.nodeId, setNodes, setEdges, closeContextMenu]);
-  // console.log(graphs?.data[0]);
+    closePropertiesPanel();
+  }, [
+    contextMenu.nodeId,
+    setNodes,
+    setEdges,
+    closeContextMenu,
+    closePropertiesPanel,
+  ]);
+
   const {
     id: graphId,
     name: graphName,
@@ -275,10 +285,15 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     <Panel position="bottom-right">{Math.round(zoom * 100)}%</Panel>
   );
 
-  const closePropertiesPanel = useCallback(() => {
-    setSelectedNodeId(null);
-  }, [setSelectedNodeId]);
+  const [isShortcutPanelVisible, setShortcutPanelVisible] = useState(false); // Add this state
 
+  const toggleShortcutPanel = () => {
+    setShortcutPanelVisible((prev) => !prev);
+  };
+
+  const hideShortcutPanel = () => {
+    setShortcutPanelVisible(false);
+  };
   return (
     <Box
       display="flex"
@@ -329,6 +344,35 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
             style={{ background: "#f1f1f1" }}
           />
           <MiniMap />
+          <Panel position="top-right">
+            <Button
+              onClick={onSave}
+              isLoading={isSaving}
+              loadingText="Saving..."
+            >
+              Save Graph
+            </Button>
+          </Panel>
+          <Panel position="top-left">
+            <MdOutlineHelp
+              onMouseEnter={toggleShortcutPanel}
+              onMouseLeave={hideShortcutPanel}
+              cursor="pointer"
+            />
+            {isShortcutPanelVisible && (
+              <Box bg="white" p={2} borderRadius="md" boxShadow="md">
+                Shortcut:
+                <br /> Change edges type:<Kbd>E</Kbd>
+                <br />
+                Delete:<Kbd>Backspace</Kbd> <Kbd>Delete</Kbd>
+                <br />
+                Info:
+                <br /> solid line: Normal edge
+                <br />
+                dashed line: Conditional edge
+              </Box>
+            )}
+          </Panel>
           <ZoomDisplay />
         </ReactFlow>
         {contextMenu.nodeId && (
@@ -366,16 +410,6 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           )}
         </Box>
       )}
-      <Button
-        onClick={onSave}
-        position="absolute"
-        top={4}
-        right={4}
-        isLoading={isSaving}
-        loadingText="Saving..."
-      >
-        保存配置
-      </Button>
     </Box>
   );
 };

@@ -95,6 +95,7 @@ export default function NormalTeamSettings({
               <DebugPreview
                 teamId={Number.parseInt(teamId)}
                 triggerSubmit={triggerSubmit}
+                useDeployButton={true}
               />
             </Box>
           </Box>
