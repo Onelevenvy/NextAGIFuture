@@ -1,10 +1,20 @@
-import { Box, Button, CloseButton, Flex, Spinner } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  CloseButton,
+  Flex,
+  Spinner,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import useCustomToast from "@/hooks/useCustomToast";
 import DebugPreview from "./DebugPreview";
 import TqxWorkflow from "../WorkFlow";
 import { useEffect, useState } from "react";
 import { ApiError, GraphsService } from "@/client";
 import { useQuery, useQueryClient } from "react-query";
+import PaneStateControl from "../Common/PaneStateControl";
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 
 interface WorkflowSettingProps {
   teamId: number;
@@ -27,6 +37,10 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
     {
       keepPreviousData: true,
     }
+  );
+  const selctedColor = useColorModeValue(
+    "ui.selctedColor",
+    "ui.selctedColorDark"
   );
 
   const createDefaultGraph = async (teamId: number) => {
@@ -114,8 +128,10 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
     const errDetail = (error as ApiError).body?.detail;
     showToast("Something went wrong.", `${errDetail}`, "error");
   }
-  const [showDebugPreview, setShowDebugPreview] = useState(false);
-
+  const [showDebugPreview, setShowDebugPreview] = useState(true);
+  const toggleDebugPreview = () => {
+    setShowDebugPreview(!showDebugPreview);
+  };
   return (
     <Flex width="full" height="full">
       <Box width={showDebugPreview ? "80%" : "100%"} transition="width 0.3s">
@@ -131,13 +147,14 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
           )
         )}
       </Box>
-
-      {!showDebugPreview && (
-        <Button onClick={() => setShowDebugPreview(true)}>
-          Show Debug Preview
-        </Button>
-      )}
-
+      <Center>
+        <PaneStateControl
+          selectedColor={selctedColor}
+          onClick={toggleDebugPreview}
+          background={"transparent"}
+          Icon={showDebugPreview ? LuChevronRight : LuChevronLeft}
+        />
+      </Center>
       {showDebugPreview && (
         <Box
           width="20%"
@@ -145,14 +162,6 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
           borderLeft="1px solid"
           borderColor="gray.200"
         >
-          <CloseButton
-            position="absolute"
-            top={2}
-            right={2}
-            onClick={() => setShowDebugPreview(false)}
-            size={"lg"}
-          />
-
           <DebugPreview
             teamId={currentTeamId}
             triggerSubmit={triggerSubmit}

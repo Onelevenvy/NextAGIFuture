@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { MdBuild } from "react-icons/md";
 import ChatHistoryList from "@/components/Playground/ChatHistoryList";
 import { LuHistory } from "react-icons/lu";
+import { useState } from "react";
 
 function DebugPreviewHead({
   teamId,
@@ -31,6 +32,7 @@ function DebugPreviewHead({
   const bgColor = useColorModeValue("ui.bgMain", "ui.bgMainDark");
   const buttonColor = useColorModeValue("ui.main", "ui.main");
   const { t } = useTranslation();
+
   return (
     <Box
       display={"flex"}
@@ -85,6 +87,7 @@ function DebugPreviewHead({
             <Text color={"white"}>{t("team.teamsetting.savedeploy")}</Text>
           </Button>
         )}
+        
       </Box>
     </Box>
   );

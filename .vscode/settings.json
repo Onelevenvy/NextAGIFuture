@@ -5,7 +5,7 @@
             "server": "localhost",
             "port": 5432,
             "driver": "PostgreSQL",
-            "name": "next",
+            "name": "n",
             "database": "evoagi",
             "username": "postgres",
             "password": "evoagi123456"

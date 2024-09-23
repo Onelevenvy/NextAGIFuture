@@ -25,7 +25,7 @@ import {
   CloseButton,
   Kbd,
   useColorModeValue,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import { nodeConfig, NodeType } from "./nodes/nodeConfig";
 import BaseProperties from "./nodes/Base/Properties";
@@ -346,19 +346,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
             style={{ background: "#f1f1f1" }}
           />
           <MiniMap />
-          <Panel position="top-right">
-            <Button
-            bg={buttonColor}
-            borderRadius={"md"}
-              onClick={onSave}
-              isLoading={isSaving}
-              loadingText="Saving..."
-              _hover={{ backgroundColor: "#1c86ee" }}
-              rightIcon={<MdBuild color={"white"} />}
-            > <Text color={"white"}>Deploy</Text>
-              
-            </Button>
-          </Panel>
+
           <Panel position="top-left">
             <MdOutlineHelp
               onMouseEnter={toggleShortcutPanel}
@@ -391,11 +379,27 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
                 top: `${contextMenu.y}px`,
               }}
             >
-              <MenuItem onClick={deleteNode}>删除节点</MenuItem>
+              <MenuItem onClick={deleteNode}>Delete Node</MenuItem>
             </MenuList>
           </Menu>
         )}
       </Box>
+      {/* <Panel position="top-right" > */}
+      <Button
+        bg={buttonColor}
+        borderRadius={"md"}
+        onClick={onSave}
+        isLoading={isSaving}
+        loadingText="Saving..."
+        _hover={{ backgroundColor: "#1c86ee" }}
+        rightIcon={<MdBuild color={"white"} />}
+        position={"absolute"}
+        right={"20px"}
+        top={"8px"}
+      >
+        <Text color={"white"}>Deploy</Text>
+      </Button>
+      {/* </Panel> */}
       {selectedNodeId && (
         <Box
           position="relative"

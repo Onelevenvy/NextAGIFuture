@@ -5,11 +5,11 @@ import DebugPreviewHead from "./head";
 function DebugPreview({
   teamId,
   triggerSubmit,
-  useDeployButton
+  useDeployButton,
 }: {
   teamId: number;
   triggerSubmit: () => void;
-  useDeployButton:boolean
+  useDeployButton: boolean;
 }) {
   return (
     <Box
@@ -20,10 +20,12 @@ function DebugPreview({
       display={"flex"}
       flexDirection={"column"}
     >
-      <Box 
-      py="5"
-       overflow={"hidden"}>
-        <DebugPreviewHead teamId={teamId} triggerSubmit={triggerSubmit} useDeployButton={useDeployButton} />
+      <Box py="5" overflow={"hidden"}>
+        <DebugPreviewHead
+          teamId={teamId}
+          triggerSubmit={triggerSubmit}
+          useDeployButton={useDeployButton}
+        />
       </Box>
       <Box
         display={"flex"}
