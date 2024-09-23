@@ -1,6 +1,11 @@
 "use client";
-import React, { useCallback, useMemo, useState, KeyboardEvent } from "react";
-import { v4 } from "uuid";
+import React, {
+  useCallback,
+  useMemo,
+  KeyboardEvent,
+  useEffect,
+  useState,
+} from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -8,14 +13,9 @@ import ReactFlow, {
   Node,
   Edge,
   ConnectionLineType,
-  NodeTypes,
-  DefaultEdgeOptions,
-  addEdge,
   Connection,
   useReactFlow,
   MarkerType,
-  useEdgesState,
-  useNodesState,
   Panel,
   useViewport,
 } from "reactflow";
@@ -30,60 +30,76 @@ import {
   MenuList,
   MenuItem,
   IconButton,
+  Spinner,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { nodeConfig, NodeType } from "./nodes/nodeConfig";
 import BaseProperties from "./nodes/Base/Properties";
-import { GraphsService } from "@/client/services/GraphsService";
-import { GraphUpdate } from "@/client/models/GraphUpdate";
-import { useMutation, useQuery } from "react-query";
-import { ApiError } from "@/client";
 import useCustomToast from "@/hooks/useCustomToast";
-
-interface NodeData {
-  label: string;
-  customName?: string; // 新增：用于存储自定义名称
-  onChange?: (key: string, value: any) => void;
-  model?: string;
-  temperature?: number;
-  tool?: string[];
-  [key: string]: any; // 添加索引签名
-}
-
-interface CustomNode extends Node {
-  data: NodeData;
-}
-
-export interface FlowVisualizerProps {
-  initialNodes: CustomNode[];
-  initialEdges: Edge[];
-  nodeTypes: NodeTypes;
-  defaultEdgeOptions?: DefaultEdgeOptions;
-  teamId: number; // 新增：从props接收teamId
-}
+import { CustomNode, FlowVisualizerProps } from "./types";
+import { useGraphStore } from "@/stores/graphStore";
+import { useFlowState } from "@/hooks/graphs/useFlowState";
+import { useContextMenu } from "@/hooks/graphs/useContextMenu";
+import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   initialNodes,
   initialEdges,
   nodeTypes,
   defaultEdgeOptions,
-  teamId, // 新增：接收teamId
+  teamId,
 }) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const {
+    graphs,
+    isLoading: isGraphLoading,
+    error: graphError,
+    fetchGraphs,
+  } = useGraphStore();
+  const showToast = useCustomToast();
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    const initializeGraph = async () => {
+      if (teamId && !isInitialized) {
+        await fetchGraphs(teamId);
+        setIsInitialized(true);
+      }
+    };
+
+    initializeGraph();
+  }, [teamId, fetchGraphs, isInitialized]);
+
+  const {
+    nodes,
+    setNodes,
+    edges,
+    setEdges,
+    selectedNodeId,
+    setSelectedNodeId,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    onNodeDataChange,
+  } = useFlowState(
+    isInitialized && graphs?.data[0]?.config?.nodes
+      ? graphs.data[0].config.nodes
+      : initialNodes,
+    isInitialized && graphs?.data[0]?.config?.edges
+      ? graphs.data[0].config.edges
+      : initialEdges
+  );
+
+  const { contextMenu, onNodeContextMenu, closeContextMenu } = useContextMenu();
 
   const reactFlowInstance = useReactFlow();
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [contextMenu, setContextMenu] = useState<{
-    x: number;
-    y: number;
-    nodeId: string | null;
-  }>({ x: 0, y: 0, nodeId: null });
-  const showToast = useCustomToast();
   const [nameError, setNameError] = useState<string | null>(null);
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    setSelectedNodeId(node.id);
-  }, []);
+
+  const onNodeClick = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      setSelectedNodeId(node.id);
+    },
+    [setSelectedNodeId]
+  );
 
   const nodesWithSelection = useMemo(() => {
     return nodes?.map((node) => ({
@@ -162,56 +178,6 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     },
     [nodes, edges]
   );
-  const onNodeDataChange = useCallback(
-    (nodeId: string, key: string, value: any) => {
-      setNodes((nds) =>
-        nds.map((node) => {
-          if (node.id === nodeId) {
-            if (key === "label") {
-              // Check if the new name already exists
-              const isNameExists = nds.some(
-                (n) => n.id !== nodeId && n.data.label === value
-              );
-              if (isNameExists) {
-                setNameError("Node name already exists");
-                return node;
-              }
-              setNameError(null);
-            }
-            return {
-              ...node,
-              data: {
-                ...node.data,
-                [key]: value,
-              },
-            };
-          }
-          return node;
-        })
-      );
-    },
-    [setNodes]
-  );
-  const onConnect = useCallback(
-    (connection: Connection) => {
-      if (isValidConnection(connection)) {
-        const newEdge = {
-          ...connection,
-          type: "default",
-          animated: false,
-          style: { strokeDasharray: "none" },
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-            width: 20,
-            height: 20,
-            color: "#000",
-          },
-        };
-        setEdges((eds) => addEdge(newEdge, eds));
-      }
-    },
-    [setEdges, isValidConnection]
-  );
 
   const toggleEdgeType = useCallback(
     (edge: Edge) => {
@@ -234,6 +200,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     },
     [setEdges]
   );
+
   const onEdgeContextMenu = useCallback(
     (event: React.MouseEvent, edge: Edge) => {
       event.preventDefault();
@@ -251,6 +218,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     },
     [edges, toggleEdgeType]
   );
+
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
@@ -301,21 +269,6 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     },
     [nodes, reactFlowInstance, setNodes, onNodeDataChange, generateUniqueName]
   );
-  const onNodeContextMenu = useCallback(
-    (event: React.MouseEvent, node: Node) => {
-      event.preventDefault();
-      setContextMenu({
-        x: event.clientX,
-        y: event.clientY,
-        nodeId: node.id,
-      });
-    },
-    []
-  );
-
-  const closeContextMenu = useCallback(() => {
-    setContextMenu({ x: 0, y: 0, nodeId: null });
-  }, []);
 
   const deleteNode = useCallback(() => {
     if (contextMenu.nodeId) {
@@ -331,132 +284,21 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     closeContextMenu();
   }, [contextMenu.nodeId, setNodes, setEdges, closeContextMenu]);
 
-  // 获取当前team的graph
-  const { data: graphData, isLoading: isGraphLoading } = useQuery(
-    ["graph", teamId],
-    () => GraphsService.readGraphs({ teamId }),
-    {
-      enabled: !!teamId,
-      onError: (error: ApiError) => {
-        showToast("Something went wrong.", `${error}`, "error");
-      },
-    }
+  const {
+    id: graphId,
+    name: graphName,
+    description: graphDescription,
+  } = graphs?.data[0] || {};
+
+  const { onSave, isLoading: isSaving } = useGraphConfig(
+    teamId,
+    graphId,
+    graphName,
+    graphDescription,
+    nodes,
+    edges
   );
 
-  const graphId = graphData?.data[0]?.id;
-  const graphName = graphData?.data[0]?.name;
-  const graphDescription = graphData?.data[0]?.description;
-
-  const saveConfig = (): Record<string, any> => {
-    const startEdge = edges.find((edge) => {
-      const sourceNode = nodes.find(
-        (node) => node.id === edge.source && node.type === "start"
-      );
-      return sourceNode !== undefined;
-    });
-
-    const entryPointId = startEdge ? startEdge.target : null;
-
-    return {
-      id: v4(),
-      name: "Flow Visualization",
-      nodes: nodes.map((node) => {
-        const nodeType = node.type as NodeType;
-        const initialData = nodeConfig[nodeType].initialData || {};
-        const nodeData: Record<string, any> = {
-          label: node.data.label,
-        };
-
-        Object.keys(initialData).forEach((key) => {
-          if (node.data[key as keyof NodeData] !== undefined) {
-            nodeData[key] = node.data[key as keyof NodeData];
-          }
-        });
-
-        return {
-          id: node.id,
-          type: node.type,
-          position: node.position,
-          data: nodeData,
-        };
-      }),
-      edges: edges.map((edge) => ({
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-        sourceHandle: edge.sourceHandle || "bottom",
-        targetHandle: edge.targetHandle || "top",
-        type: edge.type,
-      })),
-      metadata: {
-        entry_point: entryPointId,
-        start_connections: edges
-          .filter((edge) =>
-            nodes.find(
-              (node) => node.id === edge.source && node.type === "start"
-            )
-          )
-          .map((edge) => ({
-            target: edge.target,
-            type: edge.type,
-          })),
-        end_connections: edges
-          .filter((edge) =>
-            nodes.find((node) => node.id === edge.target && node.type === "end")
-          )
-          .map((edge) => ({
-            source: edge.source,
-            type: edge.type,
-          })),
-      },
-    };
-  };
-
-  const updateGraph = async (data: GraphUpdate) => {
-    if (!graphId) {
-      throw new Error("No graph found for this team");
-    }
-    return await GraphsService.updateGraph({
-      teamId,
-      id: graphId,
-      requestBody: data,
-    });
-  };
-
-  const mutation = useMutation(updateGraph, {
-    onSuccess: (data) => {
-      showToast("Success!", "Graph updated.", "success");
-    },
-    onError: (err: ApiError) => {
-      const errDetail = err.body?.detail || "An error occurred";
-      showToast("Something went wrong.", `${errDetail}`, "error");
-    },
-  });
-
-  const onSave = () => {
-    if (!graphId) {
-      showToast(
-        "Something went wrong.",
-        "No graph found for this team",
-        "error"
-      );
-      return;
-    }
-
-    const config = saveConfig();
-    const currentDate = new Date().toISOString();
-
-    const updateData: GraphUpdate = {
-      name: graphName,
-      description: graphDescription,
-      config: config,
-      updated_at: currentDate,
-    };
-
-    mutation.mutate(updateData);
-  };
-
-  // 使用 useMemo 来记忆化 nodeTypes 和 defaultEdgeOptions
   const memoizedNodeTypes = useMemo(() => nodeTypes, [nodeTypes]);
   const memoizedDefaultEdgeOptions = useMemo(
     () => defaultEdgeOptions,
@@ -470,7 +312,15 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
   const closePropertiesPanel = useCallback(() => {
     setSelectedNodeId(null);
-  }, []);
+  }, [setSelectedNodeId]);
+
+  if (isGraphLoading) {
+    return <Spinner />; // 或者其他加载指示器
+  }
+
+  if (graphError) {
+    showToast("Error loading graph data", `${graphError}`, "error");
+  }
 
   return (
     <Box
@@ -509,7 +359,6 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
             },
             style: { strokeWidth: 2 },
           }}
-          // fitView
           connectionLineType={ConnectionLineType.SmoothStep}
           onDragOver={onDragOver}
           onDrop={onDrop}
@@ -566,7 +415,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         position="absolute"
         top={4}
         right={4}
-        isLoading={mutation.isLoading}
+        isLoading={isSaving}
         loadingText="Saving..."
       >
         保存配置

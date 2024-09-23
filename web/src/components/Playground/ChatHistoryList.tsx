@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import { StarIcon, Trash2Icon } from "lucide-react";
-import useChatMessageStore from "@/store/chatMessageStore";
+import useChatMessageStore from "@/stores/chatMessageStore";
 
 interface ChatHistoryProps {
   teamId: number;

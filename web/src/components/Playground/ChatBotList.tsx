@@ -11,14 +11,14 @@ import { TeamsService, type ApiError } from "@/client";
 import useCustomToast from "@/hooks/useCustomToast";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import useChatTeamIdStore from "@/store/chatTeamIDStore"; // 引入 Zustand store
+import useChatTeamIdStore from "@/stores/chatTeamIDStore"; // 引入 Zustand store
 import { useTranslation } from "react-i18next";
 import { FaRobot } from "react-icons/fa";
-import useChatMessageStore from "@/store/chatMessageStore";
+import useChatMessageStore from "@/stores/chatMessageStore";
 import { tqxIconLibrary } from "../Icons/TqxIcon";
 
 const ChatBotList = () => {
-  const [selectedTeamId, setSelectedTeamId] = useState<string | null>("1");
+  const [selectedTeamId, setSelectedTeamId] = useState<string>("1");
   const showToast = useCustomToast();
   const navigate = useRouter();
   const { t } = useTranslation();
@@ -41,14 +41,14 @@ const ChatBotList = () => {
   const { setMessages } = useChatMessageStore();
   const handleRowClick = (teamId: string) => {
     setSelectedTeamId(teamId);
-    setTeamId(teamId); // 更新 Zustand store 中的 teamId
+    setTeamId(Number.parseInt(teamId)); // 更新 Zustand store 中的 teamId
     navigate.push(`/playground?teamId=${teamId}`);
     setMessages([]);
   };
 
   // 同步 selectedTeamId 和 Zustand store 中的 teamId
   useEffect(() => {
-    setTeamId(selectedTeamId);
+    setTeamId(Number.parseInt(selectedTeamId));
   }, [selectedTeamId, setTeamId]);
 
   return (

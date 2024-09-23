@@ -2,12 +2,12 @@
 import { create } from "zustand";
 
 interface ChatTeamIdStore {
-  teamId: string | null;
-  setTeamId: (teamId: string | null) => void;
+  teamId: number;
+  setTeamId: (teamId: number) => void;
 }
 
 const useChatTeamIdStore = create<ChatTeamIdStore>((set) => ({
-  teamId: null,
+  teamId: 1,
   setTeamId: (teamId) => set(() => ({ teamId })),
 }));
 
