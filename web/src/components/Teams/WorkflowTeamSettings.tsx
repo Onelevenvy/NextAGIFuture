@@ -89,10 +89,7 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
 
   useEffect(() => {
     const initializeGraphs = async () => {
-      if (
-        graphs?.data.length === 0 ||
-        graphs?.data.some((graph) => !graph.config)
-      ) {
+      if (graphs?.data.length === 0) {
         await createDefaultGraph(teamId);
       }
     };
@@ -113,7 +110,7 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
         </Flex>
       ) : (
         <>
-          {graphs && graphs.data[0].config && (
+          {graphs && (
             <>
               <Box w="80%" maxH={"full"} bg={"#f6f8fa"} mr="2">
                 <TqxWorkflow teamId={teamId} graphData={graphs} />

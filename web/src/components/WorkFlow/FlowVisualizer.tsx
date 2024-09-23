@@ -22,7 +22,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  IconButton,
+  CloseButton,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { nodeConfig, NodeType } from "./nodes/nodeConfig";
@@ -280,14 +280,6 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     setSelectedNodeId(null);
   }, [setSelectedNodeId]);
 
-  // if (isGraphLoading) {
-  //   return <Spinner />; // 或者其他加载指示器
-  // }
-
-  // if (graphError) {
-  //   showToast("Error loading graph data", `${graphError}`, "error");
-  // }
-
   return (
     <Box
       display="flex"
@@ -362,15 +354,15 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           borderLeft="1px solid #ccc"
           p={4}
         >
-          <IconButton
-            aria-label="Close properties panel"
-            icon={<CloseIcon />}
-            size="sm"
+         
+          <CloseButton
+            onClick={closePropertiesPanel}
             position="absolute"
             right={2}
             top={2}
-            onClick={closePropertiesPanel}
+            size={"lg"}
           />
+
           {getNodePropertiesComponent(
             nodes.find((n) => n.id === selectedNodeId) || null
           )}
