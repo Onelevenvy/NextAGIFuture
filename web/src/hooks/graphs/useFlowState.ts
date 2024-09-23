@@ -13,7 +13,7 @@ export function useFlowState(initialNodes: CustomNode[], initialEdges: Edge[]) {
   const [nodes, setNodes] = useState<CustomNode[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-
+  const [nameError, setNameError] = useState<string | null>(null);
   const onNodesChange = useCallback((changes: any) => {
     setNodes((nds) => applyNodeChanges(changes, nds));
   }, []);
@@ -25,12 +25,22 @@ export function useFlowState(initialNodes: CustomNode[], initialEdges: Edge[]) {
   const onConnect = useCallback((connection: Connection) => {
     setEdges((eds) => addEdge(connection, eds));
   }, []);
-
   const onNodeDataChange = useCallback(
     (nodeId: string, key: string, value: any) => {
       setNodes((nds) =>
         nds.map((node) => {
           if (node.id === nodeId) {
+            if (key === "label") {
+              // Check if the new name already exists
+              const isNameExists = nds.some(
+                (n) => n.id !== nodeId && n.data.label === value
+              );
+              if (isNameExists) {
+                setNameError("Node name already exists");
+                return node;
+              }
+              setNameError(null);
+            }
             return {
               ...node,
               data: {
@@ -43,7 +53,7 @@ export function useFlowState(initialNodes: CustomNode[], initialEdges: Edge[]) {
         })
       );
     },
-    []
+    [setNodes]
   );
 
   return {
@@ -57,5 +67,6 @@ export function useFlowState(initialNodes: CustomNode[], initialEdges: Edge[]) {
     onEdgesChange,
     onConnect,
     onNodeDataChange,
+    nameError,
   };
 }

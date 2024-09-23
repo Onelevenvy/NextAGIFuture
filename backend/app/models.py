@@ -612,7 +612,7 @@ class GraphBase(SQLModel):
 
 class GraphCreate(GraphBase):
     created_at: datetime
-
+    updated_at: datetime
 
 class GraphUpdate(GraphBase):
     name: str | None = None

@@ -92,7 +92,10 @@ export default function NormalTeamSettings({
               flexDirection={"column"}
               overflow={"hidden"}
             >
-              <DebugPreview teamId={teamId} triggerSubmit={triggerSubmit} />
+              <DebugPreview
+                teamId={Number.parseInt(teamId)}
+                triggerSubmit={triggerSubmit}
+              />
             </Box>
           </Box>
         </Box>

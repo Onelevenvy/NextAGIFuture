@@ -1,11 +1,5 @@
 "use client";
-import React, {
-  useCallback,
-  useMemo,
-  KeyboardEvent,
-  useEffect,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, KeyboardEvent, useState } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -20,7 +14,6 @@ import ReactFlow, {
   useViewport,
 } from "reactflow";
 import "reactflow/dist/style.css";
-
 import NodePalette from "./NodePalette";
 import {
   Box,
@@ -30,45 +23,22 @@ import {
   MenuList,
   MenuItem,
   IconButton,
-  Spinner,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { nodeConfig, NodeType } from "./nodes/nodeConfig";
 import BaseProperties from "./nodes/Base/Properties";
-import useCustomToast from "@/hooks/useCustomToast";
+
 import { CustomNode, FlowVisualizerProps } from "./types";
-import { useGraphStore } from "@/stores/graphStore";
 import { useFlowState } from "@/hooks/graphs/useFlowState";
 import { useContextMenu } from "@/hooks/graphs/useContextMenu";
 import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
-  initialNodes,
-  initialEdges,
   nodeTypes,
   defaultEdgeOptions,
   teamId,
+  graphData,
 }) => {
-  const {
-    graphs,
-    isLoading: isGraphLoading,
-    error: graphError,
-    fetchGraphs,
-  } = useGraphStore();
-  const showToast = useCustomToast();
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  useEffect(() => {
-    const initializeGraph = async () => {
-      if (teamId && !isInitialized) {
-        await fetchGraphs(teamId);
-        setIsInitialized(true);
-      }
-    };
-
-    initializeGraph();
-  }, [teamId, fetchGraphs, isInitialized]);
-
   const {
     nodes,
     setNodes,
@@ -80,19 +50,15 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     onEdgesChange,
     onConnect,
     onNodeDataChange,
+    nameError,
   } = useFlowState(
-    isInitialized && graphs?.data[0]?.config?.nodes
-      ? graphs.data[0].config.nodes
-      : initialNodes,
-    isInitialized && graphs?.data[0]?.config?.edges
-      ? graphs.data[0].config.edges
-      : initialEdges
+    graphData?.data[0]?.config?.nodes,
+    graphData?.data[0]?.config?.edges
   );
 
   const { contextMenu, onNodeContextMenu, closeContextMenu } = useContextMenu();
 
   const reactFlowInstance = useReactFlow();
-  const [nameError, setNameError] = useState<string | null>(null);
 
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -283,12 +249,12 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     }
     closeContextMenu();
   }, [contextMenu.nodeId, setNodes, setEdges, closeContextMenu]);
-
+  // console.log(graphs?.data[0]);
   const {
     id: graphId,
     name: graphName,
     description: graphDescription,
-  } = graphs?.data[0] || {};
+  } = graphData?.data[0] || {};
 
   const { onSave, isLoading: isSaving } = useGraphConfig(
     teamId,
@@ -314,13 +280,13 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     setSelectedNodeId(null);
   }, [setSelectedNodeId]);
 
-  if (isGraphLoading) {
-    return <Spinner />; // 或者其他加载指示器
-  }
+  // if (isGraphLoading) {
+  //   return <Spinner />; // 或者其他加载指示器
+  // }
 
-  if (graphError) {
-    showToast("Error loading graph data", `${graphError}`, "error");
-  }
+  // if (graphError) {
+  //   showToast("Error loading graph data", `${graphError}`, "error");
+  // }
 
   return (
     <Box

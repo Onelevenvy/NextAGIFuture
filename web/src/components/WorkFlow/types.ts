@@ -1,4 +1,5 @@
-import { Node, Edge, NodeTypes, DefaultEdgeOptions } from 'reactflow';
+import { GraphsOut } from "@/client";
+import { Node, Edge, NodeTypes, DefaultEdgeOptions } from "reactflow";
 
 export interface NodeData {
   label: string;
@@ -15,8 +16,7 @@ export interface CustomNode extends Node {
 }
 
 export interface FlowVisualizerProps {
-  initialNodes: CustomNode[];
-  initialEdges: Edge[];
+  graphData: GraphsOut;
   nodeTypes: NodeTypes;
   defaultEdgeOptions?: DefaultEdgeOptions;
   teamId: number;
