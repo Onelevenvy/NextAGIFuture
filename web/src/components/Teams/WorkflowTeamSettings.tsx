@@ -2,9 +2,9 @@ import { Box, Flex, Spinner } from "@chakra-ui/react";
 import useCustomToast from "@/hooks/useCustomToast";
 import DebugPreview from "./DebugPreview";
 import TqxWorkflow from "../WorkFlow";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ApiError, GraphsService } from "@/client";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 
 interface WorkflowSettingProps {
   teamId: number;
@@ -13,13 +13,17 @@ interface WorkflowSettingProps {
 
 function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
   const showToast = useCustomToast();
+  const queryClient = useQueryClient();
+  const [currentTeamId, setCurrentTeamId] = useState(teamId);
 
   const {
     data: graphs,
     isLoading,
     isError,
     error,
-  } = useQuery("graphs", () => GraphsService.readGraphs({ teamId: teamId }));
+  } = useQuery(["graphs", currentTeamId], () => GraphsService.readGraphs({ teamId: currentTeamId }), {
+    keepPreviousData: true,
+  });
 
   const createDefaultGraph = async (teamId: number) => {
     try {
@@ -90,12 +94,17 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
   useEffect(() => {
     const initializeGraphs = async () => {
       if (graphs?.data.length === 0) {
-        await createDefaultGraph(teamId);
+        await createDefaultGraph(currentTeamId);
       }
     };
 
     initializeGraphs();
-  }, [graphs, teamId]);
+  }, [graphs, currentTeamId]);
+
+  useEffect(() => {
+    setCurrentTeamId(teamId);
+    queryClient.invalidateQueries(["graphs", teamId]);
+  }, [teamId, queryClient]);
 
   if (isError) {
     const errDetail = (error as ApiError).body?.detail;
@@ -113,10 +122,10 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
           {graphs && (
             <>
               <Box w="80%" maxH={"full"} bg={"#f6f8fa"} mr="2">
-                <TqxWorkflow teamId={teamId} graphData={graphs} />
+                <TqxWorkflow teamId={currentTeamId} graphData={graphs} />
               </Box>
               <Box w="20%">
-                <DebugPreview teamId={teamId} triggerSubmit={triggerSubmit} />
+                <DebugPreview teamId={currentTeamId} triggerSubmit={triggerSubmit} />
               </Box>
             </>
           )}

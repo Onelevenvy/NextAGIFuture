@@ -24,7 +24,6 @@ import {
   MenuItem,
   CloseButton,
 } from "@chakra-ui/react";
-import { CloseIcon } from "@chakra-ui/icons";
 import { nodeConfig, NodeType } from "./nodes/nodeConfig";
 import BaseProperties from "./nodes/Base/Properties";
 
@@ -354,7 +353,6 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           borderLeft="1px solid #ccc"
           p={4}
         >
-         
           <CloseButton
             onClick={closePropertiesPanel}
             position="absolute"
