@@ -1,10 +1,11 @@
-import { Box, Flex, Spinner } from "@chakra-ui/react";
+import { Box, Button, Flex, IconButton, Spinner } from "@chakra-ui/react";
 import useCustomToast from "@/hooks/useCustomToast";
 import DebugPreview from "./DebugPreview";
 import TqxWorkflow from "../WorkFlow";
 import { useEffect, useState } from "react";
 import { ApiError, GraphsService } from "@/client";
 import { useQuery, useQueryClient } from "react-query";
+import { CloseIcon } from "@chakra-ui/icons";
 
 interface WorkflowSettingProps {
   teamId: number;
@@ -114,32 +115,57 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
     const errDetail = (error as ApiError).body?.detail;
     showToast("Something went wrong.", `${errDetail}`, "error");
   }
+  const [showDebugPreview, setShowDebugPreview] = useState(false);
 
   return (
-    <>
-      {isLoading ? (
-        <Flex justify="center" align="center" height="100vh" width="full">
-          <Spinner size="xl" color="ui.main" />
-        </Flex>
-      ) : (
-        <>
-          {graphs && (
-            <>
-              <Box w="80%" maxH={"full"} bg={"#f6f8fa"} mr="2">
-                <TqxWorkflow teamId={currentTeamId} graphData={graphs} />
-              </Box>
-              <Box w="20%">
-                <DebugPreview
-                  teamId={currentTeamId}
-                  triggerSubmit={triggerSubmit}
-                  useDeployButton={false}
-                />
-              </Box>
-            </>
-          )}
-        </>
+    <Flex width="full" height="full">
+      <Box width={showDebugPreview ? "80%" : "100%"} transition="width 0.3s">
+        {isLoading ? (
+          <Flex justify="center" align="center" height="100%" width="100%">
+            <Spinner size="xl" color="ui.main" />
+          </Flex>
+        ) : (
+          graphs && (
+            <Box height="100%" bg="#f6f8fa">
+              <TqxWorkflow teamId={currentTeamId} graphData={graphs} />
+            </Box>
+          )
+        )}
+      </Box>
+      {showDebugPreview && (
+        <Box
+          width="20%"
+          position="relative"
+          borderLeft="1px solid"
+          borderColor="gray.200"
+        >
+          <IconButton
+            aria-label="Close Debug Preview"
+            icon={<CloseIcon />}
+            size="sm"
+            position="absolute"
+            top={2}
+            right={2}
+            onClick={() => setShowDebugPreview(false)}
+          />
+          <DebugPreview
+            teamId={currentTeamId}
+            triggerSubmit={triggerSubmit}
+            useDeployButton={false}
+          />
+        </Box>
       )}
-    </>
+      {!showDebugPreview && (
+        <Button
+          position="fixed"
+          bottom={4}
+          right={4}
+          onClick={() => setShowDebugPreview(true)}
+        >
+          Show Debug Preview
+        </Button>
+      )}
+    </Flex>
   );
 }
 

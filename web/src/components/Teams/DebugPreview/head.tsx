@@ -16,8 +16,8 @@ import {
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { MdBuild } from "react-icons/md";
-import { ImHistory } from "react-icons/im";
 import ChatHistoryList from "@/components/Playground/ChatHistoryList";
+import { LuHistory } from "react-icons/lu";
 
 function DebugPreviewHead({
   teamId,
@@ -46,7 +46,7 @@ function DebugPreviewHead({
           <PopoverTrigger>
             <IconButton
               aria-label="history"
-              icon={<Icon as={ImHistory} h="6" w="6" color={buttonColor} />}
+              icon={<Icon as={LuHistory} h="6" w="6" color={buttonColor} />}
               h="10"
               w="10"
               bg={bgColor}
