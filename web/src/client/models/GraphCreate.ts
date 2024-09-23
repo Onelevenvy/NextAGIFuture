@@ -4,11 +4,10 @@
 /* eslint-disable */
 
 export type GraphCreate = {
-    name: string;
-    description?: (string | null);
-    config?: Record<string, any>;
-    metadata_?: Record<string, any>;
-    created_at: (string | null);
-    updated_at: (string | null);
+  name: string;
+  description?: string | null;
+  config?: Record<string, any>;
+  metadata_?: Record<string, any>;
+  created_at: string;
+  updated_at: string;
 };
-

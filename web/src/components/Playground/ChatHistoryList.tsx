@@ -15,10 +15,10 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import { StarIcon, Trash2Icon } from "lucide-react";
-import useChatMessageStore from "@/store/chatMessageStore";
+import useChatMessageStore from "@/stores/chatMessageStore";
 
 interface ChatHistoryProps {
-  teamId: string;
+  teamId: number;
   isPlayground?: boolean;
 }
 
@@ -40,7 +40,7 @@ const ChatHistoryList = ({ teamId, isPlayground }: ChatHistoryProps) => {
     error: membersError,
   } = useQuery(
     ["teams", localTeamId, "members"],
-    () => MembersService.readMembers({ teamId: Number.parseInt(localTeamId) }),
+    () => MembersService.readMembers({ teamId: localTeamId }),
     {
       enabled: !!localTeamId, // 确保在 localTeamId 存在时才执行查询
     }
@@ -52,12 +52,12 @@ const ChatHistoryList = ({ teamId, isPlayground }: ChatHistoryProps) => {
     isError,
     error,
   } = useQuery(["threads", teamId], () =>
-    ThreadsService.readThreads({ teamId: Number.parseInt(teamId) })
+    ThreadsService.readThreads({ teamId: teamId })
   );
 
   const deleteThread = async (threadId: string) => {
     await ThreadsService.deleteThread({
-      teamId: Number.parseInt(teamId),
+      teamId: teamId,
       id: threadId,
     });
   };

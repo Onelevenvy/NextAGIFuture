@@ -22,7 +22,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import useCustomToast from "../../hooks/useCustomToast";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import {
   type ApiError,
   MembersService,

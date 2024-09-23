@@ -22,9 +22,11 @@ import ChatHistoryList from "@/components/Playground/ChatHistoryList";
 function DebugPreviewHead({
   teamId,
   triggerSubmit,
+  useDeployButton,
 }: {
-  teamId: string;
+  teamId: number;
   triggerSubmit: () => void;
+  useDeployButton: boolean;
 }) {
   const bgColor = useColorModeValue("ui.bgMain", "ui.bgMainDark");
   const buttonColor = useColorModeValue("ui.main", "ui.main");
@@ -41,7 +43,6 @@ function DebugPreviewHead({
       </Text>
       <Box display={"flex"} flexDirection={"row"} mr="5" alignItems={"center"}>
         <Popover preventOverflow={false} isLazy={true}>
-          {/* {Todo: 需要修改chathistory组件，现在点击会跳转到playground，需要改成根据情况而定 team or playground} */}
           <PopoverTrigger>
             <IconButton
               aria-label="history"
@@ -72,17 +73,18 @@ function DebugPreviewHead({
             <PopoverFooter />
           </PopoverContent>
         </Popover>
-
-        <Button
-          ml={"5"}
-          bg={buttonColor}
-          borderRadius={"md"}
-          onClick={triggerSubmit}
-          _hover={{ backgroundColor: "#1c86ee" }}
-          rightIcon={<MdBuild color={"white"} />}
-        >
-          <Text color={"white"}>{t("team.teamsetting.savedeploy")}</Text>
-        </Button>
+        {useDeployButton && (
+          <Button
+            ml={"5"}
+            bg={buttonColor}
+            borderRadius={"md"}
+            onClick={triggerSubmit}
+            _hover={{ backgroundColor: "#1c86ee" }}
+            rightIcon={<MdBuild color={"white"} />}
+          >
+            <Text color={"white"}>{t("team.teamsetting.savedeploy")}</Text>
+          </Button>
+        )}
       </Box>
     </Box>
   );

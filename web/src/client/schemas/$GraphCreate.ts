@@ -32,24 +32,9 @@ export const $GraphCreate = {
             },
         },
         created_at: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-                format: 'date-time',
-            }, {
-                type: 'null',
-            }],
+            type: 'string',
             isRequired: true,
-        },
-        updated_at: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-                format: 'date-time',
-            }, {
-                type: 'null',
-            }],
-            isRequired: true,
+            format: 'date-time',
         },
     },
 } as const;

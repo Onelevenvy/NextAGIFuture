@@ -24,7 +24,7 @@ import { RiApps2Line, RiBookLine } from "react-icons/ri";
 import { useTabSearchParams } from "@/hooks/useTabSearchparams";
 import { GoGitMerge, GoGitPullRequestDraft } from "react-icons/go";
 import { PiChatCircleDots } from "react-icons/pi";
-import useChatTeamIdStore from "@/store/chatTeamIDStore";
+import useChatTeamIdStore from "@/stores/chatTeamIDStore";
 import { useTranslation } from "react-i18next";
 
 function Teams() {
@@ -45,14 +45,14 @@ function Teams() {
     showToast("Something went wrong.", `${errDetail}`, "error");
   }
 
-  const handleRowClick = (teamId: string) => {
+  const handleRowClick = (teamId: number) => {
     navigate.push(`/teams/${teamId}`);
     setTeamId(teamId);
   };
   const options = [
     {
       value: "all",
-      text:  t(`panestate.team.all`),
+      text: t(`panestate.team.all`),
       icon: <RiApps2Line className="w-[14px] h-[14px] mr-1" />,
     },
     {
@@ -67,7 +67,7 @@ function Teams() {
     },
     {
       value: "chatbot",
-      text:t(`panestate.team.chatbot`),
+      text: t(`panestate.team.chatbot`),
       icon: <PiChatCircleDots className="w-[14px] h-[14px] mr-1" />,
     },
     {
@@ -128,7 +128,7 @@ function Teams() {
                       key={team.id}
                       _hover={{ backgroundColor: rowTint }}
                       cursor={"pointer"}
-                      onClick={() => handleRowClick(team.id.toString())}
+                      onClick={() => handleRowClick(team.id)}
                       p={4}
                       borderRadius="xl"
                       borderWidth="1px"

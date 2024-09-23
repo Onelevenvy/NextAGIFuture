@@ -3207,35 +3207,15 @@
             "title": "Metadata "
           },
           "created_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "string",
+            "format": "date-time",
             "title": "Created At"
-          },
-          "updated_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Updated At"
           }
         },
         "type": "object",
         "required": [
           "name",
-          "created_at",
-          "updated_at"
+          "created_at"
         ],
         "title": "GraphCreate"
       },
@@ -3265,30 +3245,6 @@
             "type": "object",
             "title": "Metadata "
           },
-          "created_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Created At"
-          },
-          "updated_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Updated At"
-          },
           "id": {
             "type": "integer",
             "title": "Id"
@@ -3297,8 +3253,6 @@
         "type": "object",
         "required": [
           "name",
-          "created_at",
-          "updated_at",
           "id"
         ],
         "title": "GraphOut"
@@ -3306,8 +3260,14 @@
       "GraphUpdate": {
         "properties": {
           "name": {
-            "type": "string",
-            "pattern": "^[a-zA-Z0-9_-]{1,64}$",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Name"
           },
           "description": {
@@ -3329,35 +3289,15 @@
             "type": "object",
             "title": "Metadata "
           },
-          "created_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Created At"
-          },
           "updated_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "string",
+            "format": "date-time",
             "title": "Updated At"
           }
         },
         "type": "object",
         "required": [
-          "name",
-          "created_at"
+          "updated_at"
         ],
         "title": "GraphUpdate"
       },

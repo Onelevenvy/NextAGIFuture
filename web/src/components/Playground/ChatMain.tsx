@@ -1,5 +1,5 @@
 import { Box, Button } from "@chakra-ui/react";
-import useChatMessageStore from "@/store/chatMessageStore";
+import useChatMessageStore from "@/stores/chatMessageStore";
 import {
   type TeamChat,
   type ApiError,
@@ -29,7 +29,7 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { useRouter, useSearchParams } from "next/navigation";
 import MessageBox from "./MessageBox";
 import MessageInput from "../MessageInput";
-import useChatTeamIdStore from "@/store/chatTeamIDStore";
+import useChatTeamIdStore from "@/stores/chatTeamIDStore";
 import { useTranslation } from "react-i18next";
 import { FaRegStopCircle } from "react-icons/fa";
 
@@ -59,7 +59,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const searchParams = useSearchParams();
   const threadId = searchParams.get("threadId");
   const { t } = useTranslation();
-  const { teamId } = useChatTeamIdStore() as { teamId: string };
+  const { teamId } = useChatTeamIdStore() ;
 
   const [currentThreadId, setCurrentThreadId] = useState<string | null>(
     searchParams.get("threadId")
@@ -77,7 +77,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     ["thread", threadId],
     () =>
       ThreadsService.readThread({
-        teamId: Number.parseInt(teamId),
+        teamId: teamId,
         id: threadId!,
       }),
     {
@@ -110,7 +110,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
 
   const createThread = async (data: ThreadCreate) => {
     const thread = await ThreadsService.createThread({
-      teamId: Number.parseInt(teamId),
+      teamId: teamId,
       requestBody: data,
     });
     return thread.id;
@@ -137,7 +137,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     if (!threadId) throw new Error("Thread ID is not available");
     return new Promise((resolve, reject) => {
       const cancelablePromise = ThreadsService.updateThread({
-        teamId: Number.parseInt(teamId),
+        teamId: teamId,
         id: threadId,
         requestBody: data,
       });
@@ -213,7 +213,6 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
       },
     });
 
- 
     const threadUpdateData: ThreadUpdate = {
       query: data.messages[0].content,
     };
@@ -280,7 +279,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
       },
     ]);
 
-    await stream(Number.parseInt(teamId), currentThreadId, data);
+    await stream(teamId, currentThreadId, data);
   };
 
   const mutation = useMutation(chatTeam, {

@@ -31,26 +31,6 @@ export const $GraphOut = {
                 },
             },
         },
-        created_at: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-                format: 'date-time',
-            }, {
-                type: 'null',
-            }],
-            isRequired: true,
-        },
-        updated_at: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-                format: 'date-time',
-            }, {
-                type: 'null',
-            }],
-            isRequired: true,
-        },
         id: {
             type: 'number',
             isRequired: true,

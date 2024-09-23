@@ -3,7 +3,7 @@ import ChatBotList from "@/components/Playground/ChatBotList";
 import ChatHistoryList from "@/components/Playground/ChatHistoryList";
 import { Box, Center, Flex, useColorModeValue } from "@chakra-ui/react";
 import { useState } from "react";
-import useChatTeamIdStore from "@/store/chatTeamIDStore";
+import useChatTeamIdStore from "@/stores/chatTeamIDStore";
 import ChatMain from "@/components/Playground/ChatMain";
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import PaneStateControl from "@/components/Common/PaneStateControl";
@@ -45,7 +45,7 @@ const ChatPlayground = () => {
         w={isChatBotListOpen ? "20%" : "0"}
         maxW={isChatBotListOpen ? "20%" : "0"}
         minW={isChatBotListOpen ? "20%" : "0"}
-        bg="transparent" 
+        bg="transparent"
         border="1px solid #cccccc"
         visibility={isChatBotListOpen ? "visible" : "hidden"}
         transition="width 0.1s, visibility 0.1s"
@@ -93,8 +93,8 @@ const ChatPlayground = () => {
         maxH="full"
         p={4}
         mt="0"
-        bg="transparent" 
-        border="1px solid #cccccc" 
+        bg="transparent"
+        border="1px solid #cccccc"
         borderRadius="md"
         overflow="hidden"
         visibility={isChatHistoryOpen ? "visible" : "hidden"}
