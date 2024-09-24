@@ -10,6 +10,10 @@ from app.core.graph.skills import managed_skills
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, StateGraph
 from langchain_core.runnables import RunnableLambda
+
+from app.curd.models import get_all_models
+from app.api.deps import SessionDep
+from app.core.workflow.db_utils import get_all_models_helper
 from .node import (
     WorkerNode,
     SequentialWorkerNode,
@@ -122,10 +126,25 @@ def initialize_graph(
             node_data = node["data"]
 
             if node_type == "llm":
+                model_name = node_data["model"]
+                all_models = get_all_models_helper()
+                for model in all_models.data:
+                    if model.ai_model_name == model_name:
+                        model_info = {
+                            "ai_model_name": model.ai_model_name,
+                            "provider_name": model.provider.provider_name,
+                            "base_url": model.provider.base_url,
+                            "api_key": model.provider.api_key,
+                        }
+                    else:
+                        raise ValueError(f"Model {model_name} not supported now.")
+
                 if is_sequential:
                     node_class = SequentialWorkerNode
                 elif is_hierarchical:
-                    if llm_children[node_id]:  # in the future wo can use more langchain templates here apply to different node type TODO
+                    if llm_children[
+                        node_id
+                    ]:  # in the future wo can use more langchain templates here apply to different node type TODO
                         node_class = LLMNode
                     else:
                         node_class = LLMNode
@@ -151,11 +170,11 @@ def initialize_graph(
                     node_id,
                     RunnableLambda(
                         node_class(
-                            provider=node_data.get("provider", "zhipuai"),
-                            model=node_data["model"],
+                            provider=model_info["provider_name"],
+                            model=model_info["ai_model_name"],
                             tools=tools_to_bind,
-                            openai_api_key="",
-                            openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
+                            openai_api_key=model_info["api_key"],
+                            openai_api_base=model_info["base_url"],
                             temperature=node_data["temperature"],
                         ).work
                     ),
