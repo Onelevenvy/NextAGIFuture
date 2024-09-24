@@ -14,10 +14,14 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
   onNodeDataChange,
 }) => {
   const [temperatureInput, setTemperatureInput] = useState("");
+  const [systemPromptInput, setSystemPromptInput] = useState("");
 
   useEffect(() => {
     if (node && node.data.temperature !== undefined) {
       setTemperatureInput(node.data.temperature.toString());
+    }
+    if (node && node.data.systemMessage !== undefined) {
+      setSystemPromptInput(node.data.systemMessage);
     }
   }, [node]);
 
@@ -90,7 +94,11 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
         <Textarea
           bg="#edf2f7"
           placeholder="Write your prompt here"
-          value={node.data.systemMessage}
+          onChange={(e) => {
+            setSystemPromptInput(e.target.value);
+            onNodeDataChange(node.id, "systemMessage", e.target.value);
+          }}
+          value={systemPromptInput}
         />
       </Box>
     </VStack>
