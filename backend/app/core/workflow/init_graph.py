@@ -140,15 +140,16 @@ def initialize_graph(
                         break
                 if model_info is None:
                     raise ValueError(f"Model {model_name} not supported now.")
-                
+                # in the future wo can use more langchain templates here apply to different node type TODO
                 if is_sequential:
-                    node_class = SequentialWorkerNode
+                    # node_class = SequentialWorkerNode
+                    node_class = LLMNode
                 elif is_hierarchical:
-                    if llm_children[
-                        node_id
-                    ]:  # in the future wo can use more langchain templates here apply to different node type TODO
+                    if llm_children[node_id]:
+                        # node_class = LeaderNode
                         node_class = LLMNode
                     else:
+                        # node_class = WorkerNode
                         node_class = LLMNode
                 else:
                     node_class = LLMNode

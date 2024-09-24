@@ -15,7 +15,7 @@ const ToolNodeProperties: React.FC<ToolNodePropertiesProps> = ({
       <Box>
         <Text fontWeight="bold">Tool:</Text>
         <Select
-          value={node.data.tool}
+          value={node.data.tools}
           onChange={(e) => onNodeDataChange(node.id, "tool", e.target.value)}
         >
           <option value="calculator">Calculator</option>
