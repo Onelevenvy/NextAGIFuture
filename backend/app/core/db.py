@@ -3,7 +3,7 @@ from sqlalchemy import text
 from sqlmodel import Session, create_engine, select
 from app.curd import users
 from app.core.config import settings
-from app.core.graph.skills import managed_skills
+from app.core.graph.tools import managed_skills
 from app.models import Skill, User, UserCreate
 
 

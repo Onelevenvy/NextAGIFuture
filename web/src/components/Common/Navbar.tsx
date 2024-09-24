@@ -2,7 +2,7 @@ import { Button, Flex, Icon, useDisclosure } from "@chakra-ui/react";
 import { FaPlus } from "react-icons/fa";
 import AddUser from "@/components/Admin/AddUser";
 import AddTeam from "@/components/Teams/AddTeam";
-import AddSkill from "@/components/Skills/AddSkill";
+import AddSkill from "@/components/Tools/AddSkill";
 import AddUpload from "@/components/Uploads/AddUpload";
 import { useTranslation } from "react-i18next";
 

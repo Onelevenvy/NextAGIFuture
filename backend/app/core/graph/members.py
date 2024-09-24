@@ -18,9 +18,9 @@ from pydantic import BaseModel, Field
 from typing_extensions import NotRequired, TypedDict
 
 from app.core.graph.rag.qdrant import QdrantStore
-from app.core.graph.skills import managed_skills
-from app.core.graph.skills.api_tool import dynamic_api_tool
-from app.core.graph.skills.retriever_tool import create_retriever_tool
+from app.core.graph.tools import managed_skills
+from app.core.graph.tools.api_tool import dynamic_api_tool
+from app.core.graph.tools.retriever_tool import create_retriever_tool
 
 
 class GraphSkill(BaseModel):

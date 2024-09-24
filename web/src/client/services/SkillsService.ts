@@ -29,7 +29,7 @@ export class SkillsService {
     }): CancelablePromise<SkillsOut> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/skills/',
+            url: '/api/v1/tools/',
             query: {
                 'skip': skip,
                 'limit': limit,
@@ -53,7 +53,7 @@ export class SkillsService {
     }): CancelablePromise<SkillOut> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/skills/',
+            url: '/api/v1/tools/',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -75,7 +75,7 @@ export class SkillsService {
     }): CancelablePromise<SkillOut> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/skills/{id}',
+            url: '/api/v1/tools/{id}',
             path: {
                 'id': id,
             },
@@ -100,7 +100,7 @@ export class SkillsService {
     }): CancelablePromise<SkillOut> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/api/v1/skills/{id}',
+            url: '/api/v1/tools/{id}',
             path: {
                 'id': id,
             },
@@ -125,7 +125,7 @@ export class SkillsService {
     }): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/api/v1/skills/{id}',
+            url: '/api/v1/tools/{id}',
             path: {
                 'id': id,
             },
@@ -148,7 +148,7 @@ export class SkillsService {
     }): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/skills/validate',
+            url: '/api/v1/tools/validate',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

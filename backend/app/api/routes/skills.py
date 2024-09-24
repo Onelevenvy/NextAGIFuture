@@ -5,7 +5,7 @@ from pydantic import ValidationError
 from sqlmodel import col, func, or_, select
 
 from app.api.deps import CurrentUser, SessionDep
-from app.core.graph.skills.api_tool import ToolDefinition
+from app.core.graph.tools.api_tool import ToolDefinition
 from app.models import (
     Message,
     Skill,

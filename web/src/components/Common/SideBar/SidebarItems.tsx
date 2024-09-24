@@ -15,8 +15,6 @@ import {
   IoChatbubbleEllipses,
 } from "react-icons/io5";
 
-
-
 interface SidebarItemsProps {
   onClose?: () => void;
 }
@@ -50,7 +48,7 @@ const SidebarItems = ({ onClose }: SidebarItemsProps) => {
       activeIcon: FaToolbox,
       inactiveIcon: PiToolboxLight,
       title: t(`sidebar.tools`),
-      path: "/skills",
+      path: "/tools",
     },
     {
       activeIcon: FaBook,
@@ -59,7 +57,7 @@ const SidebarItems = ({ onClose }: SidebarItemsProps) => {
       path: "/knowledge",
     },
   ];
-  
+
   const nosuperuser_items = [
     {
       activeIcon: FiHome,
