@@ -402,7 +402,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           border={"1px solid #d1d5db"}
           onClick={() => setShowDebugPreview(true)}
           _hover={{ backgroundColor: "#eff4ff" }}
-          rightIcon={<VscTriangleRight color={"#155aef"} />}
+          rightIcon={<VscTriangleRight color={"#155aef"} size={"12px"} />}
           size={"sm"}
         >
           <Text color={"#155aef"}>Debug</Text>
@@ -414,7 +414,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           isLoading={isSaving}
           loadingText="Saving..."
           _hover={{ backgroundColor: "#1c86ee" }}
-          rightIcon={<MdBuild color={"white"} />}
+          rightIcon={<MdBuild color={"white"} size={"12px"} />}
           size={"sm"}
         >
           <Text color={"white"}>Deploy</Text>
