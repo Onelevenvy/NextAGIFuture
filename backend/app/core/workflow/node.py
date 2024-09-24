@@ -362,8 +362,7 @@ class LLMNode(BaseNode):
                 "system",
                 (
                     "Perform the task given to you.\n"
-                    "If you are unable to perform the task, that's OK, another member with different tools "
-                    "will help where you left off. Do not attempt to communicate with other members. "
+                    "If you are unable to perform the task, that's OK, you can ask human for help, or just say that you are unable to perform the task."
                     "Execute what you can to make progress. "
                     "Stay true to your role and use your tools if necessary.\n\n"
                 ),
@@ -375,21 +374,6 @@ class LLMNode(BaseNode):
             MessagesPlaceholder(variable_name="messages"),
         ]
     )
-
-    def tag_with_name(self, ai_message: AIMessage, name: str) -> AIMessage:
-        """Tag a name to the AI message"""
-        ai_message.name = name
-        return ai_message
-
-    def get_next_member_in_sequence(
-        self, members: Mapping[str, GraphMember | GraphLeader], current_name: str
-    ) -> str | None:
-        member_names = list(members.keys())
-        next_index = member_names.index(current_name) + 1
-        if next_index < len(members):
-            return member_names[member_names.index(current_name) + 1]
-        else:
-            return None
 
     async def work(self, state: TeamState, config: RunnableConfig) -> ReturnTeamState:
         history = state.get("history", [])

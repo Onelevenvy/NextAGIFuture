@@ -1,6 +1,6 @@
 from langchain.pydantic_v1 import BaseModel
 from langchain.tools import BaseTool
-from typing import Dict, Any,  Set
+from typing import Dict, Any, Set
 from functools import lru_cache
 import time
 from langgraph.graph.graph import CompiledGraph
@@ -59,7 +59,9 @@ def should_continue(state: TeamState) -> str:
 
 
 def initialize_graph(
-    build_config: Dict[str, Any], checkpointer: BaseCheckpointSaver,save_graph_img=False
+    build_config: Dict[str, Any],
+    checkpointer: BaseCheckpointSaver,
+    save_graph_img=False,
 ) -> CompiledGraph:
     global tool_name_to_node_id
 
@@ -123,10 +125,10 @@ def initialize_graph(
                 if is_sequential:
                     node_class = SequentialWorkerNode
                 elif is_hierarchical:
-                    if llm_children[node_id]:  # If the node has child LLM nodes
-                        node_class = LeaderNode
+                    if llm_children[node_id]:  # in the future wo can use more langchain templates here apply to different node type TODO
+                        node_class = LLMNode
                     else:
-                        node_class = WorkerNode
+                        node_class = LLMNode
                 else:
                     node_class = LLMNode
 

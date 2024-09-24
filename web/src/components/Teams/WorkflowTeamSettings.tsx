@@ -58,13 +58,13 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
           {
             id: "end",
             type: "end",
-            position: { x: 891.4025316455695, y: 221.5569620253164 },
+            position: { x: 891, y: 221 },
             data: { label: "End" },
           },
           {
             id: "llm",
             type: "llm",
-            position: { x: 500.04430379746833, y: 219.95189873417723 },
+            position: { x: 500, y: 219 },
             data: { label: "LLM", model: "glm-4-flash", temperature: 0.1 },
           },
         ],
