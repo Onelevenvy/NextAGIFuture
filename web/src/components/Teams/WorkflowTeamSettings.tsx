@@ -1,25 +1,15 @@
-import {
-  Box,
-  Center,
-  Flex,
-  Spinner,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Box, Flex, Spinner, useColorModeValue } from "@chakra-ui/react";
 import useCustomToast from "@/hooks/useCustomToast";
-import DebugPreview from "./DebugPreview";
 import TqxWorkflow from "../WorkFlow";
 import { useEffect, useState } from "react";
 import { ApiError, GraphsService } from "@/client";
 import { useQuery, useQueryClient } from "react-query";
-import PaneStateControl from "../Common/PaneStateControl";
-import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 
 interface WorkflowSettingProps {
   teamId: number;
-  triggerSubmit: () => void;
 }
 
-function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
+function WorkflowTeamSettings({ teamId }: WorkflowSettingProps) {
   const showToast = useCustomToast();
   const queryClient = useQueryClient();
   const [currentTeamId, setCurrentTeamId] = useState(teamId);
@@ -35,10 +25,6 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
     {
       keepPreviousData: true,
     }
-  );
-  const selctedColor = useColorModeValue(
-    "ui.selctedColor",
-    "ui.selctedColorDark"
   );
 
   const createDefaultGraph = async (teamId: number) => {
@@ -97,6 +83,7 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
       };
       const validJsonConfig = JSON.parse(JSON.stringify(defaultConfig));
       const uniqueName = `DefaultGraph_${teamId}_${Date.now()}`;
+
       await GraphsService.createGraph({
         teamId: Number(teamId),
         requestBody: {

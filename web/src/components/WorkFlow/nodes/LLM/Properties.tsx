@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, VStack, Text, Input } from "@chakra-ui/react";
+import { Box, VStack, Text, Input, Textarea } from "@chakra-ui/react";
 import ModelSelect from "@/components/Common/ModelProvider";
 import { useModelQuery } from "@/hooks/useModelQuery";
 import { useForm } from "react-hook-form";
@@ -72,6 +72,7 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
         <Text fontWeight="bold">Temperature:</Text>
         <Input
           type="number"
+          bg="#edf2f7"
           value={temperatureInput}
           onChange={(e) => {
             setTemperatureInput(e.target.value);
@@ -82,6 +83,14 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
           step={0.1}
           min={0}
           max={1}
+        />
+      </Box>
+      <Box>
+        <Text fontWeight="bold">System Prompt:</Text>
+        <Textarea
+          bg="#edf2f7"
+          placeholder="Write your prompt here"
+          value={node.data.systemMessage}
         />
       </Box>
     </VStack>

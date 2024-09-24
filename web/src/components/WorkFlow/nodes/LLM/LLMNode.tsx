@@ -27,9 +27,6 @@ const LLMNode: React.FC<NodeProps> = (props) => (
           {props.data.model}
         </Text>
       </Box>
-      <Box bg="#f2f4f7" borderRadius={"md"} w="full" p="2">
-        <Text fontSize="xs">{props.data.temperature}</Text>
-      </Box>
     </VStack>
   </BaseNode>
 );

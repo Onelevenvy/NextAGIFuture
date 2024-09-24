@@ -50,7 +50,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     initialData: {
       model: "glm-4-flash",
       temperature: 0.1,
-      systemMessage: null,
+      systemMessage: "null",
     },
   },
   tool: {

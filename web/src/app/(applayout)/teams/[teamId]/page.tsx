@@ -115,10 +115,7 @@ function Team() {
                   px="1"
                   borderRadius={"lg"}
                 >
-                  <WorkflowTeamSettings
-                    teamId={Number.parseInt(teamId)}
-                    triggerSubmit={triggerSubmit}
-                  />
+                  <WorkflowTeamSettings teamId={Number.parseInt(teamId)} />
                 </Box>
               ) : (
                 <Box h="full" maxH={"full"} borderRadius="md">
