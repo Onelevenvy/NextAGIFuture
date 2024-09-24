@@ -36,6 +36,7 @@ import { useContextMenu } from "@/hooks/graphs/useContextMenu";
 import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
 import { MdBuild, MdOutlineHelp } from "react-icons/md";
 import DebugPreview from "../Teams/DebugPreview";
+import { VscTriangleRight } from "react-icons/vsc";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -290,7 +291,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     <Panel position="bottom-right">{Math.round(zoom * 100)}%</Panel>
   );
 
-  const [isShortcutPanelVisible, setShortcutPanelVisible] = useState(false); // Add this state
+  const [isShortcutPanelVisible, setShortcutPanelVisible] = useState(false);
 
   const toggleShortcutPanel = () => {
     setShortcutPanelVisible((prev) => !prev);
@@ -299,6 +300,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const hideShortcutPanel = () => {
     setShortcutPanelVisible(false);
   };
+
+  const [showDebugPreview, setShowDebugPreview] = useState(false);
+
   return (
     <Box
       display="flex"
@@ -390,20 +394,32 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         )}
       </Box>
 
-      <Button
-        bg={buttonColor}
-        borderRadius={"md"}
-        onClick={onSave}
-        isLoading={isSaving}
-        loadingText="Saving..."
-        _hover={{ backgroundColor: "#1c86ee" }}
-        rightIcon={<MdBuild color={"white"} />}
-        position={"absolute"}
-        right={"20px"}
-        top={"8px"}
-      >
-        <Text color={"white"}>Deploy</Text>
-      </Button>
+      <Box position={"absolute"} right={"20px"} top={"8px"}>
+        <Button
+          mr={5}
+          bg={"white"}
+          borderRadius={"lg"}
+          border={"1px solid #d1d5db"}
+          onClick={() => setShowDebugPreview(true)}
+          _hover={{ backgroundColor: "#eff4ff" }}
+          rightIcon={<VscTriangleRight color={"#155aef"} />}
+          size={"sm"}
+        >
+          <Text color={"#155aef"}>Debug</Text>
+        </Button>
+        <Button
+          bg={buttonColor}
+          borderRadius={"lg"}
+          onClick={onSave}
+          isLoading={isSaving}
+          loadingText="Saving..."
+          _hover={{ backgroundColor: "#1c86ee" }}
+          rightIcon={<MdBuild color={"white"} />}
+          size={"sm"}
+        >
+          <Text color={"white"}>Deploy</Text>
+        </Button>
+      </Box>
 
       {selectedNodeId && (
         <Box
@@ -431,32 +447,33 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           )}
         </Box>
       )}
-      <Box
-        position="relative"
-        w="350"
-        minW={"350"}
-        maxW={"350"}
-        bg={"white"}
-        p={4}
-        borderRadius={"lg"}
-        boxShadow="md"
-        my={1}
-        mr={2}
-      >
-        <CloseButton
-          onClick={closePropertiesPanel}
-          position="absolute"
-          right={2}
-          top={2}
-          size={"md"}
-        />
-
-        <DebugPreview
-          teamId={teamId}
-          triggerSubmit={() => {}}
-          useDeployButton={false}
-        />
-      </Box>
+      {showDebugPreview && (
+        <Box
+          position="relative"
+          w="350"
+          minW={"350"}
+          maxW={"350"}
+          bg={"white"}
+          p={4}
+          borderRadius={"lg"}
+          boxShadow="md"
+          my={1}
+          mr={2}
+        >
+          <CloseButton
+            onClick={() => setShowDebugPreview(false)}
+            position="absolute"
+            right={2}
+            top={2}
+            size={"md"}
+          />
+          <DebugPreview
+            teamId={teamId}
+            triggerSubmit={() => {}}
+            useDeployButton={false}
+          />
+        </Box>
+      )}
     </Box>
   );
 };

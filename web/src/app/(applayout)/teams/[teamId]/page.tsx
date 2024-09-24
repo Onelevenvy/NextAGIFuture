@@ -112,7 +112,6 @@ function Team() {
                   display={"flex"}
                   flexDirection={"row"}
                   maxH={"full"}
-                  pt="2"
                   px="1"
                   borderRadius={"lg"}
                 >
