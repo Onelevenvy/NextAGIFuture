@@ -23,7 +23,6 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
     textAlign="center"
     position="relative"
     boxShadow="md"
-   
   >
     <HStack spacing={2} mb={1}>
       <IconButton

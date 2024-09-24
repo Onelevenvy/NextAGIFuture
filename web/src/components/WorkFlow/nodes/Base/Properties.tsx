@@ -1,22 +1,49 @@
 import React from "react";
-import { Text, Input, VStack, FormControl, FormErrorMessage } from "@chakra-ui/react";
+import {
+  Input,
+  VStack,
+  FormControl,
+  FormErrorMessage,
+  IconButton,
+  HStack,
+} from "@chakra-ui/react";
 
 interface BasePropertiesProps {
   children: React.ReactNode;
   nodeName: string;
   onNameChange: (newName: string) => void;
   nameError: string | null;
+  icon: React.ReactElement;
+  colorScheme: string;
 }
 
-const BaseProperties: React.FC<BasePropertiesProps> = ({ children, nodeName, onNameChange, nameError }) => {
+const BaseProperties: React.FC<BasePropertiesProps> = ({
+  children,
+  nodeName,
+  onNameChange,
+  nameError,
+  icon,
+  colorScheme,
+}) => {
   return (
     <VStack spacing={4} align="stretch">
       <FormControl isInvalid={!!nameError}>
-        <Text fontWeight="bold" mb={2}>Node Name:</Text>
-        <Input 
-          value={nodeName} 
-          onChange={(e) => onNameChange(e.target.value)}
-        />
+        <HStack spacing={1} mb={1}>
+          <IconButton
+            aria-label="names"
+            icon={icon}
+            colorScheme={colorScheme}
+            size="xs"
+          />
+          <Input
+            value={nodeName}
+            onChange={(e) => onNameChange(e.target.value)}
+            border={"1px solid white"}
+            size={"sm"}
+            fontWeight={"bold"}
+            w={"50%"}
+          />
+        </HStack>
         <FormErrorMessage>{nameError}</FormErrorMessage>
       </FormControl>
       {children}
