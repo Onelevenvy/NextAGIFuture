@@ -180,7 +180,8 @@ def initialize_graph(
                             openai_api_key=model_info["api_key"],
                             openai_api_base=model_info["base_url"],
                             temperature=node_data["temperature"],
-                            system_prompt=node_data["systemMessage"],
+                            system_prompt=node_data.get("systemMessage", None),
+                            agent_name=node_data.get("label", node_id),
                         ).work
                     ),
                 )

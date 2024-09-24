@@ -88,9 +88,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
     const nodeType = node.type as NodeType;
     const PropertiesComponent = nodeConfig[nodeType]?.properties;
-
+    const { icon: Icon, colorScheme } = nodeConfig[nodeType];
     return (
-      <BaseProperties
+      <BaseProperties icon={<Icon />} colorScheme={colorScheme}
         nodeName={node.data.label}
         onNameChange={(newName: string) =>
           onNodeDataChange(node.id, "label", newName)
@@ -402,7 +402,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           border={"1px solid #d1d5db"}
           onClick={() => setShowDebugPreview(true)}
           _hover={{ backgroundColor: "#eff4ff" }}
-          rightIcon={<VscTriangleRight color={"#155aef"} size={"12px"} />}
+          rightIcon={<VscTriangleRight color={"#155aef"} size={"12px"}/>}
           size={"sm"}
         >
           <Text color={"#155aef"}>Debug</Text>

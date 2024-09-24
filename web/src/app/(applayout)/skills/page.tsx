@@ -23,17 +23,13 @@ import {
 import { useTabSearchParams } from "@/hooks/useTabSearchparams";
 import TabSlider from "@/components/Common/TabSlider";
 import { useTranslation } from "react-i18next";
+import { useSkillsQuery } from "@/hooks/useSkillsQuery";
 
 function Skills() {
   const showToast = useCustomToast();
   const { t } = useTranslation();
-  const {
-    data: skills,
-    isLoading,
-    isError,
-    error,
-  } = useQuery("skills", () => SkillsService.readSkills({}));
 
+  const { data: skills, isLoading, isError, error } = useSkillsQuery();
   if (isError) {
     const errDetail = (error as ApiError).body?.detail;
     showToast("Something went wrong.", `${errDetail}`, "error");
