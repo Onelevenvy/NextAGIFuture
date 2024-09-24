@@ -65,7 +65,12 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
             id: "llm",
             type: "llm",
             position: { x: 500, y: 219 },
-            data: { label: "LLM", model: "glm-4-flash", temperature: 0.1 },
+            data: {
+              label: "LLM",
+              model: "glm-4-flash",
+              temperature: 0.1,
+              systemMessage: null,
+            },
           },
         ],
         edges: [
