@@ -140,6 +140,7 @@ def initialize_graph(
                         break
                 if model_info is None:
                     raise ValueError(f"Model {model_name} not supported now.")
+
                 # in the future wo can use more langchain templates here apply to different node type TODO
                 if is_sequential:
                     # node_class = SequentialWorkerNode
@@ -179,6 +180,7 @@ def initialize_graph(
                             openai_api_key=model_info["api_key"],
                             openai_api_base=model_info["base_url"],
                             temperature=node_data["temperature"],
+                            system_prompt=node_data["systemMessage"],
                         ).work
                     ),
                 )
