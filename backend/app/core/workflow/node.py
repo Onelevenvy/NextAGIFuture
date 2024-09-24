@@ -163,8 +163,10 @@ class BaseNode:
         openai_api_base: str,
         temperature: float,
         system_prompt: str,
+        agent_name: str,
     ):
         self.system_prompt = system_prompt
+        self.agent_name = agent_name
         if provider in ["zhipuai", "Siliconflow"]:
             self.model = ChatOpenAI(
                 model=model,
@@ -250,6 +252,7 @@ class LLMNode(BaseNode):
                         "If you are unable to perform the task, that's OK, you can ask human for help, or just say that you are unable to perform the task."
                         "Execute what you can to make progress. "
                         "And your role is:" + self.system_prompt + "\n"
+                        "And your name is:" + self.agent_name + "\n"
                         "Stay true to your role and use your tools if necessary.\n\n",
                     ),
                     (
