@@ -13,7 +13,7 @@ const ToolNode: React.FC<NodeProps> = (props) => {
       <Handle type="source" position={Position.Left} id="left" />
       <Handle type="source" position={Position.Right} id="right" />
       <Box bg="#f2f4f7" borderRadius={"md"} w="full" p="2">
-        <Text fontSize="xs">{props.data.tool}</Text>
+        <Text fontSize="xs">{props.data.tools}</Text>
       </Box>
     </BaseNode>
   );

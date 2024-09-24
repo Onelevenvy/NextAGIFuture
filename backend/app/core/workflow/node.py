@@ -158,43 +158,24 @@ class BaseNode:
         self,
         provider: str,
         model: str,
-        tools:Sequence[BaseTool],
+        tools: Sequence[BaseTool],
         openai_api_key: str,
         openai_api_base: str,
         temperature: float,
     ):
 
-        if provider in ["zhipuai"] and openai_api_base:
-
-            # self.model = ChatOpenAI(
-            #     model=model,
-            #     streaming=True,
-            #     openai_api_key=openai_api_key,
-            #     openai_api_base=openai_api_base,
-            #     temperature=temperature,
-            # )
-            # self.final_answer_model = ChatOpenAI(
-            #     model=model,
-            #     streaming=True,
-            #     openai_api_key=openai_api_key,
-            #     openai_api_base=openai_api_base,
-            #     temperature=0,
-            # )
-
+        if provider in ["zhipuai", "Siliconflow"]:
             self.model = ChatOpenAI(
-                # model="chatglm_turbo",
-                model="glm-4-flash",
-                temperature=0.01,
-                # openai_api_key='9953866f9b7fac2fd6d564842d8bcc79.AbXduj53KA3SDSMs',
-                # openai_api_key='fe1f2097b7284bd4baa1284be8d54aea.6VOvX4efbye8M6m0',
-                openai_api_key="1a65e1fed7ab7a788ee94d73570e9fcf.5FVs3ceE6POvEnSN",
-                openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
+                model=model,
+                temperature=temperature,
+                openai_api_key=openai_api_key,
+                openai_api_base=openai_api_base,
             )
-            if len(tools)>=1:
+            if len(tools) >= 1:
                 self.model = self.model.bind_tools(tools)
             self.final_answer_model = self.model
 
-        elif provider in ["openai"] and openai_api_base:
+        elif provider in ["openai"]:
             self.model = init_chat_model(
                 model,
                 model_provider=provider,
@@ -362,8 +343,7 @@ class LLMNode(BaseNode):
                 "system",
                 (
                     "Perform the task given to you.\n"
-                    "If you are unable to perform the task, that's OK, another member with different tools "
-                    "will help where you left off. Do not attempt to communicate with other members. "
+                    "If you are unable to perform the task, that's OK, you can ask human for help, or just say that you are unable to perform the task."
                     "Execute what you can to make progress. "
                     "Stay true to your role and use your tools if necessary.\n\n"
                 ),
@@ -375,21 +355,6 @@ class LLMNode(BaseNode):
             MessagesPlaceholder(variable_name="messages"),
         ]
     )
-
-    def tag_with_name(self, ai_message: AIMessage, name: str) -> AIMessage:
-        """Tag a name to the AI message"""
-        ai_message.name = name
-        return ai_message
-
-    def get_next_member_in_sequence(
-        self, members: Mapping[str, GraphMember | GraphLeader], current_name: str
-    ) -> str | None:
-        member_names = list(members.keys())
-        next_index = member_names.index(current_name) + 1
-        if next_index < len(members):
-            return member_names[member_names.index(current_name) + 1]
-        else:
-            return None
 
     async def work(self, state: TeamState, config: RunnableConfig) -> ReturnTeamState:
         history = state.get("history", [])

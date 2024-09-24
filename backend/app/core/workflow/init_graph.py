@@ -1,6 +1,6 @@
 from langchain.pydantic_v1 import BaseModel
 from langchain.tools import BaseTool
-from typing import Dict, Any,  Set
+from typing import Dict, Any, Set
 from functools import lru_cache
 import time
 from langgraph.graph.graph import CompiledGraph
@@ -10,6 +10,10 @@ from app.core.graph.skills import managed_skills
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, StateGraph
 from langchain_core.runnables import RunnableLambda
+
+from app.curd.models import get_all_models
+from app.api.deps import SessionDep
+from app.core.workflow.db_utils import get_all_models_helper
 from .node import (
     WorkerNode,
     SequentialWorkerNode,
@@ -59,7 +63,9 @@ def should_continue(state: TeamState) -> str:
 
 
 def initialize_graph(
-    build_config: Dict[str, Any], checkpointer: BaseCheckpointSaver,save_graph_img=False
+    build_config: Dict[str, Any],
+    checkpointer: BaseCheckpointSaver,
+    save_graph_img=False,
 ) -> CompiledGraph:
     global tool_name_to_node_id
 
@@ -120,13 +126,31 @@ def initialize_graph(
             node_data = node["data"]
 
             if node_type == "llm":
+                model_name = node_data["model"]
+                all_models = get_all_models_helper()
+                model_info = None
+                for model in all_models.data:
+                    if model.ai_model_name == model_name:
+                        model_info = {
+                            "ai_model_name": model.ai_model_name,
+                            "provider_name": model.provider.provider_name,
+                            "base_url": model.provider.base_url,
+                            "api_key": model.provider.api_key,
+                        }
+                        break
+                if model_info is None:
+                    raise ValueError(f"Model {model_name} not supported now.")
+                # in the future wo can use more langchain templates here apply to different node type TODO
                 if is_sequential:
-                    node_class = SequentialWorkerNode
+                    # node_class = SequentialWorkerNode
+                    node_class = LLMNode
                 elif is_hierarchical:
-                    if llm_children[node_id]:  # If the node has child LLM nodes
-                        node_class = LeaderNode
+                    if llm_children[node_id]:
+                        # node_class = LeaderNode
+                        node_class = LLMNode
                     else:
-                        node_class = WorkerNode
+                        # node_class = WorkerNode
+                        node_class = LLMNode
                 else:
                     node_class = LLMNode
 
@@ -149,11 +173,11 @@ def initialize_graph(
                     node_id,
                     RunnableLambda(
                         node_class(
-                            provider=node_data.get("provider", "zhipuai"),
-                            model=node_data["model"],
+                            provider=model_info["provider_name"],
+                            model=model_info["ai_model_name"],
                             tools=tools_to_bind,
-                            openai_api_key="",
-                            openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
+                            openai_api_key=model_info["api_key"],
+                            openai_api_base=model_info["base_url"],
                             temperature=node_data["temperature"],
                         ).work
                     ),
