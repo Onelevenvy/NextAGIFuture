@@ -112,12 +112,13 @@ function Team() {
                   display={"flex"}
                   flexDirection={"row"}
                   maxH={"full"}
-                  p="2"
+                  pt="2"
+                  px="1"
+                  borderRadius={"lg"}
                 >
                   <WorkflowTeamSettings
                     teamId={Number.parseInt(teamId)}
                     triggerSubmit={triggerSubmit}
-                    
                   />
                 </Box>
               ) : (

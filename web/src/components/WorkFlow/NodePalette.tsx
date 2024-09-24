@@ -9,32 +9,43 @@ const NodePalette: React.FC = () => {
   };
 
   return (
-    <Box width="200px" padding={4} borderRight="1px solid #ccc">
+    <Box
+      width="150px"
+      padding={4}
+      bg={"#fcfcfd"}
+      borderTopLeftRadius={"lg"}
+      maxH={"full"}
+      h="full"
+    >
       <VStack spacing={4} align="stretch">
-        {(Object.entries(nodeConfig) as [NodeType, typeof nodeConfig[NodeType]][]).map(
-          ([nodeType, { display, icon: Icon, colorScheme }]) => (
-            <Box
-              key={nodeType}
-              border="1px solid #ddd"
-              borderRadius="md"
-              padding={2}
-              textAlign="left"
-              cursor="move"
-              draggable
-              onDragStart={(event) => onDragStart(event, nodeType)}
-            >
-              <IconButton
-                aria-label={display}
-                icon={<Icon />}
-                colorScheme={colorScheme}
-                size="xs"
-              />
-              <Text display="inline" ml={2}>
-                {display}
-              </Text>
-            </Box>
-          )
-        )}
+        {(
+          Object.entries(nodeConfig) as [
+            NodeType,
+            (typeof nodeConfig)[NodeType],
+          ][]
+        ).map(([nodeType, { display, icon: Icon, colorScheme }]) => (
+          <Box
+            key={nodeType}
+            border="1px solid #ddd"
+            borderRadius="md"
+            padding={2}
+            textAlign="left"
+            cursor="move"
+            draggable
+            maxH={"full"}
+            onDragStart={(event) => onDragStart(event, nodeType)}
+          >
+            <IconButton
+              aria-label={display}
+              icon={<Icon />}
+              colorScheme={colorScheme}
+              size="xs"
+            />
+            <Text display="inline" ml={2}>
+              {display}
+            </Text>
+          </Box>
+        ))}
       </VStack>
     </Box>
   );

@@ -242,6 +242,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const closePropertiesPanel = useCallback(() => {
     setSelectedNodeId(null);
   }, [setSelectedNodeId]);
+
   const deleteNode = useCallback(() => {
     if (contextMenu.nodeId) {
       setNodes((nds) => nds.filter((node) => node.id !== contextMenu.nodeId));
@@ -301,12 +302,18 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   return (
     <Box
       display="flex"
-      height="100%"
+      h="100%"
+      maxH={"full"}
       onKeyDown={onKeyDown}
       tabIndex={0}
       bg={"#f0f2f7"}
+      border={"1px solid #d1d5db"}
+      borderRadius={"lg"}
+      boxShadow={"md"}
     >
-      <NodePalette />
+      <Box h="full" maxH={"full"}>
+        <NodePalette />
+      </Box>
       <Box flex={1} position="relative">
         <ReactFlow
           onNodeClick={onNodeClick}
@@ -342,11 +349,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         >
           <Controls />
 
-          <Background
-            color="#f2f2f2"
-            gap={16}
-            style={{ background: "#f1f1f1" }}
-          />
+          <Background gap={16} style={{ background: "#f0f2f7" }} />
           <MiniMap />
 
           <Panel position="top-left">
@@ -386,7 +389,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           </Menu>
         )}
       </Box>
-      {/* <Panel position="top-right" > */}
+
       <Button
         bg={buttonColor}
         borderRadius={"md"}
@@ -405,18 +408,22 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       {selectedNodeId && (
         <Box
           position="relative"
-          width="350px"
-          bg={"white"}
+          w="330"
+          minW={"330"}
+          maxW={"330"}
+          bg={"#fcfcfd"}
           p={4}
           borderRadius={"lg"}
           boxShadow="md"
+          mr={"5px"}
+          my={1}
         >
           <CloseButton
             onClick={closePropertiesPanel}
             position="absolute"
             right={2}
             top={2}
-            size={"lg"}
+            size={"md"}
           />
 
           {getNodePropertiesComponent(
@@ -426,19 +433,22 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       )}
       <Box
         position="relative"
-        width="350px"
+        w="350"
+        minW={"350"}
+        maxW={"350"}
         bg={"white"}
         p={4}
         borderRadius={"lg"}
         boxShadow="md"
-        border={"1px solid red"}
+        my={1}
+        mr={2}
       >
         <CloseButton
           onClick={closePropertiesPanel}
           position="absolute"
           right={2}
           top={2}
-          size={"lg"}
+          size={"md"}
         />
 
         <DebugPreview

@@ -67,7 +67,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     },
   },
   questionClassifier: {
-    display: "问题分类器",
+    display: "Q-Router",
     icon: FaRobot,
     colorScheme: "orange",
     properties: QuestionClassifierProperties,
