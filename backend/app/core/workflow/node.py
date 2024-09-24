@@ -158,43 +158,24 @@ class BaseNode:
         self,
         provider: str,
         model: str,
-        tools:Sequence[BaseTool],
+        tools: Sequence[BaseTool],
         openai_api_key: str,
         openai_api_base: str,
         temperature: float,
     ):
 
-        if provider in ["zhipuai"] and openai_api_base:
-
-            # self.model = ChatOpenAI(
-            #     model=model,
-            #     streaming=True,
-            #     openai_api_key=openai_api_key,
-            #     openai_api_base=openai_api_base,
-            #     temperature=temperature,
-            # )
-            # self.final_answer_model = ChatOpenAI(
-            #     model=model,
-            #     streaming=True,
-            #     openai_api_key=openai_api_key,
-            #     openai_api_base=openai_api_base,
-            #     temperature=0,
-            # )
-
+        if provider in ["zhipuai", "Siliconflow"]:
             self.model = ChatOpenAI(
-                # model="chatglm_turbo",
-                model="glm-4-flash",
-                temperature=0.01,
-                # openai_api_key='9953866f9b7fac2fd6d564842d8bcc79.AbXduj53KA3SDSMs',
-                # openai_api_key='fe1f2097b7284bd4baa1284be8d54aea.6VOvX4efbye8M6m0',
-                openai_api_key="1a65e1fed7ab7a788ee94d73570e9fcf.5FVs3ceE6POvEnSN",
-                openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
+                model=model,
+                temperature=temperature,
+                openai_api_key=openai_api_key,
+                openai_api_base=openai_api_base,
             )
-            if len(tools)>=1:
+            if len(tools) >= 1:
                 self.model = self.model.bind_tools(tools)
             self.final_answer_model = self.model
 
-        elif provider in ["openai"] and openai_api_base:
+        elif provider in ["openai"]:
             self.model = init_chat_model(
                 model,
                 model_provider=provider,

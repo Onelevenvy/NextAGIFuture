@@ -128,6 +128,7 @@ def initialize_graph(
             if node_type == "llm":
                 model_name = node_data["model"]
                 all_models = get_all_models_helper()
+                model_info = None
                 for model in all_models.data:
                     if model.ai_model_name == model_name:
                         model_info = {
@@ -136,9 +137,10 @@ def initialize_graph(
                             "base_url": model.provider.base_url,
                             "api_key": model.provider.api_key,
                         }
-                    else:
-                        raise ValueError(f"Model {model_name} not supported now.")
-
+                        break
+                if model_info is None:
+                    raise ValueError(f"Model {model_name} not supported now.")
+                
                 if is_sequential:
                     node_class = SequentialWorkerNode
                 elif is_hierarchical:
