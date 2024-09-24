@@ -162,8 +162,9 @@ class BaseNode:
         openai_api_key: str,
         openai_api_base: str,
         temperature: float,
+        system_prompt: str,
     ):
-
+        self.system_prompt = system_prompt
         if provider in ["zhipuai", "Siliconflow"]:
             self.model = ChatOpenAI(
                 model=model,
@@ -236,6 +237,62 @@ class BaseNode:
         return ",".join(list(team_members))
 
 
+class LLMNode(BaseNode):
+    """Perform LLM Node actions"""
+
+    async def work(self, state: TeamState, config: RunnableConfig) -> ReturnTeamState:
+        if self.system_prompt:
+            llm_node_prompts = ChatPromptTemplate.from_messages(
+                [
+                    (
+                        "system",
+                        "Perform the task given to you.\n"
+                        "If you are unable to perform the task, that's OK, you can ask human for help, or just say that you are unable to perform the task."
+                        "Execute what you can to make progress. "
+                        "And your role is:" + self.system_prompt + "\n"
+                        "Stay true to your role and use your tools if necessary.\n\n",
+                    ),
+                    (
+                        "human",
+                        "Here is the previous conversation: \n\n {history_string} \n\n Provide your response.",
+                    ),
+                    MessagesPlaceholder(variable_name="messages"),
+                ]
+            )
+
+        else:
+            llm_node_prompts = ChatPromptTemplate.from_messages(
+                [
+                    (
+                        "system",
+                        (
+                            "Perform the task given to you.\n"
+                            "If you are unable to perform the task, that's OK, you can ask human for help, or just say that you are unable to perform the task."
+                            "Execute what you can to make progress. "
+                            "Stay true to your role and use your tools if necessary.\n\n"
+                        ),
+                    ),
+                    (
+                        "human",
+                        "Here is the previous conversation: \n\n {history_string} \n\n Provide your response.",
+                    ),
+                    MessagesPlaceholder(variable_name="messages"),
+                ]
+            )
+        history = state.get("history", [])
+        messages = state.get("messages", [])
+        prompt = llm_node_prompts.partial(history_string=format_messages(history))
+        chain: RunnableSerializable[dict[str, Any], AnyMessage] = prompt | self.model
+        result: AIMessage = await chain.ainvoke(state, config)
+
+        return_state: ReturnTeamState = {
+            "history": history + [result],
+            "messages": [result] if result.tool_calls else [],
+            "all_messages": messages + [result],
+        }
+        return return_state
+
+
 class WorkerNode(BaseNode):
     worker_prompt = ChatPromptTemplate.from_messages(
         [
@@ -306,44 +363,6 @@ class SequentialWorkerNode(BaseNode):
                     "Perform the task given to you.\n"
                     "If you are unable to perform the task, that's OK, another member with different tools "
                     "will help where you left off. Do not attempt to communicate with other members. "
-                    "Execute what you can to make progress. "
-                    "Stay true to your role and use your tools if necessary.\n\n"
-                ),
-            ),
-            (
-                "human",
-                "Here is the previous conversation: \n\n {history_string} \n\n Provide your response.",
-            ),
-            MessagesPlaceholder(variable_name="messages"),
-        ]
-    )
-
-    async def work(self, state: TeamState, config: RunnableConfig) -> ReturnTeamState:
-        history = state.get("history", [])
-        messages = state.get("messages", [])
-        prompt = self.worker_prompt.partial(history_string=format_messages(history))
-        chain: RunnableSerializable[dict[str, Any], AnyMessage] = prompt | self.model
-        work_chain = chain
-        result: AIMessage = await work_chain.ainvoke(state, config)
-
-        return_state: ReturnTeamState = {
-            "history": history + [result],
-            "messages": [result] if result.tool_calls else [],
-            "all_messages": messages + [result],
-        }
-        return return_state
-
-
-class LLMNode(BaseNode):
-    """Perform Sequential Worker actions"""
-
-    worker_prompt = ChatPromptTemplate.from_messages(
-        [
-            (
-                "system",
-                (
-                    "Perform the task given to you.\n"
-                    "If you are unable to perform the task, that's OK, you can ask human for help, or just say that you are unable to perform the task."
                     "Execute what you can to make progress. "
                     "Stay true to your role and use your tools if necessary.\n\n"
                 ),
