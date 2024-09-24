@@ -13,6 +13,7 @@ import ReactFlow, {
   Panel,
   useViewport,
 } from "reactflow";
+
 import "reactflow/dist/style.css";
 import NodePalette from "./NodePalette";
 import {
@@ -34,6 +35,8 @@ import { useFlowState } from "@/hooks/graphs/useFlowState";
 import { useContextMenu } from "@/hooks/graphs/useContextMenu";
 import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
 import { MdBuild, MdOutlineHelp } from "react-icons/md";
+import DebugPreview from "../Teams/DebugPreview";
+import { VscTriangleRight } from "react-icons/vsc";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -240,6 +243,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const closePropertiesPanel = useCallback(() => {
     setSelectedNodeId(null);
   }, [setSelectedNodeId]);
+
   const deleteNode = useCallback(() => {
     if (contextMenu.nodeId) {
       setNodes((nds) => nds.filter((node) => node.id !== contextMenu.nodeId));
@@ -287,7 +291,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     <Panel position="bottom-right">{Math.round(zoom * 100)}%</Panel>
   );
 
-  const [isShortcutPanelVisible, setShortcutPanelVisible] = useState(false); // Add this state
+  const [isShortcutPanelVisible, setShortcutPanelVisible] = useState(false);
 
   const toggleShortcutPanel = () => {
     setShortcutPanelVisible((prev) => !prev);
@@ -296,15 +300,24 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const hideShortcutPanel = () => {
     setShortcutPanelVisible(false);
   };
+
+  const [showDebugPreview, setShowDebugPreview] = useState(false);
+
   return (
     <Box
       display="flex"
-      height="100%"
+      h="100%"
+      maxH={"full"}
       onKeyDown={onKeyDown}
       tabIndex={0}
       bg={"#f0f2f7"}
+      border={"1px solid #d1d5db"}
+      borderRadius={"lg"}
+      boxShadow={"md"}
     >
-      <NodePalette />
+      <Box h="full" maxH={"full"}>
+        <NodePalette />
+      </Box>
       <Box flex={1} position="relative">
         <ReactFlow
           onNodeClick={onNodeClick}
@@ -340,11 +353,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         >
           <Controls />
 
-          <Background
-            color="#f2f2f2"
-            gap={16}
-            style={{ background: "#f1f1f1" }}
-          />
+          <Background gap={16} style={{ background: "#f0f2f7" }} />
           <MiniMap />
 
           <Panel position="top-left">
@@ -384,40 +393,85 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           </Menu>
         )}
       </Box>
-      {/* <Panel position="top-right" > */}
-      <Button
-        bg={buttonColor}
-        borderRadius={"md"}
-        onClick={onSave}
-        isLoading={isSaving}
-        loadingText="Saving..."
-        _hover={{ backgroundColor: "#1c86ee" }}
-        rightIcon={<MdBuild color={"white"} />}
-        position={"absolute"}
-        right={"20px"}
-        top={"8px"}
-      >
-        <Text color={"white"}>Deploy</Text>
-      </Button>
-      {/* </Panel> */}
+
+      <Box position={"absolute"} right={"20px"} top={"8px"}>
+        <Button
+          mr={5}
+          bg={"white"}
+          borderRadius={"lg"}
+          border={"1px solid #d1d5db"}
+          onClick={() => setShowDebugPreview(true)}
+          _hover={{ backgroundColor: "#eff4ff" }}
+          rightIcon={<VscTriangleRight color={"#155aef"} size={"12px"} />}
+          size={"sm"}
+        >
+          <Text color={"#155aef"}>Debug</Text>
+        </Button>
+        <Button
+          bg={buttonColor}
+          borderRadius={"lg"}
+          onClick={onSave}
+          isLoading={isSaving}
+          loadingText="Saving..."
+          _hover={{ backgroundColor: "#1c86ee" }}
+          rightIcon={<MdBuild color={"white"} size={"12px"} />}
+          size={"sm"}
+        >
+          <Text color={"white"}>Deploy</Text>
+        </Button>
+      </Box>
+
       {selectedNodeId && (
         <Box
           position="relative"
-          width="250px"
-          borderLeft="1px solid #ccc"
+          w="330"
+          minW={"330"}
+          maxW={"330"}
+          bg={"#fcfcfd"}
           p={4}
+          borderRadius={"lg"}
+          boxShadow="md"
+          mr={"5px"}
+          my={1}
         >
           <CloseButton
             onClick={closePropertiesPanel}
             position="absolute"
             right={2}
             top={2}
-            size={"lg"}
+            size={"md"}
           />
 
           {getNodePropertiesComponent(
             nodes.find((n) => n.id === selectedNodeId) || null
           )}
+        </Box>
+      )}
+      {showDebugPreview && (
+        <Box
+          position="relative"
+          w="350"
+          minW={"350"}
+          maxW={"350"}
+          bg={"white"}
+          p={4}
+          borderRadius={"lg"}
+          boxShadow="md"
+          my={1}
+          mr={2}
+        >
+          <CloseButton
+            onClick={() => setShowDebugPreview(false)}
+            position="absolute"
+            right={2}
+            top={2}
+            size={"md"}
+          />
+          <DebugPreview
+            teamId={teamId}
+            triggerSubmit={() => {}}
+            useDeployButton={false}
+          />
         </Box>
       )}
     </Box>

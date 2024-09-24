@@ -50,6 +50,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     initialData: {
       model: "glm-4-flash",
       temperature: 0.1,
+      systemMessage: null,
     },
   },
   tool: {
@@ -66,7 +67,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     },
   },
   questionClassifier: {
-    display: "问题分类器",
+    display: "Q-Router",
     icon: FaRobot,
     colorScheme: "orange",
     properties: QuestionClassifierProperties,
