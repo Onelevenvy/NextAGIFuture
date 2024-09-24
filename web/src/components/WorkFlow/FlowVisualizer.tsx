@@ -13,6 +13,7 @@ import ReactFlow, {
   Panel,
   useViewport,
 } from "reactflow";
+
 import "reactflow/dist/style.css";
 import NodePalette from "./NodePalette";
 import {
@@ -34,6 +35,7 @@ import { useFlowState } from "@/hooks/graphs/useFlowState";
 import { useContextMenu } from "@/hooks/graphs/useContextMenu";
 import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
 import { MdBuild, MdOutlineHelp } from "react-icons/md";
+import DebugPreview from "../Teams/DebugPreview";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -399,13 +401,15 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       >
         <Text color={"white"}>Deploy</Text>
       </Button>
-      {/* </Panel> */}
+
       {selectedNodeId && (
         <Box
           position="relative"
-          width="250px"
-          borderLeft="1px solid #ccc"
+          width="350px"
+          bg={"white"}
           p={4}
+          borderRadius={"lg"}
+          boxShadow="md"
         >
           <CloseButton
             onClick={closePropertiesPanel}
@@ -420,6 +424,29 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           )}
         </Box>
       )}
+      <Box
+        position="relative"
+        width="350px"
+        bg={"white"}
+        p={4}
+        borderRadius={"lg"}
+        boxShadow="md"
+        border={"1px solid red"}
+      >
+        <CloseButton
+          onClick={closePropertiesPanel}
+          position="absolute"
+          right={2}
+          top={2}
+          size={"lg"}
+        />
+
+        <DebugPreview
+          teamId={teamId}
+          triggerSubmit={() => {}}
+          useDeployButton={false}
+        />
+      </Box>
     </Box>
   );
 };

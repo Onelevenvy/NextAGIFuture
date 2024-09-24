@@ -1,8 +1,6 @@
 import {
   Box,
-  Button,
   Center,
-  CloseButton,
   Flex,
   Spinner,
   useColorModeValue,
@@ -133,13 +131,10 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
     const errDetail = (error as ApiError).body?.detail;
     showToast("Something went wrong.", `${errDetail}`, "error");
   }
-  const [showDebugPreview, setShowDebugPreview] = useState(true);
-  const toggleDebugPreview = () => {
-    setShowDebugPreview(!showDebugPreview);
-  };
+
   return (
     <Flex width="full" height="full">
-      <Box width={showDebugPreview ? "80%" : "100%"} transition="width 0.3s">
+      <Box width={"100%"} transition="width 0.3s">
         {isLoading ? (
           <Flex justify="center" align="center" height="100%" width="100%">
             <Spinner size="xl" color="ui.main" />
@@ -152,28 +147,6 @@ function WorkflowTeamSettings({ teamId, triggerSubmit }: WorkflowSettingProps) {
           )
         )}
       </Box>
-      <Center>
-        <PaneStateControl
-          selectedColor={selctedColor}
-          onClick={toggleDebugPreview}
-          background={"transparent"}
-          Icon={showDebugPreview ? LuChevronRight : LuChevronLeft}
-        />
-      </Center>
-      {showDebugPreview && (
-        <Box
-          width="20%"
-          position="relative"
-          borderLeft="1px solid"
-          borderColor="gray.200"
-        >
-          <DebugPreview
-            teamId={currentTeamId}
-            triggerSubmit={triggerSubmit}
-            useDeployButton={false}
-          />
-        </Box>
-      )}
     </Flex>
   );
 }
