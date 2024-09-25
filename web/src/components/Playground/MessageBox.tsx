@@ -60,7 +60,7 @@ const MessageBox = ({ message, onResume }: MessageBoxProps) => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [content, tool_calls, tool_output, documents, documents]); // 依赖 content 确保每次 content 变更时触发滚动
+  }, [content, tool_calls, tool_output, documents]); // 依赖 content 确保每次 content 变更时触发滚动
 
   const [timestamp, setTimestamp] = useState<string>("");
 
