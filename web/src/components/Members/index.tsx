@@ -1,3 +1,6 @@
+import { useModelQuery } from "@/hooks/useModelQuery";
+import { useSkillsQuery } from "@/hooks/useSkillsQuery";
+import { useUploadsQuery } from "@/hooks/useUploadsQuery";
 import {
   Box,
   Button,
@@ -21,23 +24,20 @@ import {
   Textarea,
   Tooltip,
 } from "@chakra-ui/react";
-import useCustomToast from "../../hooks/useCustomToast";
+import { Select as MultiSelect, chakraComponents } from "chakra-react-select";
+import { type Ref, forwardRef, useState } from "react";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "react-query";
 import {
   type ApiError,
-  MembersService,
-  type TeamUpdate,
   type MemberOut,
   type MemberUpdate,
+  MembersService,
+  type TeamUpdate,
 } from "../../client";
-import { type SubmitHandler, useForm, Controller } from "react-hook-form";
-import { Select as MultiSelect, chakraComponents } from "chakra-react-select";
-import { forwardRef, Ref, useState } from "react";
+import useCustomToast from "../../hooks/useCustomToast";
 import ModelSelect from "../Common/ModelProvider";
-import { useTranslation } from "react-i18next";
-import { useSkillsQuery } from "@/hooks/useSkillsQuery";
-import { useUploadsQuery } from "@/hooks/useUploadsQuery";
-import { useModelQuery } from "@/hooks/useModelQuery";
 
 interface EditTeamMemberProps {
   member: MemberOut;
@@ -229,7 +229,7 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
           // Remove 'ask-human' tool if 'enableHumanTool' is false
           .filter(
             (skill) =>
-              skill.name !== "ask-human" || memberConfig.enableHumanTool
+              skill.name !== "ask-human" || memberConfig.enableHumanTool,
           )
           .map((skill) => ({
             ...skill,
@@ -248,7 +248,7 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
 
     const onModelSelect = (modelName: string) => {
       const selectedModel = models?.data.find(
-        (model) => model.ai_model_name === modelName
+        (model) => model.ai_model_name === modelName,
       );
       setValue("model", modelName);
       setValue("openai_api_key", selectedModel?.provider.api_key);
@@ -443,204 +443,203 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
           </Box>
         </Box>
       );
-    } else {
-      return (
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
-          <ModalOverlay>
-            <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
-              <ModalHeader>Update Team Member</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody pb={6}>
-                <FormControl
-                  isDisabled={
-                    member.type === "root" ||
-                    member.type.startsWith("freelancer") ||
-                    member.type.endsWith("bot")
-                  }
-                >
-                  <FormLabel htmlFor="type">Type</FormLabel>
-                  <Select id="type" {...register("type")}>
-                    {memberConfig.selection.map((member, index) => (
-                      <option key={index} value={member}>
-                        {member}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl mt={4} isRequired isInvalid={!!errors.name}>
-                  <FormLabel htmlFor="name">Name</FormLabel>
-                  <Input
-                    id="name"
-                    {...register("name", {
-                      required: "Name is required.",
-                      pattern: {
-                        value: /^[a-zA-Z0-9_-]{1,64}$/,
-                        message:
-                          "Name must follow pattern: ^[a-zA-Z0-9_-]{1,64}$",
-                      },
-                    })}
-                    placeholder="Name"
-                    type="text"
-                  />
-                  {errors.name && (
-                    <FormErrorMessage>{errors.name.message}</FormErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl mt={4} isRequired isInvalid={!!errors.role}>
-                  <FormLabel htmlFor="role">Role</FormLabel>
-                  <Textarea
-                    id="role"
-                    {...register("role", { required: "Role is required." })}
-                    placeholder="Role"
-                    className="nodrag nopan"
-                  />
-                  {errors.role && (
-                    <FormErrorMessage>{errors.role.message}</FormErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl mt={4}>
-                  <FormLabel htmlFor="backstory">Backstory</FormLabel>
-                  <Textarea
-                    id="backstory"
-                    {...register("backstory")}
-                    className="nodrag nopan"
-                  />
-                </FormControl>
-                <FormControl mt={4}>
-                  <FormLabel htmlFor="model">
-                    {t("team.teamsetting.model")}
-                  </FormLabel>
-                  <ModelSelect
-                    models={models}
-                    control={control}
-                    onModelSelect={onModelSelect}
-                    isLoading={isLoadingModel}
-                  />
-                </FormControl>
-                {memberConfig.enableSkillTools && (
-                  <Controller
-                    control={control}
-                    name="skills"
-                    render={({
-                      field: { onChange, onBlur, value, name, ref },
-                      fieldState: { error },
-                    }) => (
-                      <FormControl mt={4} isInvalid={!!error} id="skills">
-                        <FormLabel>Skills</FormLabel>
-                        <MultiSelect
-                          isDisabled={!memberConfig.enableSkillTools}
-                          isLoading={isLoadingSkills}
-                          isMulti
-                          name={name}
-                          ref={ref}
-                          onChange={onChange}
-                          onBlur={onBlur}
-                          value={value}
-                          options={skillOptions}
-                          placeholder="Select skills"
-                          closeMenuOnSelect={false}
-                          components={customSelectOption}
-                        />
-                        <FormErrorMessage>{error?.message}</FormErrorMessage>
-                      </FormControl>
-                    )}
-                  />
+    }
+    return (
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay>
+          <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
+            <ModalHeader>Update Team Member</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <FormControl
+                isDisabled={
+                  member.type === "root" ||
+                  member.type.startsWith("freelancer") ||
+                  member.type.endsWith("bot")
+                }
+              >
+                <FormLabel htmlFor="type">Type</FormLabel>
+                <Select id="type" {...register("type")}>
+                  {memberConfig.selection.map((member, index) => (
+                    <option key={index} value={member}>
+                      {member}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl mt={4} isRequired isInvalid={!!errors.name}>
+                <FormLabel htmlFor="name">Name</FormLabel>
+                <Input
+                  id="name"
+                  {...register("name", {
+                    required: "Name is required.",
+                    pattern: {
+                      value: /^[a-zA-Z0-9_-]{1,64}$/,
+                      message:
+                        "Name must follow pattern: ^[a-zA-Z0-9_-]{1,64}$",
+                    },
+                  })}
+                  placeholder="Name"
+                  type="text"
+                />
+                {errors.name && (
+                  <FormErrorMessage>{errors.name.message}</FormErrorMessage>
                 )}
-                {memberConfig.enableUploadTools && (
-                  <Controller
-                    control={control}
-                    name="uploads"
-                    render={({
-                      field: { onChange, onBlur, value, name, ref },
-                      fieldState: { error },
-                    }) => (
-                      <FormControl mt={4} isInvalid={!!error} id="uploads">
-                        <FormLabel>Knowledge Base</FormLabel>
-                        <MultiSelect
-                          isDisabled={!memberConfig.enableUploadTools}
-                          isLoading={isLoadingUploads}
-                          isMulti
-                          name={name}
-                          ref={ref}
-                          onChange={onChange}
-                          onBlur={onBlur}
-                          value={value}
-                          options={uploadOptions}
-                          placeholder="Select uploads"
-                          closeMenuOnSelect={false}
-                          components={customSelectOption}
-                        />
-                        <FormErrorMessage>{error?.message}</FormErrorMessage>
-                      </FormControl>
-                    )}
-                  />
+              </FormControl>
+              <FormControl mt={4} isRequired isInvalid={!!errors.role}>
+                <FormLabel htmlFor="role">Role</FormLabel>
+                <Textarea
+                  id="role"
+                  {...register("role", { required: "Role is required." })}
+                  placeholder="Role"
+                  className="nodrag nopan"
+                />
+                {errors.role && (
+                  <FormErrorMessage>{errors.role.message}</FormErrorMessage>
                 )}
-                {memberConfig.enableInterrupt && (
-                  <FormControl mt={4}>
-                    <FormLabel htmlFor="interrupt">Human In The Loop</FormLabel>
-                    <Checkbox {...register("interrupt")}>
-                      Require approval before executing actions
-                    </Checkbox>
-                  </FormControl>
-                )}
-
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel htmlFor="backstory">Backstory</FormLabel>
+                <Textarea
+                  id="backstory"
+                  {...register("backstory")}
+                  className="nodrag nopan"
+                />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel htmlFor="model">
+                  {t("team.teamsetting.model")}
+                </FormLabel>
+                <ModelSelect
+                  models={models}
+                  control={control}
+                  onModelSelect={onModelSelect}
+                  isLoading={isLoadingModel}
+                />
+              </FormControl>
+              {memberConfig.enableSkillTools && (
                 <Controller
                   control={control}
-                  name="temperature"
-                  rules={{ required: true }}
+                  name="skills"
                   render={({
                     field: { onChange, onBlur, value, name, ref },
                     fieldState: { error },
                   }) => (
-                    <FormControl mt={4} isRequired isInvalid={!!error}>
-                      <FormLabel htmlFor="temperature">Temperature</FormLabel>
-                      <Slider
-                        id="temperature"
+                    <FormControl mt={4} isInvalid={!!error} id="skills">
+                      <FormLabel>Skills</FormLabel>
+                      <MultiSelect
+                        isDisabled={!memberConfig.enableSkillTools}
+                        isLoading={isLoadingSkills}
+                        isMulti
                         name={name}
-                        value={value ?? 0} // Use nullish coalescing to ensure value is never null
+                        ref={ref}
                         onChange={onChange}
                         onBlur={onBlur}
-                        ref={ref}
-                        min={0}
-                        max={1}
-                        step={0.1}
-                        onMouseEnter={() => setShowTooltip(true)}
-                        onMouseLeave={() => setShowTooltip(false)}
-                      >
-                        <SliderTrack>
-                          <SliderFilledTrack />
-                        </SliderTrack>
-                        <Tooltip
-                          hasArrow
-                          placement="top"
-                          isOpen={showTooltip}
-                          label={watch("temperature")}
-                        >
-                          <SliderThumb />
-                        </Tooltip>
-                      </Slider>
+                        value={value}
+                        options={skillOptions}
+                        placeholder="Select skills"
+                        closeMenuOnSelect={false}
+                        components={customSelectOption}
+                      />
                       <FormErrorMessage>{error?.message}</FormErrorMessage>
                     </FormControl>
                   )}
                 />
-              </ModalBody>
-              <ModalFooter gap={3}>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  isLoading={isSubmitting || mutation.isLoading}
-                  isDisabled={!isDirty || !isValid}
-                >
-                  Save
-                </Button>
-                <Button onClick={onCancel}>Cancel</Button>
-              </ModalFooter>
-            </ModalContent>
-          </ModalOverlay>
-        </Modal>
-      );
-    }
-  }
+              )}
+              {memberConfig.enableUploadTools && (
+                <Controller
+                  control={control}
+                  name="uploads"
+                  render={({
+                    field: { onChange, onBlur, value, name, ref },
+                    fieldState: { error },
+                  }) => (
+                    <FormControl mt={4} isInvalid={!!error} id="uploads">
+                      <FormLabel>Knowledge Base</FormLabel>
+                      <MultiSelect
+                        isDisabled={!memberConfig.enableUploadTools}
+                        isLoading={isLoadingUploads}
+                        isMulti
+                        name={name}
+                        ref={ref}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        value={value}
+                        options={uploadOptions}
+                        placeholder="Select uploads"
+                        closeMenuOnSelect={false}
+                        components={customSelectOption}
+                      />
+                      <FormErrorMessage>{error?.message}</FormErrorMessage>
+                    </FormControl>
+                  )}
+                />
+              )}
+              {memberConfig.enableInterrupt && (
+                <FormControl mt={4}>
+                  <FormLabel htmlFor="interrupt">Human In The Loop</FormLabel>
+                  <Checkbox {...register("interrupt")}>
+                    Require approval before executing actions
+                  </Checkbox>
+                </FormControl>
+              )}
+
+              <Controller
+                control={control}
+                name="temperature"
+                rules={{ required: true }}
+                render={({
+                  field: { onChange, onBlur, value, name, ref },
+                  fieldState: { error },
+                }) => (
+                  <FormControl mt={4} isRequired isInvalid={!!error}>
+                    <FormLabel htmlFor="temperature">Temperature</FormLabel>
+                    <Slider
+                      id="temperature"
+                      name={name}
+                      value={value ?? 0} // Use nullish coalescing to ensure value is never null
+                      onChange={onChange}
+                      onBlur={onBlur}
+                      ref={ref}
+                      min={0}
+                      max={1}
+                      step={0.1}
+                      onMouseEnter={() => setShowTooltip(true)}
+                      onMouseLeave={() => setShowTooltip(false)}
+                    >
+                      <SliderTrack>
+                        <SliderFilledTrack />
+                      </SliderTrack>
+                      <Tooltip
+                        hasArrow
+                        placement="top"
+                        isOpen={showTooltip}
+                        label={watch("temperature")}
+                      >
+                        <SliderThumb />
+                      </Tooltip>
+                    </Slider>
+                    <FormErrorMessage>{error?.message}</FormErrorMessage>
+                  </FormControl>
+                )}
+              />
+            </ModalBody>
+            <ModalFooter gap={3}>
+              <Button
+                variant="primary"
+                type="submit"
+                isLoading={isSubmitting || mutation.isLoading}
+                isDisabled={!isDirty || !isValid}
+              >
+                Save
+              </Button>
+              <Button onClick={onCancel}>Cancel</Button>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
+      </Modal>
+    );
+  },
 );
 
 EditTeamMember.displayName = "EditTeamMember";

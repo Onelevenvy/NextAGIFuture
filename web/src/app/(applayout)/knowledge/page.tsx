@@ -1,23 +1,24 @@
 "use client";
-import {
-  Flex,
-  Spinner,
-  Heading,
-  Box,
-  SimpleGrid,
-  useColorModeValue,
-  Badge,
-} from "@chakra-ui/react";
-import { useQuery } from "react-query";
-import { UploadsService, type ApiError } from "@/client";
+import { type ApiError, UploadsService } from "@/client";
 import ActionsMenu from "@/components/Common/ActionsMenu";
 import Navbar from "@/components/Common/Navbar";
 import useCustomToast from "@/hooks/useCustomToast";
+import {
+  Badge,
+  Box,
+  Flex,
+  Heading,
+  SimpleGrid,
+  Spinner,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import React from "react";
 import { RiListUnordered } from "react-icons/ri";
+import { useQuery } from "react-query";
 
-import { useTabSearchParams } from "@/hooks/useTabSearchparams";
 import TabSlider from "@/components/Common/TabSlider";
+import { useTabSearchParams } from "@/hooks/useTabSearchparams";
+import { useTranslation } from "react-i18next";
 import {
   FaFileExcel,
   FaFileExport,
@@ -26,7 +27,6 @@ import {
   FaFileWord,
 } from "react-icons/fa";
 import { PiFileHtmlFill } from "react-icons/pi";
-import { useTranslation } from "react-i18next";
 
 function Uploads() {
   const showToast = useCustomToast();
@@ -46,7 +46,7 @@ function Uploads() {
   const options = [
     {
       value: "all",
-      text: t(`panestate.kb.all`),
+      text: t("panestate.kb.all"),
       icon: <RiListUnordered className="w-[14px] h-[14px] mr-1" />,
     },
     {

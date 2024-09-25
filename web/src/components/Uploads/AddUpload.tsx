@@ -16,26 +16,26 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-} from "@chakra-ui/react"
-import { type SubmitHandler, useForm, Controller } from "react-hook-form"
-import { useMutation, useQueryClient } from "react-query"
+} from "@chakra-ui/react";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "react-query";
 
 import {
   type ApiError,
-  UploadsService,
   type Body_uploads_create_upload,
-} from "../../client"
-import useCustomToast from "../../hooks/useCustomToast"
-import FileUpload from "../Common/FileUpload"
+  UploadsService,
+} from "../../client";
+import useCustomToast from "../../hooks/useCustomToast";
+import FileUpload from "../Common/FileUpload";
 
 interface AddUploadProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const AddUpload = ({ isOpen, onClose }: AddUploadProps) => {
-  const queryClient = useQueryClient()
-  const showToast = useCustomToast()
+  const queryClient = useQueryClient();
+  const showToast = useCustomToast();
   const {
     register,
     handleSubmit,
@@ -49,32 +49,32 @@ const AddUpload = ({ isOpen, onClose }: AddUploadProps) => {
       chunk_size: 500,
       chunk_overlap: 50,
     },
-  })
+  });
 
   const addUpload = async (data: Body_uploads_create_upload) => {
     await UploadsService.createUpload({
       formData: data,
       contentLength: data.file.size,
-    })
-  }
+    });
+  };
 
   const mutation = useMutation(addUpload, {
     onSuccess: () => {
-      reset()
-      onClose()
+      reset();
+      onClose();
     },
     onError: (err: ApiError) => {
-      const errDetail = err.body?.detail
-      showToast("Something went wrong.", `${errDetail}`, "error")
+      const errDetail = err.body?.detail;
+      showToast("Something went wrong.", `${errDetail}`, "error");
     },
     onSettled: () => {
-      queryClient.invalidateQueries("uploads")
+      queryClient.invalidateQueries("uploads");
     },
-  })
+  });
 
   const onSubmit: SubmitHandler<Body_uploads_create_upload> = (data) => {
-    mutation.mutate(data)
-  }
+    mutation.mutate(data);
+  };
 
   return (
     <>
@@ -196,7 +196,7 @@ const AddUpload = ({ isOpen, onClose }: AddUploadProps) => {
         </ModalContent>
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default AddUpload
+export default AddUpload;

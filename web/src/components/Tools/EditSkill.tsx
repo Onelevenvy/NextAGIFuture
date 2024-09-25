@@ -11,29 +11,29 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-} from "@chakra-ui/react"
-import { type SubmitHandler, useForm, Controller } from "react-hook-form"
+} from "@chakra-ui/react";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 
-import { useMutation, useQueryClient } from "react-query"
+// import SkillEditor, { skillPlaceholder } from "./SkillEditor"
+import { RxReset } from "react-icons/rx";
+import { useMutation, useQueryClient } from "react-query";
 import {
   type ApiError,
   type SkillOut,
   type SkillUpdate,
   SkillsService,
-} from "../../client"
-import useCustomToast from "../../hooks/useCustomToast"
-// import SkillEditor, { skillPlaceholder } from "./SkillEditor"
-import { RxReset } from "react-icons/rx"
+} from "../../client";
+import useCustomToast from "../../hooks/useCustomToast";
 
 interface EditSkillProps {
-  skill: SkillOut
-  isOpen: boolean
-  onClose: () => void
+  skill: SkillOut;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const EditSkill = ({ skill, isOpen, onClose }: EditSkillProps) => {
-  const queryClient = useQueryClient()
-  const showToast = useCustomToast()
+  const queryClient = useQueryClient();
+  const showToast = useCustomToast();
   const {
     register,
     handleSubmit,
@@ -47,35 +47,35 @@ const EditSkill = ({ skill, isOpen, onClose }: EditSkillProps) => {
     mode: "onBlur",
     criteriaMode: "all",
     defaultValues: skill,
-  })
+  });
 
   const updateSkill = async (data: SkillUpdate) => {
-    return await SkillsService.updateSkill({ id: skill.id, requestBody: data })
-  }
+    return await SkillsService.updateSkill({ id: skill.id, requestBody: data });
+  };
 
   const mutation = useMutation(updateSkill, {
     onSuccess: (data) => {
-      showToast("Success!", "Skill updated successfully.", "success")
-      reset(data) // reset isDirty after updating
-      onClose()
+      showToast("Success!", "Skill updated successfully.", "success");
+      reset(data); // reset isDirty after updating
+      onClose();
     },
     onError: (err: ApiError) => {
-      const errDetail = err.body?.detail
-      showToast("Something went wrong.", `${errDetail}`, "error")
+      const errDetail = err.body?.detail;
+      showToast("Something went wrong.", `${errDetail}`, "error");
     },
     onSettled: () => {
-      queryClient.invalidateQueries("skills")
+      queryClient.invalidateQueries("skills");
     },
-  })
+  });
 
   const onSubmit: SubmitHandler<SkillUpdate> = async (data) => {
-    mutation.mutate(data)
-  }
+    mutation.mutate(data);
+  };
 
   const onCancel = () => {
-    reset()
-    onClose()
-  }
+    reset();
+    onClose();
+  };
 
   // const resetSkillDefinitionHandler = () => {
   //   setValue("tool_definition", skillPlaceholder)
@@ -174,7 +174,7 @@ const EditSkill = ({ skill, isOpen, onClose }: EditSkillProps) => {
         </ModalContent>
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default EditSkill
+export default EditSkill;

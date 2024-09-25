@@ -1,27 +1,27 @@
 import {
+  Avatar,
   Box,
+  Button,
+  Flex,
   Menu,
   MenuButton,
+  MenuDivider,
   MenuItem,
   MenuList,
-  Flex,
-  Avatar,
   Text,
-  MenuDivider,
-  Button,
   useDisclosure,
 } from "@chakra-ui/react";
 
-import { useQueryClient } from "react-query";
 import Link from "next/link";
-import useAuth from "../../../hooks/useAuth";
+import { useQueryClient } from "react-query";
 import type { UserOut } from "../../../client";
+import useAuth from "../../../hooks/useAuth";
 
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import { forwardRef, BoxProps } from "@chakra-ui/react";
-import CustomModalWrapper from "../CustomModal";
 import AccountSetting from "@/components/Settings";
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import { type BoxProps, forwardRef } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import CustomModalWrapper from "../CustomModal";
 const UserMenu = () => {
   const { logout, currentUser } = useAuth();
 
@@ -87,7 +87,7 @@ const UserMenu = () => {
               <MenuDivider />
 
               <MenuItem as={Link} href="" onClick={onOpen}>
-                {t(`setting.modal.setting`)}
+                {t("setting.modal.setting")}
                 <CustomModalWrapper
                   component={<AccountSetting />}
                   size="6xl"
@@ -97,13 +97,15 @@ const UserMenu = () => {
               </MenuItem>
 
               <MenuItem as={Link} href="">
-              {t(`setting.modal.helpDocu`)}
+                {t("setting.modal.helpDocu")}
               </MenuItem>
               <MenuItem as={Link} href="">
                 About
               </MenuItem>
               <MenuDivider />
-              <MenuItem onClick={handleLogout}>{t(`setting.modal.logOut`)}</MenuItem>
+              <MenuItem onClick={handleLogout}>
+                {t("setting.modal.logOut")}
+              </MenuItem>
             </MenuList>
           </Menu>
         </Box>

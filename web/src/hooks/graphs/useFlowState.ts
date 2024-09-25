@@ -1,13 +1,13 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
+  type Connection,
+  type Edge,
   Node,
-  Edge,
-  Connection,
   addEdge,
-  applyNodeChanges,
   applyEdgeChanges,
+  applyNodeChanges,
 } from "reactflow";
-import { CustomNode } from "../../components/WorkFlow/types";
+import type { CustomNode } from "../../components/WorkFlow/types";
 
 export function useFlowState(initialNodes: CustomNode[], initialEdges: Edge[]) {
   const [nodes, setNodes] = useState<CustomNode[]>(initialNodes);
@@ -33,7 +33,7 @@ export function useFlowState(initialNodes: CustomNode[], initialEdges: Edge[]) {
             if (key === "label") {
               // Check if the new name already exists
               const isNameExists = nds.some(
-                (n) => n.id !== nodeId && n.data.label === value
+                (n) => n.id !== nodeId && n.data.label === value,
               );
               if (isNameExists) {
                 setNameError("Node name already exists");
@@ -50,10 +50,10 @@ export function useFlowState(initialNodes: CustomNode[], initialEdges: Edge[]) {
             };
           }
           return node;
-        })
+        }),
       );
     },
-    [setNodes]
+    [setNodes],
   );
 
   return {

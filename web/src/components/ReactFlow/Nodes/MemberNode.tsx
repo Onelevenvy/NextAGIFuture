@@ -1,28 +1,28 @@
+import EditTeamMember from "@/components/Members";
 import {
   Box,
   Icon,
   IconButton,
   Stack,
+  Text,
   useColorModeValue,
   useDisclosure,
-  Text,
-} from "@chakra-ui/react"
-import type { NodeProps } from "reactflow"
-import { Handle, Position } from "reactflow"
-import type { MemberOut } from "../../../client"
-import { FiEdit2 } from "react-icons/fi"
-import { GrUserManager, GrUserWorker } from "react-icons/gr"
-import LimitConnectionHandle from "../Handles/LimitConnectionHandle"
-import  EditTeamMember  from "@/components/Members"
+} from "@chakra-ui/react";
+import { FiEdit2 } from "react-icons/fi";
+import { GrUserManager, GrUserWorker } from "react-icons/gr";
+import type { NodeProps } from "reactflow";
+import { Handle, Position } from "reactflow";
+import type { MemberOut } from "../../../client";
+import LimitConnectionHandle from "../Handles/LimitConnectionHandle";
 
 export type MemberNodeData = {
-  teamId: number
-  member: MemberOut
-}
+  teamId: number;
+  member: MemberOut;
+};
 
 export function MemberNode({ data }: NodeProps<MemberNodeData>) {
-  const editMemberModal = useDisclosure()
-  const bgColor = useColorModeValue("gray.50", "ui.darkSlate")
+  const editMemberModal = useDisclosure();
+  const bgColor = useColorModeValue("gray.50", "ui.darkSlate");
 
   return (
     <Box w="15rem" p={2} boxShadow="base" borderRadius="lg" bgColor={bgColor}>
@@ -64,5 +64,5 @@ export function MemberNode({ data }: NodeProps<MemberNodeData>) {
         <Handle type="source" position={Position.Bottom} />
       )}
     </Box>
-  )
+  );
 }

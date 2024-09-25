@@ -1,10 +1,10 @@
+import type { ChatResponse } from "@/client";
 import { create } from "zustand";
-import { type ChatResponse } from "@/client";
 
 interface ChatMessageState {
   messages: ChatResponse[];
   setMessages: (
-    update: ChatResponse[] | ((prevMessages: ChatResponse[]) => ChatResponse[])
+    update: ChatResponse[] | ((prevMessages: ChatResponse[]) => ChatResponse[]),
   ) => void;
 }
 

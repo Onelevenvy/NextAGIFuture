@@ -40,7 +40,7 @@ const DeleteConfirmation = ({ isOpen, onClose }: DeleteProps) => {
       showToast(
         "Success",
         "Your account has been successfully deleted.",
-        "success"
+        "success",
       );
       logout();
       onClose();

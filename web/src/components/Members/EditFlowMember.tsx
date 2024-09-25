@@ -1,3 +1,6 @@
+import { useSkillsQuery } from "@/hooks/useSkillsQuery";
+import { useUploadsQuery } from "@/hooks/useUploadsQuery";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Button,
   ButtonGroup,
@@ -23,28 +26,25 @@ import {
   Textarea,
   Tooltip,
 } from "@chakra-ui/react";
-import useCustomToast from "../../hooks/useCustomToast";
+import {
+  CreatableSelect,
+  Select as MultiSelect,
+  type OptionBase,
+  chakraComponents,
+} from "chakra-react-select";
+import { useState } from "react";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
   type ApiError,
-  MembersService,
-  type TeamUpdate,
   type MemberOut,
   type MemberUpdate,
+  MembersService,
   SkillsService,
+  type TeamUpdate,
   UploadsService,
 } from "../../client";
-import { type SubmitHandler, useForm, Controller } from "react-hook-form";
-import {
-  Select as MultiSelect,
-  chakraComponents,
-  CreatableSelect,
-  type OptionBase,
-} from "chakra-react-select";
-import { useState } from "react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { useSkillsQuery } from "@/hooks/useSkillsQuery";
-import { useUploadsQuery } from "@/hooks/useUploadsQuery";
+import useCustomToast from "../../hooks/useCustomToast";
 
 interface EditMemberProps {
   member: MemberOut;
@@ -243,7 +243,7 @@ export function EditFlowMember({
     ? skills.data
         // Remove 'ask-human' tool if 'enableHumanTool' is false
         .filter(
-          (skill) => skill.name !== "ask-human" || memberConfig.enableHumanTool
+          (skill) => skill.name !== "ask-human" || memberConfig.enableHumanTool,
         )
         .map((skill) => ({
           ...skill,
@@ -265,7 +265,7 @@ export function EditFlowMember({
     (model) => ({
       label: model,
       value: model,
-    })
+    }),
   );
 
   return (
@@ -404,7 +404,7 @@ export function EditFlowMember({
                   onChange: (event) =>
                     setValue(
                       "model",
-                      AVAILABLE_MODELS[event.target.value as ModelProvider][0]
+                      AVAILABLE_MODELS[event.target.value as ModelProvider][0],
                     ),
                 })}
               >

@@ -1,4 +1,4 @@
-import { TeamOut } from "@/client";
+import type { TeamOut } from "@/client";
 import { Box, Tag, TagLabel, Text } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 

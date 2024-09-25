@@ -1,23 +1,23 @@
 import {
-  Input,
   FormControl,
+  FormErrorMessage,
   FormLabel,
+  Icon,
+  Input,
   InputGroup,
   InputLeftElement,
-  FormErrorMessage,
-  Icon,
-} from "@chakra-ui/react"
-import { FiFile } from "react-icons/fi"
-import { type Control, useController } from "react-hook-form"
-import { type ReactNode, useRef } from "react"
+} from "@chakra-ui/react";
+import { type ReactNode, useRef } from "react";
+import { type Control, useController } from "react-hook-form";
+import { FiFile } from "react-icons/fi";
 
 interface FileUploadProps {
-  name: string
-  placeholder?: string
-  acceptedFileTypes: string
-  control: Control<any, any>
-  children?: ReactNode
-  isRequired?: boolean
+  name: string;
+  placeholder?: string;
+  acceptedFileTypes: string;
+  control: Control<any, any>;
+  children?: ReactNode;
+  isRequired?: boolean;
 }
 
 export const FileUpload = ({
@@ -28,7 +28,7 @@ export const FileUpload = ({
   children,
   isRequired = false,
 }: FileUploadProps) => {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null);
   const {
     field: { ref, onChange, value, ...inputProps },
     fieldState: { invalid },
@@ -36,7 +36,7 @@ export const FileUpload = ({
     name,
     control,
     rules: { required: isRequired },
-  })
+  });
 
   return (
     <FormControl isInvalid={invalid} isRequired={isRequired} mt={4}>
@@ -62,12 +62,12 @@ export const FileUpload = ({
       </InputGroup>
       <FormErrorMessage>{invalid}</FormErrorMessage>
     </FormControl>
-  )
-}
+  );
+};
 
 FileUpload.defaultProps = {
   acceptedFileTypes: "",
   allowMultipleFiles: false,
-}
+};
 
-export default FileUpload
+export default FileUpload;

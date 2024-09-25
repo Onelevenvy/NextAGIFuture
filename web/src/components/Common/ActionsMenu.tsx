@@ -9,12 +9,12 @@ import {
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FiEdit, FiTrash } from "react-icons/fi";
 
-import type { SkillOut, TeamOut, UploadOut, UserOut } from "../../client";
 import EditUser from "@/components/Admin/EditUser";
+import Delete from "@/components/Common/DeleteAlert";
 import EditTeam from "@/components/Teams/EditTeam";
 import EditSkill from "@/components/Tools/EditSkill";
-import Delete from "@/components/Common/DeleteAlert";
 import EditUpload from "@/components/Uploads/EditUpload";
+import type { SkillOut, TeamOut, UploadOut, UserOut } from "../../client";
 
 interface ActionsMenuProps {
   type: string;

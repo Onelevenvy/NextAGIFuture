@@ -1,19 +1,19 @@
 import { Box, Flex, Icon, Text, useColorModeValue } from "@chakra-ui/react";
 import Link from "next/link";
-import { FiHome } from "react-icons/fi";
-import { BsRobot } from "react-icons/bs";
-import { RiRobot2Line, RiRobot2Fill } from "react-icons/ri";
 import { usePathname } from "next/navigation";
-import useAuth from "../../../hooks/useAuth";
-import { FaHouseChimney, FaBook } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
-import { LuBookCopy } from "react-icons/lu";
+import { BsRobot } from "react-icons/bs";
 import { FaToolbox } from "react-icons/fa";
-import { PiToolboxLight } from "react-icons/pi";
+import { FaBook, FaHouseChimney } from "react-icons/fa6";
+import { FiHome } from "react-icons/fi";
 import {
   IoChatboxEllipsesOutline,
   IoChatbubbleEllipses,
 } from "react-icons/io5";
+import { LuBookCopy } from "react-icons/lu";
+import { PiToolboxLight } from "react-icons/pi";
+import { RiRobot2Fill, RiRobot2Line } from "react-icons/ri";
+import useAuth from "../../../hooks/useAuth";
 
 interface SidebarItemsProps {
   onClose?: () => void;
@@ -29,31 +29,31 @@ const SidebarItems = ({ onClose }: SidebarItemsProps) => {
     {
       activeIcon: FaHouseChimney,
       inactiveIcon: FiHome,
-      title: t(`sidebar.home`),
+      title: t("sidebar.home"),
       path: "/dashboard",
     },
     {
       activeIcon: IoChatbubbleEllipses,
       inactiveIcon: IoChatboxEllipsesOutline,
-      title: t(`sidebar.chat`),
+      title: t("sidebar.chat"),
       path: "/playground",
     },
     {
       activeIcon: RiRobot2Fill,
       inactiveIcon: RiRobot2Line,
-      title: t(`sidebar.team`),
+      title: t("sidebar.team"),
       path: "/teams",
     },
     {
       activeIcon: FaToolbox,
       inactiveIcon: PiToolboxLight,
-      title: t(`sidebar.tools`),
+      title: t("sidebar.tools"),
       path: "/tools",
     },
     {
       activeIcon: FaBook,
       inactiveIcon: LuBookCopy,
-      title: t(`sidebar.knowledge`),
+      title: t("sidebar.knowledge"),
       path: "/knowledge",
     },
   ];

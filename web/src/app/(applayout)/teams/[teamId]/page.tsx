@@ -1,26 +1,26 @@
 "use client";
+import { type ApiError, TeamsService } from "@/client";
+import useCustomToast from "@/hooks/useCustomToast";
 import {
-  Flex,
-  Spinner,
+  Box,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  Box,
+  Flex,
+  Spinner,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import { TeamsService, type ApiError } from "@/client";
-import useCustomToast from "@/hooks/useCustomToast";
 
 import Flow from "@/components/ReactFlow/Flow";
 
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import NormalTeamSettings from "@/components/Teams/NormalTeamSettings";
-import DebugPreview from "@/components/Teams/DebugPreview";
-import { useRef } from "react";
-import { color } from "framer-motion";
 import ShowFlow from "@/app/flow/show/ShowFlow";
+import DebugPreview from "@/components/Teams/DebugPreview";
+import NormalTeamSettings from "@/components/Teams/NormalTeamSettings";
 import WorkflowTeamSettings from "@/components/Teams/WorkflowTeamSettings";
+import { color } from "framer-motion";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useRef } from "react";
 
 function Team() {
   const showToast = useCustomToast();
@@ -32,7 +32,7 @@ function Team() {
     isError,
     error,
   } = useQuery(`team/${teamId}`, () =>
-    TeamsService.readTeam({ id: Number.parseInt(teamId) })
+    TeamsService.readTeam({ id: Number.parseInt(teamId) }),
   );
 
   if (isError) {

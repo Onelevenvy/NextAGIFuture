@@ -1,5 +1,5 @@
 import React from "react";
-import { Handle, Position, NodeProps } from "reactflow";
+import { Handle, type NodeProps, Position } from "reactflow";
 import { BaseNode } from "../Base/BaseNode";
 import { nodeConfig } from "../nodeConfig";
 

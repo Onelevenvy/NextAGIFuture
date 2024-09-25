@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { Node } from 'reactflow';
+import { useCallback, useState } from "react";
+import type { Node } from "reactflow";
 
 export function useContextMenu() {
   const [contextMenu, setContextMenu] = useState<{
@@ -17,7 +17,7 @@ export function useContextMenu() {
         nodeId: node.id,
       });
     },
-    []
+    [],
   );
 
   const closeContextMenu = useCallback(() => {

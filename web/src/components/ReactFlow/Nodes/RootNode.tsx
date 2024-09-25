@@ -1,18 +1,18 @@
+import EditTeamMember from "@/components/Members";
 import {
   Box,
   Icon,
   IconButton,
   Stack,
+  Text,
   useColorModeValue,
   useDisclosure,
-  Text,
 } from "@chakra-ui/react";
+import { FiEdit2 } from "react-icons/fi";
+import { GrUserManager } from "react-icons/gr";
 import type { NodeProps } from "reactflow";
 import { Handle, Position } from "reactflow";
 import type { MemberOut } from "../../../client";
-import { FiEdit2 } from "react-icons/fi";
-import { GrUserManager } from "react-icons/gr";
-import EditTeamMember from "@/components/Members";
 
 export type RootNodeData = {
   teamId: number;

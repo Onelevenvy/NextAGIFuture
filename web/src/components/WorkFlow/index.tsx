@@ -1,10 +1,10 @@
 "use client";
 
+import type { GraphsOut } from "@/client";
 import { Box } from "@chakra-ui/react";
 import { ReactFlowProvider } from "reactflow";
 import FlowVisualizer from "./FlowVisualizer";
 import { nodeTypes } from "./nodes";
-import { GraphsOut } from "@/client";
 
 export default function TqxWorkflow({
   graphData,

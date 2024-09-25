@@ -1,6 +1,6 @@
-import React from "react";
-import { NodeProps } from "reactflow";
-import { Box, HStack, Text, IconButton } from "@chakra-ui/react";
+import { Box, HStack, IconButton, Text } from "@chakra-ui/react";
+import type React from "react";
+import type { NodeProps } from "reactflow";
 
 interface BaseNodeProps extends NodeProps {
   icon: React.ReactElement;

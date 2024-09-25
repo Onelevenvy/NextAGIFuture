@@ -1,8 +1,8 @@
-import React from "react";
-import { Handle, Position, NodeProps } from "reactflow";
-import { Box, VStack, Text } from "@chakra-ui/react";
-import { BaseNode } from "../Base/BaseNode";
 import ModelProviderIcon from "@/components/Icons/models";
+import { Box, Text, VStack } from "@chakra-ui/react";
+import React from "react";
+import { Handle, type NodeProps, Position } from "reactflow";
+import { BaseNode } from "../Base/BaseNode";
 import { nodeConfig } from "../nodeConfig";
 const { icon: Icon, colorScheme } = nodeConfig.llm;
 const LLMNode: React.FC<NodeProps> = (props) => (

@@ -1,5 +1,5 @@
 const translation = {
-  create:"Create",
+  create: "Create",
   team: "Team",
   skill: "Tools",
   user: "User",
@@ -19,10 +19,10 @@ const translation = {
     myAccount: "My Account",
     password: "Password",
     language: "Language",
-    showmodel:"Show Model",
-    hidemodel:"Hide Model",
-    themedark:"Dark Mode",
-    themelight:"Light Mode",
+    showmodel: "Show Model",
+    hidemodel: "Hide Model",
+    themedark: "Dark Mode",
+    themelight: "Light Mode",
   },
 };
 

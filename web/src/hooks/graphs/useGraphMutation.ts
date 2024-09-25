@@ -1,8 +1,8 @@
-import { useMutation } from "react-query";
+import type { ApiError } from "@/client";
+import type { GraphUpdate } from "@/client/models/GraphUpdate";
 import { GraphsService } from "@/client/services/GraphsService";
-import { GraphUpdate } from "@/client/models/GraphUpdate";
-import { ApiError } from "@/client";
 import useCustomToast from "@/hooks/useCustomToast";
+import { useMutation } from "react-query";
 
 export function useGraphMutation(teamId: number, graphId: number | undefined) {
   const showToast = useCustomToast();

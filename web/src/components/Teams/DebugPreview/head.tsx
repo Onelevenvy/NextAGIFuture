@@ -1,24 +1,24 @@
+import ChatHistoryList from "@/components/Playground/ChatHistoryList";
 import {
   Box,
   Button,
   Icon,
   IconButton,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverTrigger,
   Text,
   useColorModeValue,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverHeader,
-  PopoverBody,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverFooter,
 } from "@chakra-ui/react";
-import { useTranslation } from "react-i18next";
-import { MdBuild } from "react-icons/md";
-import ChatHistoryList from "@/components/Playground/ChatHistoryList";
-import { LuHistory } from "react-icons/lu";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { LuHistory } from "react-icons/lu";
+import { MdBuild } from "react-icons/md";
 
 function DebugPreviewHead({
   teamId,
@@ -41,7 +41,7 @@ function DebugPreviewHead({
       alignItems={"center"}
     >
       <Text ml="5" fontSize={"xl"} fontWeight={"bold"}>
-        {t(`team.teamsetting.debugoverview`)}
+        {t("team.teamsetting.debugoverview")}
       </Text>
       <Box display={"flex"} flexDirection={"row"} mr="5" alignItems={"center"}>
         <Popover preventOverflow={false} isLazy={true}>
@@ -60,7 +60,7 @@ function DebugPreviewHead({
           >
             <PopoverArrow />
             <PopoverCloseButton />
-            <PopoverHeader> {t(`team.teamsetting.chathistory`)}</PopoverHeader>
+            <PopoverHeader> {t("team.teamsetting.chathistory")}</PopoverHeader>
             <PopoverBody
               maxH="50vh"
               overflowY="auto"
@@ -87,7 +87,6 @@ function DebugPreviewHead({
             <Text color={"white"}>{t("team.teamsetting.savedeploy")}</Text>
           </Button>
         )}
-        
       </Box>
     </Box>
   );

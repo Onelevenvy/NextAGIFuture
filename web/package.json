@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint2": "next lint",
+    "lint": "biome check --apply-unsafe --no-errors-on-unmatched --files-ignore-unknown=true ./",
     "generate-client": "openapi --input ./openapi.json --useOptions --useUnionTypes --output ./src/client --client axios --exportSchemas true"
   },
   "dependencies": {

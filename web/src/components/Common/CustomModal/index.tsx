@@ -16,7 +16,19 @@ const CustomModalWrapper = ({
   onClose,
   component,
 }: {
-  size: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "full" | string;
+  size:
+    | "xs"
+    | "sm"
+    | "md"
+    | "lg"
+    | "xl"
+    | "2xl"
+    | "3xl"
+    | "4xl"
+    | "5xl"
+    | "6xl"
+    | "full"
+    | string;
   isOpen: boolean;
   onClose: () => void;
   component: React.ReactNode;
@@ -30,7 +42,7 @@ const CustomModalWrapper = ({
         closeOnOverlayClick={false}
       >
         <ModalOverlay />
-        <ModalContent width={"1000px"} >
+        <ModalContent width={"1000px"}>
           {/* <ModalHeader /> */}
           <ModalCloseButton />
           <ModalBody width={"1000px"}>{component}</ModalBody>

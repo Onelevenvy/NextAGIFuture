@@ -9,13 +9,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { useEffect } from "react";
 import { LoginService } from "@/client";
 import { isLoggedIn } from "@/hooks/useAuth";
 import useCustomToast from "@/hooks/useCustomToast";
 import { emailPattern } from "@/utils";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { type SubmitHandler, useForm } from "react-hook-form";
 
 interface FormData {
   email: string;
@@ -44,7 +44,7 @@ function RecoverPassword() {
     showToast(
       "Email sent.",
       "We sent an email with a link to get back into your account.",
-      "success"
+      "success",
     );
   };
 

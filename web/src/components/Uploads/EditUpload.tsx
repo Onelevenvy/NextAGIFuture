@@ -16,28 +16,28 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-} from "@chakra-ui/react"
-import { type SubmitHandler, useForm, Controller } from "react-hook-form"
+} from "@chakra-ui/react";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "react-query";
 import {
   type ApiError,
   type Body_uploads_update_upload,
   type UploadOut,
   UploadsService,
-} from "../../client"
-import useCustomToast from "../../hooks/useCustomToast"
-import FileUpload from "../Common/FileUpload"
+} from "../../client";
+import useCustomToast from "../../hooks/useCustomToast";
+import FileUpload from "../Common/FileUpload";
 
 interface EditUploadProps {
-  upload: UploadOut
-  isOpen: boolean
-  onClose: () => void
+  upload: UploadOut;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const EditUpload = ({ upload, isOpen, onClose }: EditUploadProps) => {
-  const queryClient = useQueryClient()
-  const showToast = useCustomToast()
+  const queryClient = useQueryClient();
+  const showToast = useCustomToast();
   const {
     register,
     handleSubmit,
@@ -49,41 +49,41 @@ const EditUpload = ({ upload, isOpen, onClose }: EditUploadProps) => {
     mode: "onBlur",
     criteriaMode: "all",
     defaultValues: { ...upload, chunk_size: 500, chunk_overlap: 50 },
-  })
+  });
 
   const updateUpload = async (data: Body_uploads_update_upload) => {
     return await UploadsService.updateUpload({
       id: upload.id,
       formData: data,
       contentLength: data.file?.size || 0,
-    })
-  }
+    });
+  };
 
   const mutation = useMutation(updateUpload, {
     onSuccess: (data) => {
-      showToast("Success!", "Upload updated successfully.", "success")
-      reset(data) // reset isDirty after updating
-      onClose()
+      showToast("Success!", "Upload updated successfully.", "success");
+      reset(data); // reset isDirty after updating
+      onClose();
     },
     onError: (err: ApiError) => {
-      const errDetail = err.body?.detail
-      showToast("Something went wrong.", `${errDetail}`, "error")
+      const errDetail = err.body?.detail;
+      showToast("Something went wrong.", `${errDetail}`, "error");
     },
     onSettled: () => {
-      queryClient.invalidateQueries("uploads")
+      queryClient.invalidateQueries("uploads");
     },
-  })
+  });
 
   const onSubmit: SubmitHandler<Body_uploads_update_upload> = async (data) => {
-    mutation.mutate(data)
-  }
+    mutation.mutate(data);
+  };
 
   const onCancel = () => {
-    reset()
-    onClose()
-  }
+    reset();
+    onClose();
+  };
 
-  const isUpdatingFile = !!watch("file")
+  const isUpdatingFile = !!watch("file");
 
   return (
     <>
@@ -214,7 +214,7 @@ const EditUpload = ({ upload, isOpen, onClose }: EditUploadProps) => {
         </ModalContent>
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default EditUpload
+export default EditUpload;

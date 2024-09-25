@@ -20,9 +20,9 @@ import { useQuery } from "react-query";
 import { type ApiError, UsersService } from "@/client";
 import ActionsMenu from "@/components/Common/ActionsMenu";
 import Navbar from "@/components/Common/Navbar";
+import useAuth from "@/hooks/useAuth";
 import useCustomToast from "@/hooks/useCustomToast";
 import React from "react";
-import useAuth from "@/hooks/useAuth";
 
 function MembersPage() {
   const showToast = useCustomToast();

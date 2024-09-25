@@ -1,9 +1,11 @@
 // AddTeam.tsx
 import {
+  Box,
   Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
+  IconButton,
   Input,
   Modal,
   ModalBody,
@@ -12,21 +14,19 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Box,
-  Text,
   SimpleGrid,
+  Text,
   Textarea,
-  IconButton,
 } from "@chakra-ui/react";
-import { type SubmitHandler, useForm, Controller } from "react-hook-form";
-import { useMutation, useQueryClient } from "react-query";
-import { TbDatabaseSearch } from "react-icons/tb";
-import { RiTeamFill, RiChatVoiceLine } from "react-icons/ri";
+import { useState } from "react";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { GiTeamIdea } from "react-icons/gi";
+import { RiChatVoiceLine, RiTeamFill } from "react-icons/ri";
+import { TbDatabaseSearch } from "react-icons/tb";
+import { useMutation, useQueryClient } from "react-query";
 import { type ApiError, type TeamCreate, TeamsService } from "../../client";
 import useCustomToast from "../../hooks/useCustomToast";
-import { useTranslation } from "react-i18next";
-import { useState } from "react";
 
 import IconPicker from "@/components/Icons/TqxIcon";
 
@@ -85,7 +85,13 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
   };
 
   // 任务类型列表
-  const taskTypes = ["chatbot", "ragbot", "hierarchical", "sequential","workflow"];
+  const taskTypes = [
+    "chatbot",
+    "ragbot",
+    "hierarchical",
+    "sequential",
+    "workflow",
+  ];
 
   const cardIcons: Record<
     string,
@@ -101,36 +107,36 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
       colorScheme: "blue",
       backgroundColor: "#36abff",
       icon: <RiTeamFill size="24" />,
-      title: t(`team.teamcard.chatbot.title`),
-      descripthion: t(`team.teamcard.chatbot.description`),
+      title: t("team.teamcard.chatbot.title"),
+      descripthion: t("team.teamcard.chatbot.description"),
     },
     ragbot: {
       colorScheme: "green",
       backgroundColor: "#4caf50",
       icon: <TbDatabaseSearch size="24" />,
-      title: t(`team.teamcard.ragbot.title`),
-      descripthion: t(`team.teamcard.ragbot.description`),
+      title: t("team.teamcard.ragbot.title"),
+      descripthion: t("team.teamcard.ragbot.description"),
     },
     workflow: {
       colorScheme: "green",
       backgroundColor: "#4caf50",
       icon: <TbDatabaseSearch size="24" />,
-      title: t(`team.teamcard.workflow.title`),
-      descripthion: t(`team.teamcard.workflow.description`),
+      title: t("team.teamcard.workflow.title"),
+      descripthion: t("team.teamcard.workflow.description"),
     },
     hierarchical: {
       colorScheme: "yellow",
       backgroundColor: "#ffc107",
       icon: <RiChatVoiceLine size="24" />,
-      title: t(`team.teamcard.hagent.title`),
-      descripthion: t(`team.teamcard.hagent.description`),
+      title: t("team.teamcard.hagent.title"),
+      descripthion: t("team.teamcard.hagent.description"),
     },
     sequential: {
       colorScheme: "red",
       backgroundColor: "#ff5722",
       icon: <GiTeamIdea size="24" />,
-      title: t(`team.teamcard.sagent.title`),
-      descripthion: t(`team.teamcard.sagent.description`),
+      title: t("team.teamcard.sagent.title"),
+      descripthion: t("team.teamcard.sagent.description"),
     },
   };
 
@@ -191,11 +197,11 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
       <Modal isOpen={isOpen} onClose={onClose} size="3xl" isCentered>
         <ModalOverlay />
         <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
-          <ModalHeader>{t(`team.addteam.createteam`)}</ModalHeader>
+          <ModalHeader>{t("team.addteam.createteam")}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Text whiteSpace="nowrap" fontWeight={"bold"} pb="4">
-              {t(`team.addteam.apptype`)}
+              {t("team.addteam.apptype")}
             </Text>
             <SimpleGrid columns={2} spacing={6} pb={4}>
               {taskTypes.map((workflow) => (
@@ -209,7 +215,7 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
             </SimpleGrid>
             <Box alignItems={"left"}>
               <Text whiteSpace="nowrap" pb={2} fontWeight={"bold"}>
-                {t(`team.addteam.nameandicon`)}
+                {t("team.addteam.nameandicon")}
               </Text>
               <Box
                 display="flex"
@@ -250,7 +256,7 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
                           "Name must follow pattern: ^[a-zA-Z0-9_-]{1,64}$",
                       },
                     })}
-                    placeholder={t(`team.addteam.placeholderapp`) as string}
+                    placeholder={t("team.addteam.placeholderapp") as string}
                     type="text"
                   />
                   {errors.name && (
@@ -261,13 +267,13 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
             </Box>
             <FormControl mt={4}>
               <FormLabel htmlFor="description" fontWeight={"bold"}>
-               {t(`team.addteam.description`)}
+                {t("team.addteam.description")}
               </FormLabel>
               <Textarea
                 id="description"
                 resize="none"
                 {...register("description")}
-                placeholder={t(`team.addteam.placeholderdescription`) as string}
+                placeholder={t("team.addteam.placeholderdescription") as string}
               />
             </FormControl>
           </ModalBody>

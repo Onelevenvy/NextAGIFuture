@@ -1,7 +1,7 @@
 "use client";
 
-import { Box, Container, Text } from "@chakra-ui/react";
 import useAuth from "@/hooks/useAuth";
+import { Box, Container, Text } from "@chakra-ui/react";
 
 function Dashboard() {
   const { currentUser } = useAuth();

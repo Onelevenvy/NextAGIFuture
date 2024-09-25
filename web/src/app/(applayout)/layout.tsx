@@ -1,11 +1,12 @@
 // components/Layout.tsx
 "use client";
-import React, { useEffect } from "react";
-import { Box, Flex, useColorModeValue } from "@chakra-ui/react";
 import Sidebar from "@/components/Common/SideBar";
-import useAuth, { isLoggedIn } from "@/hooks/useAuth";
-import { usePathname, useRouter } from "next/navigation";
 import TopBar from "@/components/Common/TopBar";
+import useAuth, { isLoggedIn } from "@/hooks/useAuth";
+import { Box, Flex, useColorModeValue } from "@chakra-ui/react";
+import { usePathname, useRouter } from "next/navigation";
+import type React from "react";
+import { useEffect } from "react";
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { isLoading } = useAuth();

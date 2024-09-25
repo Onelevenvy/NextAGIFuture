@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import useAuth from "@/hooks/useAuth";
+import type React from "react";
 import I18N from "./i18n";
 import { ToastProvider } from "./toast";
-import useAuth from "@/hooks/useAuth";
 
 export type II18NServerProps = {
   children: React.ReactNode;

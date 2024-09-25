@@ -1,21 +1,21 @@
-import {
-  Flex,
-  Spinner,
-  useColorModeValue,
-  IconButton,
-  Icon,
-  Box,
-  Text,
-  Button,
-} from "@chakra-ui/react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import { MembersService, ThreadsService, type ApiError } from "../../client";
-import useCustomToast from "../../hooks/useCustomToast";
-import { useRouter } from "next/navigation";
-import { useTranslation } from "react-i18next";
-import React, { useEffect, useState } from "react";
-import { StarIcon, Trash2Icon } from "lucide-react";
 import useChatMessageStore from "@/stores/chatMessageStore";
+import {
+  Box,
+  Button,
+  Flex,
+  Icon,
+  IconButton,
+  Spinner,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import { StarIcon, Trash2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { type ApiError, MembersService, ThreadsService } from "../../client";
+import useCustomToast from "../../hooks/useCustomToast";
 
 interface ChatHistoryProps {
   teamId: number;
@@ -43,7 +43,7 @@ const ChatHistoryList = ({ teamId, isPlayground }: ChatHistoryProps) => {
     () => MembersService.readMembers({ teamId: localTeamId }),
     {
       enabled: !!localTeamId, // 确保在 localTeamId 存在时才执行查询
-    }
+    },
   );
 
   const {
@@ -52,7 +52,7 @@ const ChatHistoryList = ({ teamId, isPlayground }: ChatHistoryProps) => {
     isError,
     error,
   } = useQuery(["threads", teamId], () =>
-    ThreadsService.readThreads({ teamId: teamId })
+    ThreadsService.readThreads({ teamId: teamId }),
   );
 
   const deleteThread = async (threadId: string) => {
@@ -63,7 +63,7 @@ const ChatHistoryList = ({ teamId, isPlayground }: ChatHistoryProps) => {
   };
   const selctedColor = useColorModeValue(
     "ui.selctedColor",
-    "ui.selctedColorDark"
+    "ui.selctedColorDark",
   );
   const deleteThreadMutation = useMutation(deleteThread, {
     onError: (err: ApiError) => {
@@ -128,7 +128,7 @@ const ChatHistoryList = ({ teamId, isPlayground }: ChatHistoryProps) => {
             <>
               <Box p={4} display="flex" overflow={"hidden"}>
                 <Text fontSize="lg" fontWeight="bold">
-                  {t(`chat.chatHistoryList.chatHistory`)}
+                  {t("chat.chatHistoryList.chatHistory")}
                 </Text>
               </Box>
               <Box overflowY={"auto"} overflowX={"hidden"} maxH="full" h="full">

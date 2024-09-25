@@ -1,20 +1,20 @@
+import { type ApiError, TeamsService } from "@/client";
+import useCustomToast from "@/hooks/useCustomToast";
+import useChatMessageStore from "@/stores/chatMessageStore";
+import useChatTeamIdStore from "@/stores/chatTeamIDStore"; // 引入 Zustand store
 import {
   Box,
-  Text,
-  useColorModeValue,
+  Divider,
   Icon,
   IconButton,
-  Divider,
+  Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import { useQuery } from "react-query";
-import { TeamsService, type ApiError } from "@/client";
-import useCustomToast from "@/hooks/useCustomToast";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import useChatTeamIdStore from "@/stores/chatTeamIDStore"; // 引入 Zustand store
 import { useTranslation } from "react-i18next";
 import { FaRobot } from "react-icons/fa";
-import useChatMessageStore from "@/stores/chatMessageStore";
+import { useQuery } from "react-query";
 import { tqxIconLibrary } from "../Icons/TqxIcon";
 
 const ChatBotList = () => {
@@ -24,7 +24,7 @@ const ChatBotList = () => {
   const { t } = useTranslation();
   const selctedColor = useColorModeValue(
     "ui.selctedColor",
-    "ui.selctedColorDark"
+    "ui.selctedColorDark",
   );
 
   const {
@@ -78,17 +78,17 @@ const ChatBotList = () => {
           <Icon as={FaRobot} mr={2} ml={5} w={8} h={8} color="red.500" />
           <Box width="full" display="flex" flexDirection="column">
             <Text fontWeight="bold" fontSize="md" noOfLines={1}>
-              {t(`chat.chatBotList.easyTalk`)}
+              {t("chat.chatBotList.easyTalk")}
             </Text>
             <Text color="gray.500" fontSize="xs" noOfLines={1}>
-              {t(`chat.chatBotList.description`)}
+              {t("chat.chatBotList.description")}
             </Text>
           </Box>
         </Box>
 
         <Box width="full" pb={4} display="flex" alignItems="center">
           <Text ml="6" fontSize="sm" color="gray.500">
-            {t(`chat.chatBotList.agentList`)}
+            {t("chat.chatBotList.agentList")}
           </Text>
         </Box>
         <Divider colorScheme={"gray"} />

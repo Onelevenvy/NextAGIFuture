@@ -5,8 +5,8 @@ const translation = {
     agentList: "Agent List",
   },
   chatMain: {
-    interruptinfo:"Chat has been interrupted by the user.",
-    abort:"Stop responding",
+    interruptinfo: "Chat has been interrupted by the user.",
+    abort: "Stop responding",
   },
   messageBox: {},
   chatHistoryList: {

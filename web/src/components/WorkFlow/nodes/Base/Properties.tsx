@@ -1,12 +1,12 @@
-import React from "react";
 import {
-  Input,
-  VStack,
   FormControl,
   FormErrorMessage,
-  IconButton,
   HStack,
+  IconButton,
+  Input,
+  VStack,
 } from "@chakra-ui/react";
+import type React from "react";
 
 interface BasePropertiesProps {
   children: React.ReactNode;

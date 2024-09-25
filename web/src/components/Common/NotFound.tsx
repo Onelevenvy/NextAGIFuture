@@ -1,5 +1,5 @@
-import { Button, Container, Text } from "@chakra-ui/react"
-import { Link } from "@tanstack/react-router"
+import { Button, Container, Text } from "@chakra-ui/react";
+import { Link } from "@tanstack/react-router";
 
 const NotFound = () => {
   return (
@@ -35,7 +35,7 @@ const NotFound = () => {
         </Button>
       </Container>
     </>
-  )
-}
+  );
+};
 
-export default NotFound
+export default NotFound;
