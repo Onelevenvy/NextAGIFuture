@@ -52,7 +52,7 @@ managed_tools: dict[str, ToolInfo] = {
         icon="🌞",
     ),
     "ask-human": ToolInfo(description=AskHuman.description, tool=AskHuman, icon="📖"),
-    "googel-tanslate": ToolInfo(
+    "google-translate": ToolInfo(
         description=google_tanslate.description,
         tool=google_tanslate,
         icon="📖",
