@@ -6,8 +6,12 @@ import {
   Box,
   Flex,
   Heading,
+  HStack,
   SimpleGrid,
   Spinner,
+  Tag,
+  TagLabel,
+  TagRightIcon,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
@@ -24,6 +28,9 @@ import TabSlider from "@/components/Common/TabSlider";
 import { useSkillsQuery } from "@/hooks/useSkillsQuery";
 import { useTabSearchParams } from "@/hooks/useTabSearchparams";
 import { useTranslation } from "react-i18next";
+import ToolsIcon from "@/components/Icons/Tools";
+import { SiliconFlowIcon } from "@/components/Icons/models";
+import { MdSettings } from "react-icons/md";
 
 function Skills() {
   const showToast = useCustomToast();
@@ -110,14 +117,16 @@ function Skills() {
                       boxShadow="lg"
                       bg="white"
                     >
-                      <Heading size="md">{skill.name}</Heading>
-                      <Box
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                        whiteSpace="nowrap"
-                      >
-                        {skill.icon}
-                      </Box>
+                      <HStack spacing="16px">
+                        <ToolsIcon
+                          h="8"
+                          w="8"
+                          tools_name={skill.name.replace("-", "_")}
+                        />
+
+                        {/* </Box> */}
+                        <Heading size="md">{skill.name}</Heading>
+                      </HStack>
                       <Box
                         overflow="hidden"
                         textOverflow="ellipsis"
@@ -129,7 +138,11 @@ function Skills() {
                         {!skill.managed ? (
                           <ActionsMenu type={"Skill"} value={skill} />
                         ) : (
-                          <Badge colorScheme="green"> Managed</Badge>
+                
+                          <Tag variant="outline" colorScheme="green">
+                            <TagLabel>Built-in</TagLabel>
+                            <TagRightIcon as={MdSettings} />
+                          </Tag>
                         )}
                       </Box>
                     </Box>
