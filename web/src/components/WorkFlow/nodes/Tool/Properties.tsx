@@ -49,7 +49,9 @@ const ToolNodeProperties: React.FC<ToolNodePropertiesProps> = ({
         {node.data.tools &&
           node.data.tools.map((tool: string) => (
             <HStack key={tool} justifyContent="space-between">
-              <Text>{tool}</Text>
+              <Box bg="#f2f4f7" borderRadius="md" w="full" p="1" m="0.5">
+                <Text fontWeight={"bold"}>{tool}</Text>
+              </Box>
               <IconButton
                 aria-label="Remove tool"
                 icon={<DeleteIcon />}
