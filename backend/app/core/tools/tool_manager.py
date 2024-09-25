@@ -9,46 +9,74 @@ from langchain.tools import BaseTool
 class ToolInfo(BaseModel):
     description: str
     tool: BaseTool
-    icon: str = "default.svg"  # Default to a generic SVG icon
+    icon: str = "🔧"
 
 
-def load_tools() -> Dict[str, ToolInfo]:
-    tools = {}
-    skills_dir = os.path.dirname(__file__)
+class ToolManager:
+    def __init__(self):
+        self.managed_tools: Dict[str, ToolInfo] = {}
 
-    for item in os.listdir(skills_dir):
-        item_path = os.path.join(skills_dir, item)
-        if os.path.isdir(item_path) and not item.startswith("__"):
-            try:
-                module = importlib.import_module(
-                    f".{item}", package="app.core.graph.tools"
-                )
+    @staticmethod
+    def format_tool_name(name: str) -> str:
+        return name.replace("_", "-")
 
-                for attr_name in dir(module):
-                    attr = getattr(module, attr_name)
-                    if isinstance(attr, BaseTool) or (
-                        isinstance(attr, type) and issubclass(attr, BaseTool)
-                    ):
-                        tool_name = item.replace("_", "-").lower()
-                        description = getattr(
-                            attr, "description", f"Tool for {tool_name}"
+    def load_tools(self):
+        tools_dir = os.path.dirname(os.path.abspath(__file__))
+        for item in os.listdir(tools_dir):
+            if os.path.isdir(os.path.join(tools_dir, item)) and not item.startswith(
+                "__"
+            ):
+                try:
+                    module = importlib.import_module(
+                        f".{item}.{item}", package="app.core.tools"
+                    )
+                    # Try to get the tool instance directly
+                    tool_instance = getattr(module, item)
+                    if isinstance(tool_instance, BaseTool):
+                        formatted_name = self.format_tool_name(item)
+                        self.managed_tools[formatted_name] = ToolInfo(
+                            description=tool_instance.description,
+                            tool=tool_instance,
+                            icon=getattr(tool_instance, "icon", "🔧"),
                         )
 
-                        # Check for an SVG icon file
-                        icon_path = os.path.join(item_path, "icon.svg")
-                        if os.path.exists(icon_path):
-                            icon = f"{item}/icon.svg"
-                        else:
-                            icon = "default.svg"  # Use a default icon if no specific icon is found
+                    else:
+                        print(f"Warning: {item} is not an instance of BaseTool")
+                except (ImportError, AttributeError) as e:
+                    print(f"Failed to load tool {item}: {e}")
 
-                        tools[tool_name] = ToolInfo(
-                            description=description, tool=attr, icon=icon
-                        )
-                        break  # Assume one tool per module
-            except ImportError:
-                print(f"Failed to import module: {item}")
+        # Load external tools
+        self.load_external_tools()
 
-    return tools
+    def load_external_tools(self):
+        # Add external tools that can't be automatically loaded
+        from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun
+        from langchain_community.tools.tavily_search import TavilySearchResults
+        from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
+
+        external_tools = {
+            "duckduckgo-search": ToolInfo(
+                description="Searches the web using DuckDuckGo",
+                tool=DuckDuckGoSearchRun(),
+                icon="🔍",
+            ),
+            "wikipedia": ToolInfo(
+                description="Searches Wikipedia",
+                tool=WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper()),
+                icon="📖",
+            ),
+            "tavilysearch": ToolInfo(
+                description="tavily search useful when searching for information on the internet",
+                tool=TavilySearchResults(max_results=1),
+                icon="🔍",
+            ),
+        }
+        self.managed_tools.update(external_tools)
+
+    def get_tools(self) -> Dict[str, ToolInfo]:
+        return self.managed_tools
 
 
-managed_tools = load_tools()
+tool_manager = ToolManager()
+tool_manager.load_tools()
+managed_tools = tool_manager.get_tools()

@@ -28,7 +28,7 @@ def translate(content: str, dest: str) -> str:
         return str(e)
 
 
-google_tanslate = StructuredTool.from_function(
+google_translate = StructuredTool.from_function(
     func=translate,
     name="translate",
     description="Useful for when you neet to translate text",

@@ -58,7 +58,7 @@ function Skills() {
   });
 
   const filteredSkills = skills?.data.filter(
-    (skill) => skill.name !== "ask-human",
+    (skill) => skill.name !== "ask-human"
   );
   return (
     <>
