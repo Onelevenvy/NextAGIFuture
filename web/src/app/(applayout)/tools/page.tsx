@@ -124,7 +124,6 @@ function Skills() {
                           tools_name={skill.name.replace("-", "_")}
                         />
 
-                        {/* </Box> */}
                         <Heading size="md">{skill.name}</Heading>
                       </HStack>
                       <Box
@@ -138,7 +137,6 @@ function Skills() {
                         {!skill.managed ? (
                           <ActionsMenu type={"Skill"} value={skill} />
                         ) : (
-                
                           <Tag variant="outline" colorScheme="green">
                             <TagLabel>Built-in</TagLabel>
                             <TagRightIcon as={MdSettings} />

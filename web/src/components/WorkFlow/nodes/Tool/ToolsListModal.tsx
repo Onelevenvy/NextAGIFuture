@@ -1,4 +1,5 @@
 import type { SkillOut } from "@/client";
+import ToolsIcon from "@/components/Icons/Tools";
 import { SearchIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -35,7 +36,7 @@ const ToolsList: React.FC<ToolsListProps> = ({
 
   const filteredSkills = useMemo(() => {
     return skills.filter((skill) =>
-      skill.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      skill.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [skills, searchQuery]);
 
@@ -59,7 +60,11 @@ const ToolsList: React.FC<ToolsListProps> = ({
             </InputGroup>
             {filteredSkills.map((skill) => (
               <HStack key={skill.id} justifyContent="space-between">
-                <Text>{skill.name}</Text>
+                <HStack spacing={"2"}>
+                  <ToolsIcon tools_name={skill.name.replace("-", "_")} ml="2" />
+                  <Text>{skill.name}</Text>
+                </HStack>
+
                 <Button
                   size="sm"
                   onClick={() => onAddTool(skill.name)}
