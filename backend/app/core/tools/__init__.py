@@ -22,7 +22,7 @@ class ToolInfo(BaseModel):
     icon: str = "🔧"
 
 
-managed_skills: dict[str, ToolInfo] = {
+managed_tools: dict[str, ToolInfo] = {
     "duckduckgo-search": ToolInfo(
         description="Searches the web using DuckDuckGo",
         tool=DuckDuckGoSearchRun(),
@@ -58,3 +58,33 @@ managed_skills: dict[str, ToolInfo] = {
         icon="📖",
     ),
 }
+
+
+# from .tool_manager import managed_skills
+
+# # You can still import specific tools if needed
+# from .calculator import calculator
+# from .open_weather import open_weather_search
+# from .human_tool import AskHuman
+# from .google_translate import google_tanslate
+
+# # Add any additional imports or configurations here
+# ├── __init__.py
+# ├── tool_manager.py
+# ├── calculator/
+# │   ├── __init__.py
+# │   ├── calculator.py
+# │   └── icon.svg
+# ├── open_weather/
+# │   ├── __init__.py
+# │   ├── open_weather.py
+# │   └── icon.svg
+# ├── human_tool/
+# │   ├── __init__.py
+# │   ├── human_tool.py
+# │   └── icon.svg
+# ├── google_translate/
+# │   ├── __init__.py
+# │   ├── google_translate.py
+# │   └── icon.svg
+# └── ...

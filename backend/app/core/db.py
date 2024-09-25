@@ -3,7 +3,7 @@ from sqlalchemy import text
 from sqlmodel import Session, create_engine, select
 from app.curd import users
 from app.core.config import settings
-from app.core.graph.tools import managed_skills
+from app.core.tools import managed_tools
 from app.models import Skill, User, UserCreate
 
 
@@ -49,10 +49,10 @@ def init_db(session: Session) -> None:
     existing_skills = session.exec(select(Skill)).all()
     existing_skills_dict = {skill.name: skill for skill in existing_skills}
 
-    current_skill_names = set(managed_skills.keys())
+    current_skill_names = set(managed_tools.keys())
 
     # Add or update skills in the database
-    for skill_name, skill_info in managed_skills.items():
+    for skill_name, skill_info in managed_tools.items():
 
         if skill_name in existing_skills_dict:
             existing_skill = existing_skills_dict[skill_name]

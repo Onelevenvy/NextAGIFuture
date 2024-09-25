@@ -6,7 +6,7 @@ import time
 from langgraph.graph.graph import CompiledGraph
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import AnyMessage, AIMessage
-from app.core.graph.tools import managed_skills
+from app.core.tools import managed_tools
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, StateGraph
 from langchain_core.runnables import RunnableLambda
@@ -34,7 +34,7 @@ class ToolsInfo(BaseModel):
     tool: BaseTool
 
 
-tool_registry: dict[str, ToolsInfo] = managed_skills
+tool_registry: dict[str, ToolsInfo] = managed_tools
 
 
 @lru_cache(maxsize=None)
