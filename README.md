@@ -87,7 +87,7 @@ You have to change them with a secret key, to generate secret keys you can run t
 python -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
 Copy the content and use that as password / secret key. And run that again to generate another secure key.
-##### 1.3 安装 postgres，qdrant,redis
+##### 1.3 Insatll postgres，qdrant,redis
 
 ```bash
 cd nextagi
@@ -134,7 +134,7 @@ python /app/app/initial_data.py
 ```bash
  uvicorn app.main:app --reload --log-level debug
 ```
-##### 2.4 run celery
+##### 2.4 run celery (Not necessary, unless you want to use the rag function)
 ```bash
 poetry run celery -A app.core.celery_app.celery_app worker --loglevel=debug
 ```
