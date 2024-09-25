@@ -12,13 +12,13 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import { type SubmitHandler, useForm, Controller } from "react-hook-form";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
 
-import { type ApiError, SkillsService, type SkillCreate } from "../../client";
-import useCustomToast from "../../hooks/useCustomToast";
 // import SkillEditor, { skillPlaceholder } from "./SkillEditor"
 import { RxReset } from "react-icons/rx";
+import { type ApiError, type SkillCreate, SkillsService } from "../../client";
+import useCustomToast from "../../hooks/useCustomToast";
 
 interface AddSkillProps {
   isOpen: boolean;

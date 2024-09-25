@@ -1,21 +1,22 @@
-import React, { useState, useMemo } from "react";
+import type { SkillOut } from "@/client";
+import { SearchIcon } from "@chakra-ui/icons";
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  VStack,
-  HStack,
-  Text,
   Button,
+  HStack,
   Input,
   InputGroup,
   InputLeftElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  VStack,
 } from "@chakra-ui/react";
-import { SearchIcon } from "@chakra-ui/icons";
-import { SkillOut } from "@/client";
+import type React from "react";
+import { useMemo, useState } from "react";
 
 interface ToolsListProps {
   skills: SkillOut[];
@@ -34,7 +35,7 @@ const ToolsList: React.FC<ToolsListProps> = ({
 
   const filteredSkills = useMemo(() => {
     return skills.filter((skill) =>
-      skill.name.toLowerCase().includes(searchQuery.toLowerCase())
+      skill.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [skills, searchQuery]);
 

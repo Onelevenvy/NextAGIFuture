@@ -1,11 +1,11 @@
+import { Box, Flex, Text, useColorModeValue } from "@chakra-ui/react";
+import "highlight.js/styles/atom-one-dark.css";
+import { Terminal } from "lucide-react";
+import dynamic from "next/dynamic";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
-import "highlight.js/styles/atom-one-dark.css";
-import { Box, Flex, Text, useColorModeValue } from "@chakra-ui/react";
-import CopyButton from "./CopyButton";
-import { Terminal } from "lucide-react";
 import { v4 } from "uuid";
-import dynamic from "next/dynamic";
+import CopyButton from "./CopyButton";
 
 // const DynamicLoadMarkdownCSSStyle = dynamic(
 //   () => import("./LoadMarkdownCSSStyle"),
@@ -73,19 +73,18 @@ const Markdown = ({ content }: { content: string }) => {
                   </Box>
                 </Box>
               );
-            } else {
-              return (
-                <Box
-                  as="code"
-                  {...props}
-                  bg={secBgColor}
-                  px={2}
-                  borderRadius="md"
-                >
-                  {children}
-                </Box>
-              );
             }
+            return (
+              <Box
+                as="code"
+                {...props}
+                bg={secBgColor}
+                px={2}
+                borderRadius="md"
+              >
+                {children}
+              </Box>
+            );
           },
         }}
         className="prose prose-zinc max-w-2xl dark:prose-invert"

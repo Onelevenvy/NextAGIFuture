@@ -1,7 +1,7 @@
+import { Box, Text, VStack } from "@chakra-ui/react";
 import React from "react";
-import { Handle, Position, NodeProps } from "reactflow";
-import { Box, VStack, Text } from "@chakra-ui/react";
 import { FaRobot } from "react-icons/fa";
+import { Handle, type NodeProps, Position } from "reactflow";
 import { BaseNode } from "../Base/BaseNode";
 import { nodeConfig } from "../nodeConfig";
 

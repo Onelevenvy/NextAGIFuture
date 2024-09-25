@@ -6,7 +6,7 @@ const translation = {
   },
   chatMain: {
     interruptinfo: "聊天已被用户中断。",
-    abort:"停止响应",
+    abort: "停止响应",
   },
   messageBox: {},
   chatHistoryList: {

@@ -1,11 +1,11 @@
 "use client";
 
-import { ApiError } from "@/client";
+import type { ApiError } from "@/client";
 import { UsersService } from "@/client/services/UsersService";
 import useAuth from "@/hooks/useAuth";
 import useCustomToast from "@/hooks/useCustomToast";
 import { Container, FormControl, Select } from "@chakra-ui/react";
-import React, { ChangeEvent } from "react";
+import React, { type ChangeEvent } from "react";
 import { useMutation, useQueryClient } from "react-query";
 
 export default function LanguagePage() {
@@ -29,7 +29,7 @@ export default function LanguagePage() {
         queryClient.invalidateQueries("users");
         queryClient.invalidateQueries("currentUser");
       },
-    }
+    },
   );
 
   const onChangeLanguage = (event: ChangeEvent<HTMLSelectElement>) => {

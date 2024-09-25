@@ -1,9 +1,9 @@
-import { FaPlay, FaStop, FaRobot, FaTools } from "react-icons/fa";
-import QuestionClassifierProperties from "./QuestionClassifier/Properties";
-import ToolNodeProperties from "./Tool/Properties";
-import LLMNodeProperties from "./LLM/Properties";
+import { FaPlay, FaRobot, FaStop, FaTools } from "react-icons/fa";
 import EndNodeProperties from "./End/Properties";
+import LLMNodeProperties from "./LLM/Properties";
+import QuestionClassifierProperties from "./QuestionClassifier/Properties";
 import StartNodeProperties from "./Start/Properties";
+import ToolNodeProperties from "./Tool/Properties";
 
 interface NodeConfigItem {
   display: string;

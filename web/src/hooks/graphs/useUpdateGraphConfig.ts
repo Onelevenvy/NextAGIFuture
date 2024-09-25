@@ -1,14 +1,14 @@
-import { useCallback } from "react";
-import { v4 } from "uuid";
-import { Node, Edge } from "reactflow";
-import {
-  nodeConfig,
-  NodeType,
-} from "../../components/WorkFlow/nodes/nodeConfig";
-import { CustomNode } from "../../components/WorkFlow/types";
-import { GraphUpdate } from "@/client/models/GraphUpdate";
-import { useGraphMutation } from "./useGraphMutation";
+import type { GraphUpdate } from "@/client/models/GraphUpdate";
 import useCustomToast from "@/hooks/useCustomToast";
+import { useCallback } from "react";
+import { type Edge, Node } from "reactflow";
+import { v4 } from "uuid";
+import {
+  type NodeType,
+  nodeConfig,
+} from "../../components/WorkFlow/nodes/nodeConfig";
+import type { CustomNode } from "../../components/WorkFlow/types";
+import { useGraphMutation } from "./useGraphMutation";
 
 export function useGraphConfig(
   teamId: number,
@@ -16,7 +16,7 @@ export function useGraphConfig(
   graphName: string | undefined,
   graphDescription: string | undefined | null,
   nodes: CustomNode[],
-  edges: Edge[]
+  edges: Edge[],
 ) {
   const showToast = useCustomToast();
   const mutation = useGraphMutation(teamId, graphId);
@@ -24,7 +24,7 @@ export function useGraphConfig(
   const saveConfig = useCallback((): Record<string, any> => {
     const startEdge = edges.find((edge) => {
       const sourceNode = nodes.find(
-        (node) => node.id === edge.source && node.type === "start"
+        (node) => node.id === edge.source && node.type === "start",
       );
       return sourceNode !== undefined;
     });
@@ -67,8 +67,8 @@ export function useGraphConfig(
         start_connections: edges
           .filter((edge) =>
             nodes.find(
-              (node) => node.id === edge.source && node.type === "start"
-            )
+              (node) => node.id === edge.source && node.type === "start",
+            ),
           )
           .map((edge) => ({
             target: edge.target,
@@ -76,7 +76,9 @@ export function useGraphConfig(
           })),
         end_connections: edges
           .filter((edge) =>
-            nodes.find((node) => node.id === edge.target && node.type === "end")
+            nodes.find(
+              (node) => node.id === edge.target && node.type === "end",
+            ),
           )
           .map((edge) => ({
             source: edge.source,
@@ -91,7 +93,7 @@ export function useGraphConfig(
       showToast(
         "Something went wrong.",
         "No graph found for this team",
-        "error"
+        "error",
       );
       return;
     }

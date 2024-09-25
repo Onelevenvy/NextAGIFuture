@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Box, VStack, Text, Select, Input } from "@chakra-ui/react";
+import { Box, Input, Select, Text, VStack } from "@chakra-ui/react";
+import type React from "react";
+import { useEffect, useState } from "react";
 
 interface LLMNodePropertiesProps {
   node: any;
@@ -37,7 +38,7 @@ const QuestionClassifierProperties: React.FC<LLMNodePropertiesProps> = ({
           onChange={(e) => {
             setTemperatureInput(e.target.value);
             const numValue =
-              e.target.value === "" ? 0 : parseFloat(e.target.value);
+              e.target.value === "" ? 0 : Number.parseFloat(e.target.value);
             onNodeDataChange(node.id, "temperature", numValue);
           }}
           step={0.1}

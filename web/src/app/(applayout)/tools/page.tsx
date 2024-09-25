@@ -1,16 +1,16 @@
 "use client";
+import { type ApiError, SkillsService } from "@/client";
+import ActionsMenu from "@/components/Common/ActionsMenu";
 import {
-  Flex,
-  Spinner,
-  Heading,
-  Box,
-  SimpleGrid,
-  useColorModeValue,
   Badge,
+  Box,
+  Flex,
+  Heading,
+  SimpleGrid,
+  Spinner,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import { SkillsService, type ApiError } from "@/client";
-import ActionsMenu from "@/components/Common/ActionsMenu";
 
 import useCustomToast from "@/hooks/useCustomToast";
 import React from "react";
@@ -20,10 +20,10 @@ import {
   RiBarChartFill,
 } from "react-icons/ri";
 
-import { useTabSearchParams } from "@/hooks/useTabSearchparams";
 import TabSlider from "@/components/Common/TabSlider";
-import { useTranslation } from "react-i18next";
 import { useSkillsQuery } from "@/hooks/useSkillsQuery";
+import { useTabSearchParams } from "@/hooks/useTabSearchparams";
+import { useTranslation } from "react-i18next";
 
 function Skills() {
   const showToast = useCustomToast();
@@ -38,17 +38,17 @@ function Skills() {
   const options = [
     {
       value: "all",
-      text: t(`panestate.tools.all`),
+      text: t("panestate.tools.all"),
       icon: <RiApps2Fill className="w-[14px] h-[14px] mr-1" />,
     },
     {
       value: "managed",
-      text: t(`panestate.tools.builtin`),
+      text: t("panestate.tools.builtin"),
       icon: <RiArchiveDrawerFill className="w-[14px] h-[14px] mr-1" />,
     },
     {
       value: "def",
-      text: t(`panestate.tools.custom`),
+      text: t("panestate.tools.custom"),
       icon: <RiBarChartFill className="w-[14px] h-[14px] mr-1" />,
     },
   ];
@@ -58,7 +58,7 @@ function Skills() {
   });
 
   const filteredSkills = skills?.data.filter(
-    (skill) => skill.name !== "ask-human"
+    (skill) => skill.name !== "ask-human",
   );
   return (
     <>

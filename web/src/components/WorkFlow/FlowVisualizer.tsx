@@ -1,42 +1,43 @@
 "use client";
-import React, { useCallback, useMemo, KeyboardEvent, useState } from "react";
+import type React from "react";
+import { type KeyboardEvent, useCallback, useMemo, useState } from "react";
 import ReactFlow, {
   Background,
   Controls,
   MiniMap,
-  Node,
-  Edge,
+  type Node,
+  type Edge,
   ConnectionLineType,
-  Connection,
+  type Connection,
   useReactFlow,
   MarkerType,
   Panel,
   useViewport,
 } from "reactflow";
 
-import "reactflow/dist/style.css";
-import NodePalette from "./NodePalette";
+import { useContextMenu } from "@/hooks/graphs/useContextMenu";
+import { useFlowState } from "@/hooks/graphs/useFlowState";
+import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
 import {
   Box,
   Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   CloseButton,
   Kbd,
-  useColorModeValue,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import { nodeConfig, NodeType } from "./nodes/nodeConfig";
-import BaseProperties from "./nodes/Base/Properties";
-import { CustomNode, FlowVisualizerProps } from "./types";
-import { useFlowState } from "@/hooks/graphs/useFlowState";
-import { useContextMenu } from "@/hooks/graphs/useContextMenu";
-import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
 import { MdBuild, MdOutlineHelp } from "react-icons/md";
-import DebugPreview from "../Teams/DebugPreview";
 import { VscTriangleRight } from "react-icons/vsc";
+import "reactflow/dist/style.css";
+import DebugPreview from "../Teams/DebugPreview";
+import NodePalette from "./NodePalette";
+import BaseProperties from "./nodes/Base/Properties";
+import { type NodeType, nodeConfig } from "./nodes/nodeConfig";
+import type { CustomNode, FlowVisualizerProps } from "./types";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -58,7 +59,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     nameError,
   } = useFlowState(
     graphData?.data[0]?.config?.nodes,
-    graphData?.data[0]?.config?.edges
+    graphData?.data[0]?.config?.edges,
   );
 
   const { contextMenu, onNodeContextMenu, closeContextMenu } = useContextMenu();
@@ -69,7 +70,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     (event: React.MouseEvent, node: Node) => {
       setSelectedNodeId(node.id);
     },
-    [setSelectedNodeId]
+    [setSelectedNodeId],
   );
 
   const nodesWithSelection = useMemo(() => {
@@ -90,7 +91,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     const PropertiesComponent = nodeConfig[nodeType]?.properties;
     const { icon: Icon, colorScheme } = nodeConfig[nodeType];
     return (
-      <BaseProperties icon={<Icon />} colorScheme={colorScheme}
+      <BaseProperties
+        icon={<Icon />}
+        colorScheme={colorScheme}
         nodeName={node.data.label}
         onNameChange={(newName: string) =>
           onNodeDataChange(node.id, "label", newName)
@@ -141,13 +144,14 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       // 防止重复连接
       const existingEdge = edges.find(
         (edge) =>
-          edge.source === connection.source && edge.target === connection.target
+          edge.source === connection.source &&
+          edge.target === connection.target,
       );
       if (existingEdge) return false;
       // 允许所有其他连接
       return true;
     },
-    [nodes, edges]
+    [nodes, edges],
   );
 
   const toggleEdgeType = useCallback(
@@ -166,10 +170,10 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
             };
           }
           return e;
-        })
+        }),
       );
     },
-    [setEdges]
+    [setEdges],
   );
 
   const onEdgeContextMenu = useCallback(
@@ -177,7 +181,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       event.preventDefault();
       toggleEdgeType(edge);
     },
-    [toggleEdgeType]
+    [toggleEdgeType],
   );
 
   const onKeyDown = useCallback(
@@ -187,7 +191,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         selectedEdges.forEach(toggleEdgeType);
       }
     },
-    [edges, toggleEdgeType]
+    [edges, toggleEdgeType],
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -206,14 +210,14 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       }
       return newName;
     },
-    [nodes]
+    [nodes],
   );
 
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
       const type = event.dataTransfer.getData(
-        "application/reactflow"
+        "application/reactflow",
       ) as NodeType;
       if (typeof type === "undefined" || !type) return;
 
@@ -238,7 +242,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [nodes, reactFlowInstance, setNodes, onNodeDataChange, generateUniqueName]
+    [nodes, reactFlowInstance, setNodes, onNodeDataChange, generateUniqueName],
   );
   const closePropertiesPanel = useCallback(() => {
     setSelectedNodeId(null);
@@ -251,8 +255,8 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         eds.filter(
           (edge) =>
             edge.source !== contextMenu.nodeId &&
-            edge.target !== contextMenu.nodeId
-        )
+            edge.target !== contextMenu.nodeId,
+        ),
       );
     }
     closeContextMenu();
@@ -277,13 +281,13 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     graphName,
     graphDescription,
     nodes,
-    edges
+    edges,
   );
 
   const memoizedNodeTypes = useMemo(() => nodeTypes, [nodeTypes]);
   const memoizedDefaultEdgeOptions = useMemo(
     () => defaultEdgeOptions,
-    [defaultEdgeOptions]
+    [defaultEdgeOptions],
   );
   const { zoom } = useViewport();
 
@@ -402,7 +406,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           border={"1px solid #d1d5db"}
           onClick={() => setShowDebugPreview(true)}
           _hover={{ backgroundColor: "#eff4ff" }}
-          rightIcon={<VscTriangleRight color={"#155aef"} size={"12px"}/>}
+          rightIcon={<VscTriangleRight color={"#155aef"} size={"12px"} />}
           size={"sm"}
         >
           <Text color={"#155aef"}>Debug</Text>
@@ -443,7 +447,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           />
 
           {getNodePropertiesComponent(
-            nodes.find((n) => n.id === selectedNodeId) || null
+            nodes.find((n) => n.id === selectedNodeId) || null,
           )}
         </Box>
       )}

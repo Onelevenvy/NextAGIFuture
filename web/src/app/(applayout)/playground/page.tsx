@@ -1,12 +1,12 @@
 "use client";
+import PaneStateControl from "@/components/Common/PaneStateControl";
 import ChatBotList from "@/components/Playground/ChatBotList";
 import ChatHistoryList from "@/components/Playground/ChatHistoryList";
+import ChatMain from "@/components/Playground/ChatMain";
+import useChatTeamIdStore from "@/stores/chatTeamIDStore";
 import { Box, Center, Flex, useColorModeValue } from "@chakra-ui/react";
 import { useState } from "react";
-import useChatTeamIdStore from "@/stores/chatTeamIDStore";
-import ChatMain from "@/components/Playground/ChatMain";
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
-import PaneStateControl from "@/components/Common/PaneStateControl";
 
 const ChatPlayground = () => {
   const [isChatBotListOpen, setIsChatBotListOpen] = useState(true);
@@ -15,7 +15,7 @@ const ChatPlayground = () => {
 
   const selctedColor = useColorModeValue(
     "ui.selctedColor",
-    "ui.selctedColorDark"
+    "ui.selctedColorDark",
   );
   const toggleChatBotList = () => {
     setIsChatBotListOpen(!isChatBotListOpen);

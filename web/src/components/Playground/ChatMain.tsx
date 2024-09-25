@@ -1,37 +1,37 @@
-import { Box, Button } from "@chakra-ui/react";
 import useChatMessageStore from "@/stores/chatMessageStore";
+import useChatTeamIdStore from "@/stores/chatTeamIDStore";
+import { Box, Button } from "@chakra-ui/react";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { FaRegStopCircle } from "react-icons/fa";
 import {
-  type TeamChat,
-  type ApiError,
-  OpenAPI,
-  type OpenAPIConfig,
-  type ThreadUpdate,
-  ThreadsService,
-  type ThreadCreate,
-  type InterruptDecision,
-  type ChatResponse,
-} from "../../client";
-import {
+  type UseMutationResult,
   useMutation,
-  UseMutationResult,
   useQuery,
   useQueryClient,
 } from "react-query";
-import useCustomToast from "../../hooks/useCustomToast";
-import { useCallback, useRef, useState } from "react";
 import {
+  type ApiError,
+  type ChatResponse,
+  type InterruptDecision,
+  OpenAPI,
+  type OpenAPIConfig,
+  type TeamChat,
+  type ThreadCreate,
+  type ThreadUpdate,
+  ThreadsService,
+} from "../../client";
+import type { ApiRequestOptions } from "../../client/core/ApiRequestOptions";
+import {
+  getHeaders,
   getQueryString,
   getRequestBody,
-  getHeaders,
 } from "../../client/core/request";
-import type { ApiRequestOptions } from "../../client/core/ApiRequestOptions";
-import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { useRouter, useSearchParams } from "next/navigation";
-import MessageBox from "./MessageBox";
+import useCustomToast from "../../hooks/useCustomToast";
 import MessageInput from "../MessageInput";
-import useChatTeamIdStore from "@/stores/chatTeamIDStore";
-import { useTranslation } from "react-i18next";
-import { FaRegStopCircle } from "react-icons/fa";
+import MessageBox from "./MessageBox";
 
 const getUrl = (config: OpenAPIConfig, options: ApiRequestOptions): string => {
   const encoder = config.ENCODE_PATH || encodeURI;
@@ -59,10 +59,10 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const searchParams = useSearchParams();
   const threadId = searchParams.get("threadId");
   const { t } = useTranslation();
-  const { teamId } = useChatTeamIdStore() ;
+  const { teamId } = useChatTeamIdStore();
 
   const [currentThreadId, setCurrentThreadId] = useState<string | null>(
-    searchParams.get("threadId")
+    searchParams.get("threadId"),
   );
   const showToast = useCustomToast();
   const [input, setInput] = useState("");
@@ -105,7 +105,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
           processMessage(message);
         }
       },
-    }
+    },
   );
 
   const createThread = async (data: ThreadCreate) => {
@@ -163,7 +163,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const processMessage = (response: ChatResponse) => {
     setMessages((prevMessages: ChatResponse[]) => {
       const messageIndex = prevMessages.findIndex(
-        (msg) => msg.id === response.id
+        (msg) => msg.id === response.id,
       );
       if (messageIndex !== -1) {
         return prevMessages.map((msg, index) =>
@@ -173,7 +173,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
                 content: (msg.content ?? "") + (response.content ?? ""),
                 tool_output: response.tool_output,
               }
-            : msg
+            : msg,
         );
       }
       return [...prevMessages, response];
@@ -238,7 +238,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
       {
         type: "ai",
         id: self.crypto.randomUUID(),
-        content: t(`chat.chatMain.interruptinfo`),
+        content: t("chat.chatMain.interruptinfo"),
         name: "system",
       },
     ]);
@@ -306,7 +306,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
       mutation.mutate({ messages: [{ type: "human", content: input }] });
       setInput("");
     },
-    [input, mutation]
+    [input, mutation],
   );
 
   const newChatHandler = useCallback(() => {
@@ -332,7 +332,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
         interrupt: { decision, tool_message },
       });
     },
-    [mutation]
+    [mutation],
   );
 
   return (
@@ -373,7 +373,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
             borderRadius={"lg"}
             size={"sm"}
           >
-            {t(`chat.chatMain.abort`)}
+            {t("chat.chatMain.abort")}
           </Button>
         )}
       </Box>

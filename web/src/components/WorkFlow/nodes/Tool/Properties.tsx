@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import { useSkillsQuery } from "@/hooks/useSkillsQuery";
+import { DeleteIcon } from "@chakra-ui/icons";
 import {
   Box,
-  VStack,
-  Text,
   Button,
   HStack,
   IconButton,
+  Text,
+  VStack,
 } from "@chakra-ui/react";
-import { useSkillsQuery } from "@/hooks/useSkillsQuery";
-import { DeleteIcon } from "@chakra-ui/icons";
+import type React from "react";
+import { useState } from "react";
 import ToolsList from "./ToolsListModal";
 
 interface ToolNodePropertiesProps {
@@ -35,7 +36,7 @@ const ToolNodeProperties: React.FC<ToolNodePropertiesProps> = ({
     onNodeDataChange(
       node.id,
       "tools",
-      currentTools.filter((t: string) => t !== tool)
+      currentTools.filter((t: string) => t !== tool),
     );
   };
 
@@ -46,20 +47,19 @@ const ToolNodeProperties: React.FC<ToolNodePropertiesProps> = ({
     <VStack align="stretch" spacing={4}>
       <Box>
         <Text fontWeight="bold">Tools:</Text>
-        {node.data.tools &&
-          node.data.tools.map((tool: string) => (
-            <HStack key={tool} justifyContent="space-between">
-              <Box bg="#f2f4f7" borderRadius="md" w="full" p="1" m="0.5">
-                <Text fontWeight={"bold"}>{tool}</Text>
-              </Box>
-              <IconButton
-                aria-label="Remove tool"
-                icon={<DeleteIcon />}
-                size="sm"
-                onClick={() => removeTool(tool)}
-              />
-            </HStack>
-          ))}
+        {node.data.tools?.map((tool: string) => (
+          <HStack key={tool} justifyContent="space-between">
+            <Box bg="#f2f4f7" borderRadius="md" w="full" p="1" m="0.5">
+              <Text fontWeight={"bold"}>{tool}</Text>
+            </Box>
+            <IconButton
+              aria-label="Remove tool"
+              icon={<DeleteIcon />}
+              size="sm"
+              onClick={() => removeTool(tool)}
+            />
+          </HStack>
+        ))}
         <Button onClick={() => setIsToolsListOpen(true)} mt={2}>
           Add Tool
         </Button>

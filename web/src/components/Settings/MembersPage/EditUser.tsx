@@ -13,32 +13,32 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-} from "@chakra-ui/react"
-import { type SubmitHandler, useForm } from "react-hook-form"
-import { useMutation, useQueryClient } from "react-query"
+} from "@chakra-ui/react";
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "react-query";
 
 import {
   type ApiError,
   type UserOut,
   type UserUpdate,
   UsersService,
-} from "@/client"
-import useCustomToast from "@/hooks/useCustomToast"
-import { emailPattern } from "@/utils"
+} from "@/client";
+import useCustomToast from "@/hooks/useCustomToast";
+import { emailPattern } from "@/utils";
 
 interface EditUserProps {
-  user: UserOut
-  isOpen: boolean
-  onClose: () => void
+  user: UserOut;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 interface UserUpdateForm extends UserUpdate {
-  confirm_password: string
+  confirm_password: string;
 }
 
 const EditUser = ({ user, isOpen, onClose }: EditUserProps) => {
-  const queryClient = useQueryClient()
-  const showToast = useCustomToast()
+  const queryClient = useQueryClient();
+  const showToast = useCustomToast();
 
   const {
     register,
@@ -50,37 +50,37 @@ const EditUser = ({ user, isOpen, onClose }: EditUserProps) => {
     mode: "onBlur",
     criteriaMode: "all",
     defaultValues: user,
-  })
+  });
 
   const updateUser = async (data: UserUpdateForm) => {
-    await UsersService.updateUser({ userId: user.id, requestBody: data })
-  }
+    await UsersService.updateUser({ userId: user.id, requestBody: data });
+  };
 
   const mutation = useMutation(updateUser, {
     onSuccess: () => {
-      showToast("Success!", "User updated successfully.", "success")
-      onClose()
+      showToast("Success!", "User updated successfully.", "success");
+      onClose();
     },
     onError: (err: ApiError) => {
-      const errDetail = err.body?.detail
-      showToast("Something went wrong.", `${errDetail}`, "error")
+      const errDetail = err.body?.detail;
+      showToast("Something went wrong.", `${errDetail}`, "error");
     },
     onSettled: () => {
-      queryClient.invalidateQueries("users")
+      queryClient.invalidateQueries("users");
     },
-  })
+  });
 
   const onSubmit: SubmitHandler<UserUpdateForm> = async (data) => {
     if (data.password === "") {
-      data.password = undefined
+      data.password = undefined;
     }
-    mutation.mutate(data)
-  }
+    mutation.mutate(data);
+  };
 
   const onCancel = () => {
-    reset()
-    onClose()
-  }
+    reset();
+    onClose();
+  };
 
   return (
     <>
@@ -177,7 +177,7 @@ const EditUser = ({ user, isOpen, onClose }: EditUserProps) => {
         </ModalContent>
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default EditUser
+export default EditUser;

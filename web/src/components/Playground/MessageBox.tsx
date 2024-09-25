@@ -19,18 +19,18 @@ import {
 } from "@chakra-ui/react";
 import { VscSend } from "react-icons/vsc";
 
-import { type InterruptDecision, type ChatResponse } from "../../client";
+import type { ChatResponse, InterruptDecision } from "../../client";
 
 import { useEffect, useRef, useState } from "react";
 
 import {
   FaBook,
+  FaCheck,
+  FaHandPaper,
   FaRobot,
+  FaTimes,
   FaTools,
   FaUser,
-  FaCheck,
-  FaTimes,
-  FaHandPaper,
 } from "react-icons/fa";
 
 import { GrFormNextLink } from "react-icons/gr";
@@ -60,7 +60,7 @@ const MessageBox = ({ message, onResume }: MessageBoxProps) => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [content, tool_calls, tool_output, documents, documents]); // 依赖 content 确保每次 content 变更时触发滚动
+  }, [content, tool_calls, tool_output, documents]); // 依赖 content 确保每次 content 变更时触发滚动
 
   const [timestamp, setTimestamp] = useState<string>("");
 
@@ -73,13 +73,17 @@ const MessageBox = ({ message, onResume }: MessageBoxProps) => {
     const hw = 6;
     if (type === "human") {
       return <Icon as={FaUser} w={hw} h={hw} />;
-    } else if (type === "tool") {
+    }
+    if (type === "tool") {
       return <Icon as={FaTools} w={hw} h={hw} />;
-    } else if (type === "ai") {
+    }
+    if (type === "ai") {
       return <Icon as={FaRobot} w={hw} h={hw} />;
-    } else if (type === "interrupt") {
+    }
+    if (type === "interrupt") {
       return <Icon as={FaHandPaper} w={hw} h={hw} />;
-    } else return <Icon as={FaBook} w={hw} h={hw} />; // 如果 type 不是 'human', 'tools', 'ai'，则不显示任何图标
+    }
+    return <Icon as={FaBook} w={hw} h={hw} />; // 如果 type 不是 'human', 'tools', 'ai'，则不显示任何图标
   };
   return (
     <VStack spacing={0} my={4} onMouseEnter={onOpen} onMouseLeave={onClose}>
@@ -128,14 +132,13 @@ const MessageBox = ({ message, onResume }: MessageBoxProps) => {
                 <Text fontSize={"xs"} color={"gray.500"}>
                   {name}
                 </Text>
-                {tool_calls &&
-                  tool_calls?.map((tool_call, index) => (
-                    <Box key={index}>
-                      <Text fontSize={"xs"} color={"gray.500"}>
-                        {tool_call.name}
-                      </Text>
-                    </Box>
-                  ))}
+                {tool_calls?.map((tool_call, index) => (
+                  <Box key={index}>
+                    <Text fontSize={"xs"} color={"gray.500"}>
+                      {tool_call.name}
+                    </Text>
+                  </Box>
+                ))}
                 <Text fontSize={"xs"} color={"gray.500"}>
                   {timestamp}
                 </Text>
@@ -231,31 +234,30 @@ const MessageBox = ({ message, onResume }: MessageBoxProps) => {
                             </AccordionPanel>
                           </AccordionItem>
                         ));
-                      } else {
-                        // 处理其他情况，例如数字, string 等
-                        return (
-                          <AccordionItem>
-                            <h2>
-                              <AccordionButton>
-                                <Box
-                                  as="span"
-                                  flex="1"
-                                  textAlign="left"
-                                  noOfLines={1}
-                                >
-                                  Tool output result:
-                                  {parsedOutput}
-                                </Box>
-                                <AccordionIcon />
-                              </AccordionButton>
-                            </h2>
-                            <AccordionPanel pb={4}>
-                              {/* <ReactMarkdown>{parsedOutput}</ReactMarkdown> */}
-                              <Markdown content={parsedOutput} />
-                            </AccordionPanel>
-                          </AccordionItem>
-                        );
                       }
+                      // 处理其他情况，例如数字, string 等
+                      return (
+                        <AccordionItem>
+                          <h2>
+                            <AccordionButton>
+                              <Box
+                                as="span"
+                                flex="1"
+                                textAlign="left"
+                                noOfLines={1}
+                              >
+                                Tool output result:
+                                {parsedOutput}
+                              </Box>
+                              <AccordionIcon />
+                            </AccordionButton>
+                          </h2>
+                          <AccordionPanel pb={4}>
+                            {/* <ReactMarkdown>{parsedOutput}</ReactMarkdown> */}
+                            <Markdown content={parsedOutput} />
+                          </AccordionPanel>
+                        </AccordionItem>
+                      );
                     } catch (e) {
                       // 处理解析错误
                       return (
@@ -378,7 +380,7 @@ const MessageBox = ({ message, onResume }: MessageBoxProps) => {
           </Box>
         </Box>
         {/* 这个空的 div 用于自动滚动 */}
-        <Box ref={messagesEndRef} pb={"5"}/>
+        <Box ref={messagesEndRef} pb={"5"} />
       </Box>
     </VStack>
   );

@@ -1,8 +1,8 @@
+import { Badge, Box, HStack, Tag, Text, VStack } from "@chakra-ui/react";
 import React from "react";
-import { Handle, Position, NodeProps } from "reactflow";
-import { Box, Text, VStack, HStack, Tag, Badge } from "@chakra-ui/react";
-import { nodeConfig } from "../nodeConfig";
+import { Handle, type NodeProps, Position } from "reactflow";
 import { BaseNode } from "../Base/BaseNode";
+import { nodeConfig } from "../nodeConfig";
 
 const ToolNode: React.FC<NodeProps> = (props) => {
   const { icon: Icon, colorScheme } = nodeConfig.tool;

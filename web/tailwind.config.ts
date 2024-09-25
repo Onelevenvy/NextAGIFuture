@@ -1,6 +1,6 @@
-import type { Config } from "tailwindcss";
 import Typography from "@tailwindcss/forms";
 import Form from "@tailwindcss/typography";
+import type { Config } from "tailwindcss";
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",

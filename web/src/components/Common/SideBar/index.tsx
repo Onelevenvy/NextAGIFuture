@@ -1,15 +1,15 @@
 import {
+  Avatar,
   Box,
   Flex,
-  Avatar,
-  VStack,
-  useColorModeValue,
   Link,
   Tooltip,
+  VStack,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
-import SidebarItems from "./SidebarItems";
 import { FaGithubSquare } from "react-icons/fa";
+import SidebarItems from "./SidebarItems";
 
 const Sidebar = () => {
   const bgColor = useColorModeValue("ui.white", "ui.dark");

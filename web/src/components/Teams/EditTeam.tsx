@@ -1,3 +1,4 @@
+import IconPicker from "@/components/Icons/TqxIcon";
 import {
   Box,
   Button,
@@ -25,7 +26,6 @@ import {
   TeamsService,
 } from "../../client";
 import useCustomToast from "../../hooks/useCustomToast";
-import IconPicker from "@/components/Icons/TqxIcon";
 
 interface EditTeamProps {
   team: TeamOut;
@@ -87,12 +87,12 @@ const EditTeam = ({ team, isOpen, onClose }: EditTeamProps) => {
       >
         <ModalOverlay />
         <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
-          <ModalHeader>{t(`team.addteam.editteam`)}</ModalHeader>
+          <ModalHeader>{t("team.addteam.editteam")}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Box alignItems={"left"}>
               <Text whiteSpace="nowrap" pb={2} fontWeight={"bold"}>
-                {t(`team.addteam.nameandicon`)}
+                {t("team.addteam.nameandicon")}
               </Text>
               <Box
                 display="flex"
@@ -133,7 +133,7 @@ const EditTeam = ({ team, isOpen, onClose }: EditTeamProps) => {
                           "Name must follow pattern: ^[a-zA-Z0-9_-]{1,64}$",
                       },
                     })}
-                    placeholder={t(`team.addteam.placeholderapp`) as string}
+                    placeholder={t("team.addteam.placeholderapp") as string}
                     type="text"
                   />
                   {errors.name && (
@@ -144,12 +144,12 @@ const EditTeam = ({ team, isOpen, onClose }: EditTeamProps) => {
             </Box>
             <FormControl mt={4}>
               <FormLabel htmlFor="description" fontWeight={"bold"}>
-                {t(`team.addteam.description`)}
+                {t("team.addteam.description")}
               </FormLabel>
               <Textarea
                 id="description"
                 {...register("description")}
-                placeholder={t(`team.addteam.placeholderdescription`) as string}
+                placeholder={t("team.addteam.placeholderdescription") as string}
               />
             </FormControl>
           </ModalBody>

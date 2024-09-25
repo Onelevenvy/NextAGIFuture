@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
 import { Box, Heading } from "@chakra-ui/react";
+import React from "react";
 import { ReactFlowProvider } from "reactflow";
 import FlowVisualizer from "../../../components/WorkFlow/FlowVisualizer";
 import { nodeTypes } from "../../../components/WorkFlow/nodes";

@@ -1,27 +1,28 @@
-import React, { useState } from "react";
 import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
   Box,
   IconButton,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
 } from "@chakra-ui/react";
+import type React from "react";
+import { useState } from "react";
 
 import {
+  FcBullish,
   FcBusinessman,
   FcBusinesswoman,
-  FcShipped,
-  FcRating,
-  FcOldTimeCamera,
-  FcBullish,
   FcHome,
   FcNews,
-  FcVip,
+  FcOldTimeCamera,
+  FcRating,
+  FcShipped,
   FcTrademark,
+  FcVip,
 } from "react-icons/fc";
 
 const iconSize = 28;

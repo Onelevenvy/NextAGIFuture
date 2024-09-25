@@ -1,7 +1,14 @@
-import React from 'react';
-import { Box, InputGroup, Input, InputRightElement, IconButton, Tooltip } from '@chakra-ui/react';
-import { VscSend } from 'react-icons/vsc';
-import { GrNewWindow } from 'react-icons/gr';
+import {
+  Box,
+  IconButton,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Tooltip,
+} from "@chakra-ui/react";
+import type React from "react";
+import { GrNewWindow } from "react-icons/gr";
+import { VscSend } from "react-icons/vsc";
 
 interface MessageInputProps {
   input: string;
@@ -16,7 +23,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   setInput,
   onSubmit,
   isStreaming,
-  newChatHandler
+  newChatHandler,
 }) => (
   <Box
     display="flex"
@@ -46,12 +53,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       </InputRightElement>
     </InputGroup>
     {newChatHandler && (
-      <Tooltip
-        label="New Chat"
-        fontSize="md"
-        bg="green"
-        placement="top-end"
-      >
+      <Tooltip label="New Chat" fontSize="md" bg="green" placement="top-end">
         <IconButton
           aria-label="new chat"
           icon={<GrNewWindow />}

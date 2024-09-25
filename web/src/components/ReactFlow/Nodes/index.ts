@@ -1,7 +1,7 @@
 import type { NodeTypes } from "reactflow";
+import { FreelancerNode } from "./FreelancerNode";
 import { MemberNode } from "./MemberNode";
 import { RootNode } from "./RootNode";
-import { FreelancerNode } from "./FreelancerNode";
 
 export const nodeTypes = {
   worker: MemberNode,

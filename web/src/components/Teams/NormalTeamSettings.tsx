@@ -1,9 +1,9 @@
-import { useParams } from "next/navigation";
-import { useQuery } from "react-query";
-import { ApiError, MembersService, TeamOut } from "@/client";
-import { Box, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
-import { useRef } from "react";
+import { type ApiError, MembersService, type TeamOut } from "@/client";
 import useCustomToast from "@/hooks/useCustomToast";
+import { Box, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
+import { useParams } from "next/navigation";
+import { useRef } from "react";
+import { useQuery } from "react-query";
 import EditTeamMember from "../Members";
 import DebugPreview from "./DebugPreview";
 import TeamInforCard from "./TeamInfo";
@@ -22,7 +22,7 @@ export default function NormalTeamSettings({
     isError,
     error,
   } = useQuery(`teams/${teamId}/members`, () =>
-    MembersService.readMembers({ teamId: Number.parseInt(teamId) })
+    MembersService.readMembers({ teamId: Number.parseInt(teamId) }),
   );
 
   const member = members?.data || [];

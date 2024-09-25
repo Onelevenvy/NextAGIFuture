@@ -1,19 +1,19 @@
+import EditTeamMember from "@/components/Members";
 import {
   Box,
   Icon,
   IconButton,
   Stack,
+  Text,
   useColorModeValue,
   useDisclosure,
-  Text,
 } from "@chakra-ui/react";
+import { FiEdit2 } from "react-icons/fi";
+import { GrUserWorker } from "react-icons/gr";
 import type { NodeProps } from "reactflow";
 import { Position } from "reactflow";
 import type { MemberOut } from "../../../client";
-import { FiEdit2 } from "react-icons/fi";
-import { GrUserWorker } from "react-icons/gr";
 import LimitConnectionHandle from "../Handles/LimitConnectionHandle";
-import  EditTeamMember  from "@/components/Members";
 
 export type FreelancerNodeData = {
   teamId: number;

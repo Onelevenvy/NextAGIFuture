@@ -1,37 +1,37 @@
-import { useMemo } from "react"
-import { getConnectedEdges, Handle, useNodeId, useStore } from "reactflow"
+import { useMemo } from "react";
+import { Handle, getConnectedEdges, useNodeId, useStore } from "reactflow";
 
 const selector = (s: { nodeInternals: any; edges: any }) => ({
   nodeInternals: s.nodeInternals,
   edges: s.edges,
-})
+});
 
 interface LimitConnectionHandleProps
   extends React.ComponentProps<typeof Handle> {
-  connectionLimit?: number
+  connectionLimit?: number;
 }
 
 const LimitConnectionHandle = ({
   connectionLimit,
   ...props
 }: LimitConnectionHandleProps) => {
-  const { nodeInternals, edges } = useStore(selector)
-  const nodeId = useNodeId()
+  const { nodeInternals, edges } = useStore(selector);
+  const nodeId = useNodeId();
 
   const isHandleConnectable = useMemo(() => {
     if (connectionLimit !== undefined) {
-      const node = nodeInternals.get(nodeId)
+      const node = nodeInternals.get(nodeId);
 
       const connectedEdges = getConnectedEdges([node], edges).filter((edge) =>
         props.type === "target"
           ? edge.target === nodeId
           : edge.source === nodeId,
-      )
-      return connectedEdges.length < connectionLimit
+      );
+      return connectedEdges.length < connectionLimit;
     }
-  }, [nodeInternals, edges, nodeId, connectionLimit, props.type])
+  }, [nodeInternals, edges, nodeId, connectionLimit, props.type]);
 
-  return <Handle {...props} isConnectable={isHandleConnectable} />
-}
+  return <Handle {...props} isConnectable={isHandleConnectable} />;
+};
 
-export default LimitConnectionHandle
+export default LimitConnectionHandle;

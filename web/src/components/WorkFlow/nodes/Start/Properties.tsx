@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, VStack, Text, Input } from "@chakra-ui/react";
+import { Box, Input, Text, VStack } from "@chakra-ui/react";
+import type React from "react";
 
 interface StartNodePropertiesProps {
   node: any;

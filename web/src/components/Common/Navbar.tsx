@@ -1,10 +1,10 @@
-import { Button, Flex, Icon, useDisclosure } from "@chakra-ui/react";
-import { FaPlus } from "react-icons/fa";
 import AddUser from "@/components/Admin/AddUser";
 import AddTeam from "@/components/Teams/AddTeam";
 import AddSkill from "@/components/Tools/AddSkill";
 import AddUpload from "@/components/Uploads/AddUpload";
+import { Button, Flex, Icon, useDisclosure } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import { FaPlus } from "react-icons/fa";
 
 interface NavbarProps {
   type: string;
@@ -33,7 +33,7 @@ const Navbar = ({ type }: NavbarProps) => {
                   : addUploadModal.onOpen
           }
         >
-          <Icon as={FaPlus} /> {t(`setting.create`)}{" "}
+          <Icon as={FaPlus} /> {t("setting.create")}{" "}
           {t(`setting.${type.toLowerCase()}`)}
         </Button>
         <AddUser isOpen={addUserModal.isOpen} onClose={addUserModal.onClose} />

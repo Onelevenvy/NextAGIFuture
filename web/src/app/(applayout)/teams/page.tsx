@@ -1,31 +1,31 @@
 "use client";
-import {
-  Flex,
-  Spinner,
-  Heading,
-  SimpleGrid,
-  useColorModeValue,
-  Box,
-  IconButton,
-  Text,
-  Tag,
-  TagLabel,
-} from "@chakra-ui/react";
-import { useQuery } from "react-query";
-import { TeamsService, type ApiError } from "@/client";
+import { type ApiError, TeamsService } from "@/client";
 import ActionsMenu from "@/components/Common/ActionsMenu";
 import Navbar from "@/components/Common/Navbar";
+import TabSlider from "@/components/Common/TabSlider";
+import { tqxIconLibrary } from "@/components/Icons/TqxIcon";
 import useCustomToast from "@/hooks/useCustomToast";
+import { useTabSearchParams } from "@/hooks/useTabSearchparams";
+import useChatTeamIdStore from "@/stores/chatTeamIDStore";
+import {
+  Box,
+  Flex,
+  Heading,
+  IconButton,
+  SimpleGrid,
+  Spinner,
+  Tag,
+  TagLabel,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
-import { tqxIconLibrary } from "@/components/Icons/TqxIcon";
-import TabSlider from "@/components/Common/TabSlider";
-import { RiApps2Line, RiBookLine } from "react-icons/ri";
-import { useTabSearchParams } from "@/hooks/useTabSearchparams";
+import { useTranslation } from "react-i18next";
 import { GoGitMerge, GoGitPullRequestDraft } from "react-icons/go";
 import { PiChatCircleDots } from "react-icons/pi";
-import useChatTeamIdStore from "@/stores/chatTeamIDStore";
-import { useTranslation } from "react-i18next";
+import { RiApps2Line, RiBookLine } from "react-icons/ri";
+import { useQuery } from "react-query";
 
 function Teams() {
   const showToast = useCustomToast();
@@ -52,7 +52,7 @@ function Teams() {
   const options = [
     {
       value: "all",
-      text: t(`panestate.team.all`),
+      text: t("panestate.team.all"),
       icon: <RiApps2Line className="w-[14px] h-[14px] mr-1" />,
     },
     {
@@ -67,12 +67,12 @@ function Teams() {
     },
     {
       value: "chatbot",
-      text: t(`panestate.team.chatbot`),
+      text: t("panestate.team.chatbot"),
       icon: <PiChatCircleDots className="w-[14px] h-[14px] mr-1" />,
     },
     {
       value: "ragbot",
-      text: t(`panestate.team.ragbot`),
+      text: t("panestate.team.ragbot"),
       icon: <RiBookLine className="w-[14px] h-[14px] mr-1" />,
     },
   ];

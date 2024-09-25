@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { Box, Button, Collapse, VStack, Text } from "@chakra-ui/react";
-import ProviderUpdate from "./ProviderUpdate";
-import { useModelProviderContext } from "@/contexts/modelprovider";
-import ModelProviderIcon from "@/components/Icons/models";
 import ModelProviderIconLong from "@/components/Icons/Providers";
+import ModelProviderIcon from "@/components/Icons/models";
+import { useModelProviderContext } from "@/contexts/modelprovider";
+import { Box, Button, Collapse, Text, VStack } from "@chakra-ui/react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CiSettings } from "react-icons/ci";
 import {
   MdOutlineKeyboardDoubleArrowDown,
   MdOutlineKeyboardDoubleArrowUp,
 } from "react-icons/md";
-import { useTranslation } from "react-i18next";
+import ProviderUpdate from "./ProviderUpdate";
 
 interface ModelCardProps {
   providerName: string;
@@ -52,7 +52,7 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
               onClick={() => setIsModalOpen(true)}
               leftIcon={<CiSettings />}
             >
-              {t(`setting.modal.setting`)}
+              {t("setting.modal.setting")}
             </Button>
             <ProviderUpdate
               isModalOpen={isModalOpen}
@@ -75,7 +75,9 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
                 )
               }
             >
-              {isOpen ?  t(`setting.setting.hidemodel`) :  t(`setting.setting.showmodel`)}
+              {isOpen
+                ? t("setting.setting.hidemodel")
+                : t("setting.setting.showmodel")}
             </Button>
           </Box>
           <Collapse in={isOpen}>

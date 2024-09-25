@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui/react";
 import ChatMain from "@/components/Playground/ChatMain";
+import { Box } from "@chakra-ui/react";
 import DebugPreviewHead from "./head";
 
 function DebugPreview({

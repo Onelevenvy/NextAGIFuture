@@ -15,14 +15,14 @@ import {
   useBoolean,
 } from "@chakra-ui/react";
 
-import React from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import Logo from "@/assets/images/logo.svg";
 import type { ApiError } from "@/client";
 import type { Body_login_login_access_token as AccessToken } from "@/client/models/Body_login_login_access_token";
 import useAuth from "@/hooks/useAuth";
 import { emailPattern } from "@/utils";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { type SubmitHandler, useForm } from "react-hook-form";
 
 function Login() {
   const [show, setShow] = useBoolean();
@@ -64,7 +64,7 @@ function Login() {
         centerContent
       >
         <Image
-          src='logo.png'
+          src="logo.png"
           alt=" logo"
           height="auto"
           maxW="2xs"

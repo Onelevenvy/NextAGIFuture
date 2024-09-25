@@ -1,14 +1,19 @@
-import type { ConnectionLineComponentProps } from "reactflow"
-import { getSmoothStepPath } from "reactflow"
+import type { ConnectionLineComponentProps } from "reactflow";
+import { getSmoothStepPath } from "reactflow";
 
-const ConnectionLine =({ fromX, fromY, toX, toY }: ConnectionLineComponentProps) => {
+const ConnectionLine = ({
+  fromX,
+  fromY,
+  toX,
+  toY,
+}: ConnectionLineComponentProps) => {
   const [edgePath] = getSmoothStepPath({
     sourceX: fromX,
     sourceY: fromY,
     targetX: toX,
     targetY: toY,
     borderRadius: 10, // Adjust the border radius for the smooth step curve
-  })
+  });
 
   return (
     <g>
@@ -28,7 +33,7 @@ const ConnectionLine =({ fromX, fromY, toX, toY }: ConnectionLineComponentProps)
         strokeWidth={10}
       />
     </g>
-  )
-}
+  );
+};
 
-export default  ConnectionLine;
+export default ConnectionLine;

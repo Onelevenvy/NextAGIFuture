@@ -12,18 +12,18 @@ import {
   RiTeamLine,
 } from "react-icons/ri";
 
-import ModelProviderPage from "./ModelProviderPage";
-import UserInfoPage from "./UserInfoPage";
-import MembersPage from "./MembersPage";
+import useAuth from "@/hooks/useAuth";
 import AppearancePage from "./AcountPage/Appearance";
 import ChangePasswordPage from "./AcountPage/ChangePassword";
-import useAuth from "@/hooks/useAuth";
 import LanguagePage from "./LanguagePage";
+import MembersPage from "./MembersPage";
+import ModelProviderPage from "./ModelProviderPage";
+import UserInfoPage from "./UserInfoPage";
 
 import { useTranslation } from "react-i18next";
 import { BsBoxFill, BsSun, BsSunFill } from "react-icons/bs";
-import { MdLanguage } from "react-icons/md";
 import { LuLanguages } from "react-icons/lu";
+import { MdLanguage } from "react-icons/md";
 
 type IAccountSettingProps = {
   activeTab?: string;
@@ -48,19 +48,19 @@ export default function AccountSetting({
     return [
       {
         key: "provider",
-        name: t(`setting.setting.modelProvider`),
+        name: t("setting.setting.modelProvider"),
         icon: <RiBox3Line />,
         activeIcon: <BsBoxFill color="#155eef" />,
       },
       {
         key: "members",
-        name: t(`setting.setting.member`),
+        name: t("setting.setting.member"),
         icon: <RiTeamLine />,
         activeIcon: <RiTeamFill color="#155eef" />,
       },
       {
         key: "appearance",
-        name: t(`setting.setting.theme`),
+        name: t("setting.setting.theme"),
         icon: <BsSun />,
         activeIcon: <BsSunFill color="#155eef" />,
       },
@@ -70,28 +70,28 @@ export default function AccountSetting({
   const menuItems = [
     {
       key: "workspace-group",
-      name: t(`setting.setting.workSpace`),
+      name: t("setting.setting.workSpace"),
       items: workplaceGroupItems,
     },
     {
       key: "account-group",
-      name: t(`setting.setting.account`),
+      name: t("setting.setting.account"),
       items: [
         {
           key: "account",
-          name: t(`setting.setting.myAccount`),
+          name: t("setting.setting.myAccount"),
           icon: <RiAccountBoxLine />,
           activeIcon: <RiAccountBoxFill color="#155eef" />,
         },
         {
           key: "password",
-          name: t(`setting.setting.password`),
+          name: t("setting.setting.password"),
           icon: <RiLockPasswordLine />,
           activeIcon: <RiLockPasswordFill color="#155eef" />,
         },
         {
           key: "language",
-          name: t(`setting.setting.language`),
+          name: t("setting.setting.language"),
           icon: <MdLanguage />,
           activeIcon: <LuLanguages color="#155eef" />,
         },
@@ -113,7 +113,7 @@ export default function AccountSetting({
   }, []);
 
   const activeItem = [...menuItems[0].items, ...menuItems[1].items].find(
-    (item) => item.key === activeMenu
+    (item) => item.key === activeMenu,
   );
 
   return (
@@ -136,7 +136,7 @@ export default function AccountSetting({
             lineHeight="6"
             color="gray.900"
           >
-            {t(`setting.modal.setting`)}
+            {t("setting.modal.setting")}
           </Text>
           <Box width="full">
             {menuItems.map((menuItem) => (

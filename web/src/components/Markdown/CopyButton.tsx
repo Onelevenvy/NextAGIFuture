@@ -1,6 +1,6 @@
-import { Copy, Check } from "lucide-react";
-import { useState } from "react";
 import { IconButton, useToast } from "@chakra-ui/react";
+import { Check, Copy } from "lucide-react";
+import { useState } from "react";
 
 const CopyButton = ({ id }: { id: string }) => {
   const [copied, setCopied] = useState(false);

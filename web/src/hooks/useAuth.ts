@@ -8,9 +8,8 @@ import {
   UsersService,
 } from "../client";
 
-
 const isLoggedIn = () => {
-  if (typeof window !== 'undefined' && window.localStorage) {
+  if (typeof window !== "undefined" && window.localStorage) {
     return window.localStorage.getItem("access_token") !== null;
   }
   return false;
@@ -23,7 +22,7 @@ const useAuth = () => {
     UsersService.readUserMe,
     {
       enabled: isLoggedIn(),
-    }
+    },
   );
 
   const queryClient = useQueryClient();
@@ -43,7 +42,7 @@ const useAuth = () => {
     navigate.push("/login");
   };
 
-  return { login, logout, user, isLoading,currentUser};
+  return { login, logout, user, isLoading, currentUser };
 };
 
 export { isLoggedIn };

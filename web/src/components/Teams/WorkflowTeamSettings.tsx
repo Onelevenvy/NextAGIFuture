@@ -1,9 +1,9 @@
-import { Box, Flex, Spinner, useColorModeValue } from "@chakra-ui/react";
+import { type ApiError, GraphsService } from "@/client";
 import useCustomToast from "@/hooks/useCustomToast";
-import TqxWorkflow from "../WorkFlow";
+import { Box, Flex, Spinner, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { ApiError, GraphsService } from "@/client";
 import { useQuery, useQueryClient } from "react-query";
+import TqxWorkflow from "../WorkFlow";
 
 interface WorkflowSettingProps {
   teamId: number;
@@ -24,7 +24,7 @@ function WorkflowTeamSettings({ teamId }: WorkflowSettingProps) {
     () => GraphsService.readGraphs({ teamId: currentTeamId }),
     {
       keepPreviousData: true,
-    }
+    },
   );
 
   const createDefaultGraph = async (teamId: number) => {

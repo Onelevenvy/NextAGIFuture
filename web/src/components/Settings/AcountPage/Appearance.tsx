@@ -18,13 +18,13 @@ const AppearancePage = () => {
           <Stack>
             {/* TODO: Add system default option */}
             <Radio value="light" colorScheme="teal">
-            {t(`setting.setting.themedark`)}
+              {t("setting.setting.themedark")}
               <Badge ml="1" colorScheme="teal">
                 Default
               </Badge>
             </Radio>
             <Radio value="dark" colorScheme="teal">
-            {t(`setting.setting.themelight`)}
+              {t("setting.setting.themelight")}
             </Radio>
           </Stack>
         </RadioGroup>

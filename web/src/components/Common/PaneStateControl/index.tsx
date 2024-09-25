@@ -5,7 +5,7 @@ interface PaneStateControlProps {
   selectedColor: string;
   onClick: () => void;
   background: string;
-  Icon: React.ComponentType; 
+  Icon: React.ComponentType;
 }
 
 const PaneStateControl: React.FC<PaneStateControlProps> = ({

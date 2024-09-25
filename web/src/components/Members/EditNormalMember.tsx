@@ -1,3 +1,6 @@
+import { useModelQuery } from "@/hooks/useModelQuery";
+import { useSkillsQuery } from "@/hooks/useSkillsQuery";
+import { useUploadsQuery } from "@/hooks/useUploadsQuery";
 import {
   Box,
   Checkbox,
@@ -12,25 +15,22 @@ import {
   Textarea,
   Tooltip,
 } from "@chakra-ui/react";
-import useCustomToast from "../../hooks/useCustomToast";
+import { Select as MultiSelect, chakraComponents } from "chakra-react-select";
+import { type Ref, forwardRef, useState } from "react";
+import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
   type ApiError,
-  MembersService,
-  type TeamUpdate,
   type MemberOut,
   type MemberUpdate,
-  SkillsService,
-  UploadsService,
+  MembersService,
   ModelService,
+  SkillsService,
+  type TeamUpdate,
+  UploadsService,
 } from "../../client";
-import { type SubmitHandler, useForm, Controller } from "react-hook-form";
-import { Select as MultiSelect, chakraComponents } from "chakra-react-select";
-import { forwardRef, Ref, useState } from "react";
+import useCustomToast from "../../hooks/useCustomToast";
 import ModelSelect from "../Common/ModelProvider";
-import { useModelQuery } from "@/hooks/useModelQuery";
-import { useUploadsQuery } from "@/hooks/useUploadsQuery";
-import { useSkillsQuery } from "@/hooks/useSkillsQuery";
 
 interface EditAgentProps {
   member: MemberOut;
@@ -150,7 +150,7 @@ const EditNormalMember = forwardRef<HTMLFormElement, EditAgentProps>(
 
     const onModelSelect = (modelName: string) => {
       const selectedModel = models?.data.find(
-        (model) => model.ai_model_name === modelName
+        (model) => model.ai_model_name === modelName,
       );
       setValue("model", modelName);
       setValue("openai_api_key", selectedModel?.provider.api_key);
@@ -328,7 +328,7 @@ const EditNormalMember = forwardRef<HTMLFormElement, EditAgentProps>(
         </Box>
       </Box>
     );
-  }
+  },
 );
 EditNormalMember.displayName = "EditAgent";
 export default EditNormalMember;

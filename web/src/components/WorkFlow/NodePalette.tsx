@@ -1,6 +1,6 @@
-import React from "react";
-import { Box, VStack, Text, IconButton } from "@chakra-ui/react";
-import { nodeConfig, NodeType } from "./nodes/nodeConfig";
+import { Box, IconButton, Text, VStack } from "@chakra-ui/react";
+import type React from "react";
+import { type NodeType, nodeConfig } from "./nodes/nodeConfig";
 
 const NodePalette: React.FC = () => {
   const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {

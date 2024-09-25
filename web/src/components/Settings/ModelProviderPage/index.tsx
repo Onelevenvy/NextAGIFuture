@@ -1,10 +1,10 @@
-import { Spinner, Flex, Container, SimpleGrid, Box } from "@chakra-ui/react";
-import { useQuery } from "react-query";
-import { ApiError } from "@/client/core/ApiError";
-import useCustomToast from "@/hooks/useCustomToast";
-import ModelProviderCard from "./ProviderCard";
-import { ModelProvider } from "@/contexts/modelprovider";
+import type { ApiError } from "@/client/core/ApiError";
 import { ProviderService } from "@/client/services/ProviderService";
+import { ModelProvider } from "@/contexts/modelprovider";
+import useCustomToast from "@/hooks/useCustomToast";
+import { Box, Container, Flex, SimpleGrid, Spinner } from "@chakra-ui/react";
+import { useQuery } from "react-query";
+import ModelProviderCard from "./ProviderCard";
 
 export default function ModelProviderPage() {
   const {
@@ -30,14 +30,13 @@ export default function ModelProviderPage() {
       ) : (
         <Box maxW="full" w="full" overflow={"hidden"}>
           <SimpleGrid columns={{ base: 1, md: 1 }} spacing="6">
-            {providers &&
-              providers.providers.map((provider) => {
-                return (
-                  <ModelProvider key={provider.id} value={provider}>
-                    <ModelProviderCard providerName={provider.provider_name} />
-                  </ModelProvider>
-                );
-              })}
+            {providers?.providers.map((provider) => {
+              return (
+                <ModelProvider key={provider.id} value={provider}>
+                  <ModelProviderCard providerName={provider.provider_name} />
+                </ModelProvider>
+              );
+            })}
           </SimpleGrid>
         </Box>
       )}

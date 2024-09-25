@@ -4,6 +4,6 @@ const defaultEdgeOptions = {
     stroke: "#009688",
   },
   type: "smoothstep",
-}
+};
 
-export default defaultEdgeOptions
+export default defaultEdgeOptions;

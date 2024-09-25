@@ -1,4 +1,4 @@
-import { createIcon, Icon, IconProps } from "@chakra-ui/icons";
+import { Icon, type IconProps, createIcon } from "@chakra-ui/icons";
 
 const OllamaIconLong = (props: IconProps) => (
   <Icon viewBox="0 0 82 24" {...props}>
@@ -38,7 +38,7 @@ const OllamaIconLong = (props: IconProps) => (
           patternContentUnits="objectBoundingBox"
           width="1"
           height="1"
-        ></pattern>
+        />
       </defs>
     </svg>
   </Icon>

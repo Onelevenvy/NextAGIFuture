@@ -1,29 +1,29 @@
+import type { ModelProviderUpdate } from "@/client";
+import type { ApiError } from "@/client/core/ApiError";
+import { ProviderService } from "@/client/services/ProviderService";
+import { useModelProviderContext } from "@/contexts/modelprovider";
+import useCustomToast from "@/hooks/useCustomToast";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Button,
-  Input,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
   FormControl,
   FormLabel,
-  ModalFooter,
-  Text,
+  IconButton,
+  Input,
   InputGroup,
   InputRightElement,
-  IconButton,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
 } from "@chakra-ui/react";
-import { useMutation, useQueryClient } from "react-query";
-import { ApiError } from "@/client/core/ApiError";
-import useCustomToast from "@/hooks/useCustomToast";
-import { ProviderService } from "@/client/services/ProviderService";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { type ModelProviderUpdate } from "@/client";
-import { useModelProviderContext } from "@/contexts/modelprovider";
 import { useState } from "react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "react-query";
 
 interface ProviderUpdateProps {
   isModalOpen: boolean;

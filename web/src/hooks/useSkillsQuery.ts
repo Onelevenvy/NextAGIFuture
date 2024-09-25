@@ -1,5 +1,5 @@
-import { useQuery } from "react-query";
 import { SkillsService } from "@/client/services/SkillsService";
+import { useQuery } from "react-query";
 
 export function useSkillsQuery() {
   return useQuery("skills", () => SkillsService.readSkills({}), {

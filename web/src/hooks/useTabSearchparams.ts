@@ -1,12 +1,12 @@
-import { usePathname, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 type UseTabSearchParamsOptions = {
-  defaultTab: string
-  routingBehavior?: 'push' | 'replace'
-  searchParamName?: string
-  disableSearchParams?: boolean
-}
+  defaultTab: string;
+  routingBehavior?: "push" | "replace";
+  searchParamName?: string;
+  disableSearchParams?: boolean;
+};
 
 /**
  * Custom hook to manage tab state via URL search parameters in a Next.js application.
@@ -20,24 +20,27 @@ type UseTabSearchParamsOptions = {
  */
 export const useTabSearchParams = ({
   defaultTab,
-  routingBehavior = 'push',
-  searchParamName = 'workflow',
+  routingBehavior = "push",
+  searchParamName = "workflow",
   disableSearchParams = false,
 }: UseTabSearchParamsOptions) => {
-  const pathName = usePathname()
-  const searchParams = useSearchParams()
+  const pathName = usePathname();
+  const searchParams = useSearchParams();
   const [activeTab, setTab] = useState<string>(
     !disableSearchParams
-      ? (searchParams.get(searchParamName) || defaultTab)
+      ? searchParams.get(searchParamName) || defaultTab
       : defaultTab,
-  )
+  );
 
   const setActiveTab = (newActiveTab: string) => {
-    setTab(newActiveTab)
-    if (disableSearchParams)
-      return
-    history[`${routingBehavior}State`](null, '', `${pathName}?${searchParamName}=${newActiveTab}`)
-  }
+    setTab(newActiveTab);
+    if (disableSearchParams) return;
+    history[`${routingBehavior}State`](
+      null,
+      "",
+      `${pathName}?${searchParamName}=${newActiveTab}`,
+    );
+  };
 
-  return [activeTab, setActiveTab] as const
-}
+  return [activeTab, setActiveTab] as const;
+};

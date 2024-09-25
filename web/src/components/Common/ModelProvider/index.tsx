@@ -1,20 +1,20 @@
 "use client";
-import React, { useState, useCallback } from "react";
-import { Control, Controller } from "react-hook-form";
+import type { MemberUpdate } from "@/client/models/MemberUpdate";
+import type { ModelsOut } from "@/client/models/ModelsOut";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
-  FormControl,
-  Button,
   Box,
+  Button,
+  FormControl,
   Menu,
   MenuButton,
-  MenuList,
-  MenuItem,
   MenuGroup,
+  MenuItem,
+  MenuList,
   Spinner,
 } from "@chakra-ui/react";
-import { ModelsOut } from "@/client/models/ModelsOut";
-import { MemberUpdate } from "@/client/models/MemberUpdate";
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import React, { useState, useCallback } from "react";
+import { type Control, Controller } from "react-hook-form";
 import ModelProviderIcon from "../../Icons/models";
 
 const ModelSelect = ({
@@ -27,7 +27,7 @@ const ModelSelect = ({
   models: ModelsOut | undefined;
   control: Control<MemberUpdate, any>;
   onModelSelect: (selectData: string) => void;
-  isLoading?: Boolean;
+  isLoading?: boolean;
   value?: string;
 }) => {
   const groupedModels = models?.data.reduce(
@@ -39,7 +39,7 @@ const ModelSelect = ({
       acc[providerName].push(model);
       return acc;
     },
-    {} as Record<string, typeof models.data>
+    {} as Record<string, typeof models.data>,
   );
 
   const [selectedModelProvider, setSelectedModelProvider] =
@@ -48,13 +48,13 @@ const ModelSelect = ({
   const updateSelectedProvider = useCallback(
     (modelName: string) => {
       const selectedModelData = models?.data.find(
-        (model) => model.ai_model_name === modelName
+        (model) => model.ai_model_name === modelName,
       );
       if (selectedModelData) {
         setSelectedModelProvider(selectedModelData.provider.provider_name);
       }
     },
-    [models]
+    [models],
   );
 
   return (

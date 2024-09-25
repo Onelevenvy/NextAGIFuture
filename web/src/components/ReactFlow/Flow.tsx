@@ -1,5 +1,7 @@
 import { Box, Flex, Spinner } from "@chakra-ui/react";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
+import { useMutation, useQuery } from "react-query";
 import ReactFlow, {
   type Connection,
   type Edge,
@@ -12,19 +14,17 @@ import ReactFlow, {
   type NodeChange,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import { nodeTypes } from "./Nodes";
-import { useMutation, useQuery } from "react-query";
 import {
   type ApiError,
-  MembersService,
-  type MembersOut,
   type MemberCreate,
   type MemberUpdate,
+  type MembersOut,
+  MembersService,
 } from "../../client";
 import useCustomToast from "../../hooks/useCustomToast";
-import { useParams } from "next/navigation";
-import defaultEdgeOptions from "./Edges/DefaultEdge";
 import ConnectionLine from "./Edges/ConnectionLine";
+import defaultEdgeOptions from "./Edges/DefaultEdge";
+import { nodeTypes } from "./Nodes";
 
 interface FlowComponentProps {
   initialNodes: Node[];
@@ -69,7 +69,7 @@ const FlowComponent = ({ initialNodes, initialEdges }: FlowComponentProps) => {
     async (data: MemberCreate) => {
       return await createMemberMutation.mutateAsync(data);
     },
-    [createMemberMutation]
+    [createMemberMutation],
   );
   const deleteMember = async (id: number) => {
     await MembersService.deleteMember({ teamId: Number.parseInt(teamId), id });
@@ -88,7 +88,7 @@ const FlowComponent = ({ initialNodes, initialEdges }: FlowComponentProps) => {
     (id: number) => {
       deleteMemberMutation.mutate(id);
     },
-    [deleteMemberMutation]
+    [deleteMemberMutation],
   );
 
   const updateMember = async (data: EditMemberDataProps) => {
@@ -115,7 +115,7 @@ const FlowComponent = ({ initialNodes, initialEdges }: FlowComponentProps) => {
     (data: EditMemberDataProps) => {
       updateMemberMutation.mutate(data);
     },
-    [updateMemberMutation]
+    [updateMemberMutation],
   );
   /**
    * Handle creating a connection between two nodes
@@ -141,7 +141,7 @@ const FlowComponent = ({ initialNodes, initialEdges }: FlowComponentProps) => {
         },
       });
     },
-    [setEdges, editMember, getNode]
+    [setEdges, editMember, getNode],
   );
 
   const onConnectStart = useCallback((_: any, { nodeId }: any) => {
@@ -157,7 +157,7 @@ const FlowComponent = ({ initialNodes, initialEdges }: FlowComponentProps) => {
       const targetIsPane = event.target.classList.contains("react-flow__pane");
 
       const sourceType = nodes.filter(
-        (node) => node.id === connectingNodeId.current
+        (node) => node.id === connectingNodeId.current,
       )[0].type;
 
       if (targetIsPane && sourceType) {
@@ -200,11 +200,11 @@ const FlowComponent = ({ initialNodes, initialEdges }: FlowComponentProps) => {
             id: nodeId,
             source: connectingNodeId.current!,
             target: nodeId,
-          })
+          }),
         );
       }
     },
-    [screenToFlowPosition, setEdges, setNodes, teamId, nodes, addMember]
+    [screenToFlowPosition, setEdges, setNodes, teamId, nodes, addMember],
   );
 
   /**
@@ -218,7 +218,7 @@ const FlowComponent = ({ initialNodes, initialEdges }: FlowComponentProps) => {
         removeMember(deletedNode.data.member.id);
       }
     },
-    [removeMember]
+    [removeMember],
   );
 
   const onEdgesDelete = useCallback(
@@ -237,7 +237,7 @@ const FlowComponent = ({ initialNodes, initialEdges }: FlowComponentProps) => {
         });
       }
     },
-    [editMember, getNode]
+    [editMember, getNode],
   );
 
   const handleNodesChange = (changes: NodeChange[]) => {
@@ -339,7 +339,7 @@ export default function Fflow() {
     isError,
     error,
   } = useQuery(`teams/${teamId}/members`, () =>
-    MembersService.readMembers({ teamId: Number.parseInt(teamId) })
+    MembersService.readMembers({ teamId: Number.parseInt(teamId) }),
   );
 
   if (isError) {
@@ -352,7 +352,7 @@ export default function Fflow() {
     : { nodes: [], edges: [] };
 
   return (
-    < >
+    <>
       {isLoading ? (
         <Flex justify="center" align="center" height="100vh" width="full">
           <Spinner size="xl" color="ui.main" />
