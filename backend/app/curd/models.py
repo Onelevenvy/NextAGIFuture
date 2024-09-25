@@ -1,12 +1,8 @@
-from typing import List, Optional
-from sqlmodel import select, Session, func
-from ..models import (
-    ModelOut,
-    ModelProviderOut,
-    Models,
-    ModelsBase,
-    ModelsOut,
-)
+from typing import Optional
+
+from sqlmodel import Session, func, select
+
+from ..models import ModelOut, ModelProviderOut, Models, ModelsBase, ModelsOut
 
 
 def create_model(session: Session, model: ModelsBase) -> Models:

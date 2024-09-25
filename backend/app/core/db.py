@@ -1,9 +1,11 @@
 import os
+
 from sqlalchemy import text
 from sqlmodel import Session, create_engine, select
-from app.curd import users
+
 from app.core.config import settings
 from app.core.tools import managed_tools
+from app.curd import users
 from app.models import Skill, User, UserCreate
 
 

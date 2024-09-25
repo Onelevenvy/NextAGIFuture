@@ -1,11 +1,13 @@
-from typing import List, Optional
-from sqlmodel import select, Session, func
+from typing import Optional
+
+from sqlmodel import Session, select
+
 from ..models import (
+    ModelOutIdWithAndName,
     ModelProvider,
     ModelProviderCreate,
     ModelProviderUpdate,
     ModelProviderWithModelsListOut,
-    ModelOutIdWithAndName,
     ProvidersListWithModelsOut,
 )
 

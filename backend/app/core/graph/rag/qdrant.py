@@ -1,12 +1,14 @@
+import os
 from collections.abc import Callable
 from typing import Any
-import os
+
 import pymupdf  # type: ignore[import-untyped]
+from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest
-from langchain_community.document_loaders import WebBaseLoader
+
 from app.core.config import settings
 from app.core.graph.rag.qdrant_retriever import QdrantRetriever
 

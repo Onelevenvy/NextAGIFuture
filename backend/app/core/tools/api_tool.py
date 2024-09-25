@@ -56,8 +56,6 @@ class ToolDefinition(BaseModel):
 class TempEnum(str, Enum):
     """Convert dict into Enum"""
 
-    pass
-
 
 def dynamic_api_tool(tool_definition: dict[str, Any]) -> StructuredTool:
     """

@@ -1,6 +1,7 @@
 import secrets
 import warnings
 from typing import Annotated, Any, Literal
+
 from psycopg.rows import dict_row
 from pydantic import (
     AnyUrl,

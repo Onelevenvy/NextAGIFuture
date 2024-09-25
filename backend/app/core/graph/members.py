@@ -1,5 +1,6 @@
 from collections.abc import Mapping, Sequence
 from typing import Annotated, Any
+
 from langchain.chat_models import init_chat_model
 from langchain.tools.retriever import create_retriever_tool
 from langchain_core.messages import AIMessage, AnyMessage
