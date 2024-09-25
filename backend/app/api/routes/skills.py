@@ -53,13 +53,17 @@ def read_skills(
         count_statement = (
             select(func.count())
             .select_from(Skill)
-            .where(or_(Skill.managed == True, Skill.owner_id == current_user.id))  # noqa: E712
+            .where(
+                or_(Skill.managed == True, Skill.owner_id == current_user.id)
+            )  # noqa: E712
         )
         count = session.exec(count_statement).one()
 
         statement = (
             select(Skill)
-            .where(or_(Skill.managed == True, Skill.owner_id == current_user.id))  # noqa: E712
+            .where(
+                or_(Skill.managed == True, Skill.owner_id == current_user.id)
+            )  # noqa: E712
             .order_by(col(Skill.id).desc())
             .offset(skip)
             .limit(limit)

@@ -3,14 +3,10 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import func, select
 
-from app.curd import users
-from app.api.deps import (
-    CurrentUser,
-    SessionDep,
-    get_current_active_superuser,
-)
+from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
+from app.curd import users
 from app.models import (
     Message,
     UpdateLanguageMe,
@@ -123,13 +119,14 @@ def update_user_language(
     """
     # 更新用户的语言字段
     current_user.language = language_update.language
-    
+
     # 提交更改到数据库
     session.add(current_user)
     session.commit()
     session.refresh(current_user)
-    
+
     return current_user
+
 
 @router.get("/me", response_model=UserOut)
 def read_user_me(session: SessionDep, current_user: CurrentUser) -> Any:

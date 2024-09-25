@@ -15,7 +15,9 @@ def create_team(db: Session, user_id: int) -> Team:
         "workflow": "sequential",  # assuming a valid workflow
         "owner_id": user_id,
     }
-    team = Team.model_validate(TeamCreate(**team_data), update={"owner_id": user_id})  # noqa: F821
+    team = Team.model_validate(
+        TeamCreate(**team_data), update={"owner_id": user_id}
+    )  # noqa: F821
     db.add(team)
     db.commit()
     db.refresh(team)

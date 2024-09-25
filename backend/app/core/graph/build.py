@@ -5,12 +5,7 @@ from functools import partial
 from typing import Any, cast
 from uuid import uuid4
 
-from langchain_core.messages import (
-    AIMessage,
-    AnyMessage,
-    HumanMessage,
-    ToolMessage,
-)
+from langchain_core.messages import AIMessage, AnyMessage, HumanMessage, ToolMessage
 from langchain_core.runnables import RunnableLambda
 from langchain_core.runnables.config import RunnableConfig
 from langchain_core.tools import BaseTool
@@ -35,18 +30,8 @@ from app.core.graph.members import (
     WorkerNode,
 )
 from app.core.graph.messages import ChatResponse, event_to_response
-from app.models import ChatMessage, Interrupt, InterruptDecision, Member, Team
 from app.core.workflow.init_graph import initialize_graph
-from app.core.workflow.config import (
-    config_with_2_tool_router,
-    config_with_tools,
-    config_with_no_tools,
-    config_with_3_llm,
-    config_sequential_with_tools,
-    config_hierarchical,
-    config_n_new,
-    new_config,
-)
+from app.models import ChatMessage, Interrupt, InterruptDecision, Member, Team
 
 
 def convert_hierarchical_team_to_dict(
@@ -344,7 +329,6 @@ def create_tools_condition(
 
 def ask_human(state: TeamState) -> None:
     """Dummy node for ask human tool"""
-    pass
 
 
 def create_hierarchical_graph(

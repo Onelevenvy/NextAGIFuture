@@ -1,10 +1,10 @@
 from fastapi.encoders import jsonable_encoder
 from sqlmodel import Session
 
-from backend.app.api.routes.curd import users
 from app.core.security import verify_password
 from app.models import User, UserCreate, UserUpdate
 from app.tests.utils.utils import random_email, random_lower_string
+from backend.app.api.routes.curd import users
 
 
 def test_create_user(db: Session) -> None:

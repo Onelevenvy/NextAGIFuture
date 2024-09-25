@@ -1,17 +1,10 @@
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import col, func, select
+from sqlmodel import func, select
 
 from app.api.deps import CurrentUser, SessionDep
-from app.models import (
-    Graph,
-    GraphCreate,
-    GraphOut,
-    GraphsOut,
-    GraphUpdate,
-    Team,
-)
+from app.models import Graph, GraphCreate, GraphOut, GraphsOut, GraphUpdate, Team
 
 router = APIRouter()
 

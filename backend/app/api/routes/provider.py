@@ -1,20 +1,20 @@
-from app.api.deps import SessionDep
 from fastapi import APIRouter, HTTPException
 
+from app.api.deps import SessionDep
+from app.curd.modelprovider import (
+    create_model_provider,
+    delete_model_provider,
+    get_model_provider,
+    get_model_provider_list_with_models,
+    get_model_provider_with_models,
+    update_model_provider,
+)
 from app.models import (
     ModelProvider,
     ModelProviderCreate,
     ModelProviderUpdate,
     ModelProviderWithModelsListOut,
     ProvidersListWithModelsOut,
-)
-from app.curd.modelprovider import (
-    create_model_provider,
-    get_model_provider,
-    get_model_provider_list_with_models,
-    get_model_provider_with_models,
-    update_model_provider,
-    delete_model_provider,
 )
 
 router = APIRouter()

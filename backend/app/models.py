@@ -5,18 +5,9 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel
 from pydantic import Field as PydanticField
-from sqlalchemy import (
-    JSON,
-    Column,
-    DateTime,
-    PrimaryKeyConstraint,
-    String,
-    UniqueConstraint,
-    func,
-)
-from sqlalchemy import (
-    Enum as SQLEnum,
-)
+from sqlalchemy import JSON, Column, DateTime
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import PrimaryKeyConstraint, String, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel
 
@@ -613,6 +604,7 @@ class GraphBase(SQLModel):
 class GraphCreate(GraphBase):
     created_at: datetime
     updated_at: datetime
+
 
 class GraphUpdate(GraphBase):
     name: str | None = None

@@ -3,10 +3,10 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
-from backend.app.api.routes.curd import users
 from app.core.config import settings
 from app.models import UserCreate
 from app.tests.utils.utils import random_email, random_lower_string
+from backend.app.api.routes.curd import users
 
 
 def test_get_users_superuser_me(

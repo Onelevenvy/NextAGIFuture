@@ -5,14 +5,10 @@ Revises: 5d997b58c3de
 Create Date: 2024-09-08 11:51:01.680319
 
 """
-from alembic import op
-import sqlalchemy as sa
-import sqlmodel.sql.sqltypes
-
 
 # revision identifiers, used by Alembic.
-revision = '71194fe30706'
-down_revision = '5d997b58c3de'
+revision = "71194fe30706"
+down_revision = "5d997b58c3de"
 branch_labels = None
 depends_on = None
 
