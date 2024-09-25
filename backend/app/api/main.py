@@ -24,7 +24,7 @@ api_router.include_router(teams.router, prefix="/teams", tags=["teams"])
 api_router.include_router(
     members.router, prefix="/teams/{team_id}/members", tags=["members"]
 )
-api_router.include_router(skills.router, prefix="/skills", tags=["skills"])
+api_router.include_router(skills.router, prefix="/tools", tags=["tools"])
 api_router.include_router(
     threads.router, prefix="/teams/{team_id}/threads", tags=["threads"]
 )

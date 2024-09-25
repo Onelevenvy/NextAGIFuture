@@ -51,7 +51,7 @@ def openweather(
         return json.dumps(f"Openweather API Key is invalid. {e}")
 
 
-open_weather_search_tool = StructuredTool.from_function(
+open_weather_search = StructuredTool.from_function(
     func=openweather,
     name="openweather",
     description="Useful for when you neet to get weather information. Please provide city name in English.",

@@ -1,7 +1,7 @@
 import pytest
 from langchain.pydantic_v1 import ValidationError
 
-from app.core.graph.skills.api_tool import dynamic_api_tool
+from app.core.graph.tools.api_tool import dynamic_api_tool
 
 # Sample tool definitions
 valid_tool_definition = {
