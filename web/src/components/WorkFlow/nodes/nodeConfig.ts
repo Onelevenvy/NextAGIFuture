@@ -63,7 +63,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       targets: ["left", "right"],
     },
     initialData: {
-      tools: ["calculator"],
+      tools: ["open-weather"],
     },
   },
   questionClassifier: {

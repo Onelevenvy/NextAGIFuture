@@ -221,7 +221,7 @@ def convert_chatbot_chatrag_team_to_dict(
     member = members[0]
     assert member.id is not None, "member.id is unexpectedly None"
     tools: list[GraphSkill | GraphUpload]
-    if workflow_type == "ragbot" or workflow_type == "chatbot":
+    if workflow_type == "ragbot":
         tools = [
             GraphUpload(
                 name=upload.name,
@@ -233,7 +233,16 @@ def convert_chatbot_chatrag_team_to_dict(
             if upload.owner_id is not None
         ]
     elif workflow_type == "chatbot":
-        tools += [
+        tools = [
+            GraphUpload(
+                name=upload.name,
+                description=upload.description,
+                owner_id=upload.owner_id,
+                upload_id=cast(int, upload.id),
+            )
+            for upload in member.uploads
+            if upload.owner_id is not None
+        ] + [
             GraphSkill(
                 name=skill.name,
                 managed=skill.managed,
@@ -445,7 +454,7 @@ def create_hierarchical_graph(
     build.set_entry_point(leader_name)
     build.set_finish_point("FinalAnswer")
     graph = build.compile(
-        checkpointer=checkpointer, interrupt_before=interrupt_member_names
+        checkpointer=checkpointer, interrupt_before=interrupt_member_names, debug=True
     )
 
     # try:
@@ -819,6 +828,7 @@ async def generator(
                     formatted_output = f"data: {response.model_dump_json()}\n\n"
                     yield formatted_output
             snapshot = await root.aget_state(config)
+           
             if snapshot.next:
                 # Interrupt occured
                 message = snapshot.values["messages"][-1]
