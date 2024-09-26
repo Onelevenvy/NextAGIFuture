@@ -12,7 +12,7 @@ class WeatherSearchInput(BaseModel):
     city: str = Field(description="city name")
 
 
-def openweather(
+def open_weather_qry(
     city: str,
     appid: str = os.environ.get("OPEN_WEATHER_API_KEY", ""),
     units: str = "metric",
@@ -51,10 +51,12 @@ def openweather(
         return json.dumps(f"Openweather API Key is invalid. {e}")
 
 
-open_weather = StructuredTool.from_function(
-    func=openweather,
-    name="openweather",
+openweather = StructuredTool.from_function(
+    func=open_weather_qry,
+    name="Open Weather",
     description="Useful for when you neet to get weather information. Please provide city name in English.",
     args_schema=WeatherSearchInput,
     return_direct=True,
 )
+
+

@@ -330,7 +330,7 @@ class MembersOut(SQLModel):
 class SkillBase(SQLModel):
     name: str
     description: str
-    icon: str | None = None
+    display_name: str | None = None
     managed: bool = False
     tool_definition: dict[str, Any] | None = Field(
         default_factory=dict, sa_column=Column(JSON)

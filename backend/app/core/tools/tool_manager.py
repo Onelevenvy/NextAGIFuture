@@ -9,7 +9,7 @@ from langchain.tools import BaseTool
 class ToolInfo(BaseModel):
     description: str
     tool: BaseTool
-    icon: str = "🔧"
+    display_name: str = "NO NAME PROVIDED"
 
 
 class ToolManager:
@@ -37,7 +37,7 @@ class ToolManager:
                         self.managed_tools[formatted_name] = ToolInfo(
                             description=tool_instance.description,
                             tool=tool_instance,
-                            icon=getattr(tool_instance, "icon", "🔧"),
+                            display_name=tool_instance.name,
                         )
 
                     else:
@@ -58,17 +58,17 @@ class ToolManager:
             "duckduckgo-search": ToolInfo(
                 description="Searches the web using DuckDuckGo",
                 tool=DuckDuckGoSearchRun(),
-                icon="🔍",
+                display_name="DuckDuckGo",
             ),
             "wikipedia": ToolInfo(
                 description="Searches Wikipedia",
                 tool=WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper()),
-                icon="📖",
+                display_name="Wikipedia",
             ),
             "tavilysearch": ToolInfo(
                 description="tavily search useful when searching for information on the internet",
                 tool=TavilySearchResults(max_results=1),
-                icon="🔍",
+                display_name="Tavily Search",
             ),
         }
         self.managed_tools.update(external_tools)

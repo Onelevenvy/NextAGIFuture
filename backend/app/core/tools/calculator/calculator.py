@@ -21,3 +21,4 @@ calculator = StructuredTool.from_function(
     args_schema=CalculatorInput,
     return_direct=True,
 )
+display_name = "Calculator"
