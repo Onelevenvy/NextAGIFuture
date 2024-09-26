@@ -61,16 +61,21 @@ const ToolsList: React.FC<ToolsListProps> = ({
             {filteredSkills.map((skill) => (
               <HStack key={skill.id} justifyContent="space-between">
                 <HStack spacing={"2"}>
-                  <ToolsIcon tools_name={skill.name.replace("-", "_")} ml="2" />
-                  <Text>{skill.name}</Text>
+                  <ToolsIcon
+                    tools_name={skill.display_name!.replace(" ", "_")}
+                    ml="2"
+                  />
+                  <Text>{skill.display_name}</Text>
                 </HStack>
 
                 <Button
                   size="sm"
-                  onClick={() => onAddTool(skill.name)}
-                  isDisabled={selectedTools.includes(skill.name)}
+                  onClick={() => onAddTool(skill.display_name!)}
+                  isDisabled={selectedTools.includes(skill.display_name!)}
                 >
-                  {selectedTools.includes(skill.name) ? "已添加" : "添加"}
+                  {selectedTools.includes(skill.display_name!)
+                    ? "已添加"
+                    : "添加"}
                 </Button>
               </HStack>
             ))}

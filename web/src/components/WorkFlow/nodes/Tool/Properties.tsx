@@ -52,7 +52,7 @@ const ToolNodeProperties: React.FC<ToolNodePropertiesProps> = ({
           <HStack key={tool} justifyContent="space-between">
             <Box bg="#f2f4f7" borderRadius="md" w="full" p="1" m="0.5">
               <HStack spacing={"2"}>
-                <ToolsIcon tools_name={tool.replace("-", "_")} ml="2" />
+                <ToolsIcon tools_name={tool.replace(" ", "_")} ml="2" />
                 <Text fontWeight={"bold"}>{tool}</Text>
               </HStack>
             </Box>
