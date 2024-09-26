@@ -36,5 +36,10 @@ export const $GraphCreate = {
             isRequired: true,
             format: 'date-time',
         },
+        updated_at: {
+            type: 'string',
+            isRequired: true,
+            format: 'date-time',
+        },
     },
 } as const;

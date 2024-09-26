@@ -25,7 +25,7 @@ import {
   type MemberUpdate,
   MembersService,
   ModelService,
-  SkillsService,
+  ToolsService,
   type TeamUpdate,
   UploadsService,
 } from "../../client";
@@ -150,7 +150,7 @@ const EditNormalMember = forwardRef<HTMLFormElement, EditAgentProps>(
 
     const onModelSelect = (modelName: string) => {
       const selectedModel = models?.data.find(
-        (model) => model.ai_model_name === modelName,
+        (model) => model.ai_model_name === modelName
       );
       setValue("model", modelName);
       setValue("openai_api_key", selectedModel?.provider.api_key);
@@ -328,7 +328,7 @@ const EditNormalMember = forwardRef<HTMLFormElement, EditAgentProps>(
         </Box>
       </Box>
     );
-  },
+  }
 );
 EditNormalMember.displayName = "EditAgent";
 export default EditNormalMember;

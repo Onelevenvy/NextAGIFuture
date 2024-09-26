@@ -21,7 +21,7 @@ import {
   type ApiError,
   type SkillOut,
   type SkillUpdate,
-  SkillsService,
+  ToolsService,
 } from "../../client";
 import useCustomToast from "../../hooks/useCustomToast";
 
@@ -50,7 +50,7 @@ const EditSkill = ({ skill, isOpen, onClose }: EditSkillProps) => {
   });
 
   const updateSkill = async (data: SkillUpdate) => {
-    return await SkillsService.updateSkill({ id: skill.id, requestBody: data });
+    return await ToolsService.updateSkill({ id: skill.id, requestBody: data });
   };
 
   const mutation = useMutation(updateSkill, {

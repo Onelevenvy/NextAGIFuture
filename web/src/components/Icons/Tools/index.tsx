@@ -333,10 +333,10 @@ const calculator = createIcon({
 const iconMap: { [key: string]: React.FC } = {
   open_weather: OpenWeather,
   google_translate: GoogleTranslate,
-  duckduckgo_search: DuckduckgoSearch,
+  duckduckgo: DuckduckgoSearch,
   Wikipedia: Wikipedia,
-  tavilysearch: tavilysearch,
-  calculator: calculator,
+  tavily_search: tavilysearch,
+  math_calculator: calculator,
 };
 
 const DefaultIcon = Wikipedia;

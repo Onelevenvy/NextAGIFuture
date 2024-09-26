@@ -20,7 +20,7 @@ export const $SkillUpdate = {
                 type: 'null',
             }],
         },
-        icon: {
+        display_name: {
             type: 'any-of',
             contains: [{
                 type: 'string',

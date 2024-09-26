@@ -1,5 +1,5 @@
 "use client";
-import { type ApiError, SkillsService } from "@/client";
+import { type ApiError, ToolsService } from "@/client";
 import ActionsMenu from "@/components/Common/ActionsMenu";
 import {
   Badge,
@@ -29,7 +29,6 @@ import { useSkillsQuery } from "@/hooks/useSkillsQuery";
 import { useTabSearchParams } from "@/hooks/useTabSearchparams";
 import { useTranslation } from "react-i18next";
 import ToolsIcon from "@/components/Icons/Tools";
-import { SiliconFlowIcon } from "@/components/Icons/models";
 import { MdSettings } from "react-icons/md";
 
 function Skills() {
@@ -121,10 +120,12 @@ function Skills() {
                         <ToolsIcon
                           h="8"
                           w="8"
-                          tools_name={skill.name.replace("-", "_")}
+                          tools_name={skill
+                            .display_name!.toLowerCase()
+                            .replace(" ", "_")}
                         />
 
-                        <Heading size="md">{skill.name}</Heading>
+                        <Heading size="md">{skill.display_name}</Heading>
                       </HStack>
                       <Box
                         overflow="hidden"
