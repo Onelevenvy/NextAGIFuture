@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
 
 import {
-  SkillsService,
+  ToolsService,
   TeamsService,
   UploadsService,
   UsersService,
@@ -41,7 +41,7 @@ const Delete = ({ type, id, isOpen, onClose }: DeleteProps) => {
     } else if (type === "Team") {
       await TeamsService.deleteTeam({ id: id });
     } else if (type === "Skill") {
-      await SkillsService.deleteSkill({ id: id });
+      await ToolsService.deleteSkill({ id: id });
     } else if (type === "Upload") {
       await UploadsService.deleteUpload({ id: id });
     } else {
@@ -55,7 +55,7 @@ const Delete = ({ type, id, isOpen, onClose }: DeleteProps) => {
         showToast(
           "Success",
           `The ${type.toLowerCase()} was deleted successfully.`,
-          "success",
+          "success"
         );
       onClose();
     },
@@ -63,7 +63,7 @@ const Delete = ({ type, id, isOpen, onClose }: DeleteProps) => {
       showToast(
         "An error occurred.",
         `An error occurred while deleting the ${type.toLowerCase()}.`,
-        "error",
+        "error"
       );
     },
     onSettled: () => {
@@ -74,7 +74,7 @@ const Delete = ({ type, id, isOpen, onClose }: DeleteProps) => {
             ? "teams"
             : type === "Skill"
               ? "skills"
-              : "uploads",
+              : "uploads"
       );
     },
   });

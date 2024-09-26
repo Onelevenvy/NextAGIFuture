@@ -6,7 +6,7 @@
 export type Skill = {
     name: string;
     description: string;
-    icon?: (string | null);
+    display_name?: (string | null);
     managed?: boolean;
     tool_definition?: (Record<string, any> | null);
     id?: (number | null);

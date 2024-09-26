@@ -11,6 +11,7 @@ import {
 import type React from "react";
 import { useState } from "react";
 import ToolsList from "./ToolsListModal";
+import ToolsIcon from "@/components/Icons/Tools";
 
 interface ToolNodePropertiesProps {
   node: any;
@@ -36,7 +37,7 @@ const ToolNodeProperties: React.FC<ToolNodePropertiesProps> = ({
     onNodeDataChange(
       node.id,
       "tools",
-      currentTools.filter((t: string) => t !== tool),
+      currentTools.filter((t: string) => t !== tool)
     );
   };
 
@@ -50,7 +51,10 @@ const ToolNodeProperties: React.FC<ToolNodePropertiesProps> = ({
         {node.data.tools?.map((tool: string) => (
           <HStack key={tool} justifyContent="space-between">
             <Box bg="#f2f4f7" borderRadius="md" w="full" p="1" m="0.5">
-              <Text fontWeight={"bold"}>{tool}</Text>
+              <HStack spacing={"2"}>
+                <ToolsIcon tools_name={tool.replace("-", "_")} ml="2" />
+                <Text fontWeight={"bold"}>{tool}</Text>
+              </HStack>
             </Box>
             <IconButton
               aria-label="Remove tool"

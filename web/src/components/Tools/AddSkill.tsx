@@ -17,7 +17,7 @@ import { useMutation, useQueryClient } from "react-query";
 
 // import SkillEditor, { skillPlaceholder } from "./SkillEditor"
 import { RxReset } from "react-icons/rx";
-import { type ApiError, type SkillCreate, SkillsService } from "../../client";
+import { type ApiError, type SkillCreate, ToolsService } from "../../client";
 import useCustomToast from "../../hooks/useCustomToast";
 
 interface AddSkillProps {
@@ -48,7 +48,7 @@ const AddSkill = ({ isOpen, onClose }: AddSkillProps) => {
   });
 
   const addSkill = async (data: SkillCreate) => {
-    await SkillsService.createSkill({ requestBody: data });
+    await ToolsService.createSkill({ requestBody: data });
   };
 
   const mutation = useMutation(addSkill, {

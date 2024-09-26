@@ -3,6 +3,7 @@ import React from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
 import { BaseNode } from "../Base/BaseNode";
 import { nodeConfig } from "../nodeConfig";
+import ToolsIcon from "@/components/Icons/Tools";
 
 const ToolNode: React.FC<NodeProps> = (props) => {
   const { icon: Icon, colorScheme } = nodeConfig.tool;
@@ -20,10 +21,12 @@ const ToolNode: React.FC<NodeProps> = (props) => {
           tools.map((tool: string, index: number) => (
             <HStack key={index} justifyContent="center" justifyItems={"center"}>
               <Box bg="#f2f4f7" borderRadius="md" w="full" p="1">
-                {/* <Badge variant="solid" colorScheme="blue"> */}
+              <HStack spacing={"2"}>
+              <ToolsIcon tools_name={tool.replace("-", "_")} ml="2"/>
                 <Text fontWeight={"bold"}> {tool}</Text>
-                {/* </Badge> */}
+                </HStack>
               </Box>
+             
             </HStack>
           ))
         ) : (

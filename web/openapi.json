@@ -7,7 +7,9 @@
   "paths": {
     "/api/v1/login/access-token": {
       "post": {
-        "tags": ["login"],
+        "tags": [
+          "login"
+        ],
         "summary": "Login Access Token",
         "description": "OAuth2 compatible token login, get an access token for future requests",
         "operationId": "login_access_token",
@@ -47,7 +49,9 @@
     },
     "/api/v1/login/test-token": {
       "post": {
-        "tags": ["login"],
+        "tags": [
+          "login"
+        ],
         "summary": "Test Token",
         "description": "Test access token",
         "operationId": "test_token",
@@ -72,7 +76,9 @@
     },
     "/api/v1/password-recovery/{email}": {
       "post": {
-        "tags": ["login"],
+        "tags": [
+          "login"
+        ],
         "summary": "Recover Password",
         "description": "Password Recovery",
         "operationId": "recover_password",
@@ -113,7 +119,9 @@
     },
     "/api/v1/reset-password/": {
       "post": {
-        "tags": ["login"],
+        "tags": [
+          "login"
+        ],
         "summary": "Reset Password",
         "description": "Reset password",
         "operationId": "reset_password",
@@ -153,7 +161,9 @@
     },
     "/api/v1/password-recovery-html-content/{email}": {
       "post": {
-        "tags": ["login"],
+        "tags": [
+          "login"
+        ],
         "summary": "Recover Password Html Content",
         "description": "HTML Content for Password Recovery",
         "operationId": "recover_password_html_content",
@@ -199,7 +209,9 @@
     },
     "/api/v1/users/": {
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Read Users",
         "description": "Retrieve users.",
         "operationId": "read_users",
@@ -254,7 +266,9 @@
         }
       },
       "post": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Create User",
         "description": "Create new user.",
         "operationId": "create_user",
@@ -299,7 +313,9 @@
     },
     "/api/v1/users/me": {
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Read User Me",
         "description": "Get current user.",
         "operationId": "read_user_me",
@@ -322,7 +338,9 @@
         ]
       },
       "patch": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Update User Me",
         "description": "Update own user.",
         "operationId": "update_user_me",
@@ -367,7 +385,9 @@
     },
     "/api/v1/users/me/password": {
       "patch": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Update Password Me",
         "description": "Update own password.",
         "operationId": "update_password_me",
@@ -412,7 +432,9 @@
     },
     "/api/v1/users/me/language": {
       "patch": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Update User Language",
         "description": "Update the language of the current user.",
         "operationId": "update_user_language",
@@ -457,7 +479,9 @@
     },
     "/api/v1/users/open": {
       "post": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Create User Open",
         "description": "Create new user without the need to be logged in.",
         "operationId": "create_user_open",
@@ -497,7 +521,9 @@
     },
     "/api/v1/users/{user_id}": {
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Read User By Id",
         "description": "Get a specific user by id.",
         "operationId": "read_user_by_id",
@@ -541,7 +567,9 @@
         }
       },
       "patch": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Update User",
         "description": "Update a user.",
         "operationId": "update_user",
@@ -595,7 +623,9 @@
         }
       },
       "delete": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Delete User",
         "description": "Delete a user.",
         "operationId": "delete_user",
@@ -641,7 +671,9 @@
     },
     "/api/v1/utils/test-email/": {
       "post": {
-        "tags": ["utils"],
+        "tags": [
+          "utils"
+        ],
         "summary": "Test Email",
         "description": "Test emails.",
         "operationId": "test_email",
@@ -688,7 +720,9 @@
     },
     "/api/v1/teams/": {
       "get": {
-        "tags": ["teams"],
+        "tags": [
+          "teams"
+        ],
         "summary": "Read Teams",
         "description": "Retrieve teams",
         "operationId": "read_teams",
@@ -743,7 +777,9 @@
         }
       },
       "post": {
-        "tags": ["teams"],
+        "tags": [
+          "teams"
+        ],
         "summary": "Create Team",
         "description": "Create new team and it's team leader",
         "operationId": "create_team",
@@ -788,7 +824,9 @@
     },
     "/api/v1/teams/{id}": {
       "get": {
-        "tags": ["teams"],
+        "tags": [
+          "teams"
+        ],
         "summary": "Read Team",
         "description": "Get team by ID.",
         "operationId": "read_team",
@@ -832,7 +870,9 @@
         }
       },
       "put": {
-        "tags": ["teams"],
+        "tags": [
+          "teams"
+        ],
         "summary": "Update Team",
         "description": "Update a team.",
         "operationId": "update_team",
@@ -886,7 +926,9 @@
         }
       },
       "delete": {
-        "tags": ["teams"],
+        "tags": [
+          "teams"
+        ],
         "summary": "Delete Team",
         "description": "Delete a team.",
         "operationId": "delete_team",
@@ -932,7 +974,9 @@
     },
     "/api/v1/teams/{id}/stream/{thread_id}": {
       "post": {
-        "tags": ["teams"],
+        "tags": [
+          "teams"
+        ],
         "summary": "Stream",
         "description": "Stream a response to a user's input.",
         "operationId": "stream",
@@ -995,7 +1039,9 @@
     },
     "/api/v1/teams/{team_id}/members/": {
       "get": {
-        "tags": ["members"],
+        "tags": [
+          "members"
+        ],
         "summary": "Read Members",
         "description": "Retrieve members from team.",
         "operationId": "read_members",
@@ -1059,7 +1105,9 @@
         }
       },
       "post": {
-        "tags": ["members"],
+        "tags": [
+          "members"
+        ],
         "summary": "Create Member",
         "description": "Create new member.",
         "operationId": "create_member",
@@ -1115,7 +1163,9 @@
     },
     "/api/v1/teams/{team_id}/members/{id}": {
       "get": {
-        "tags": ["members"],
+        "tags": [
+          "members"
+        ],
         "summary": "Read Member",
         "description": "Get member by ID.",
         "operationId": "read_member",
@@ -1168,7 +1218,9 @@
         }
       },
       "put": {
-        "tags": ["members"],
+        "tags": [
+          "members"
+        ],
         "summary": "Update Member",
         "description": "Update a member.",
         "operationId": "update_member",
@@ -1231,7 +1283,9 @@
         }
       },
       "delete": {
-        "tags": ["members"],
+        "tags": [
+          "members"
+        ],
         "summary": "Delete Member",
         "description": "Delete a member.",
         "operationId": "delete_member",
@@ -1284,9 +1338,11 @@
         }
       }
     },
-    "/api/v1/skills/": {
+    "/api/v1/tools/": {
       "get": {
-        "tags": ["skills"],
+        "tags": [
+          "tools"
+        ],
         "summary": "Read Skills",
         "description": "Retrieve skills",
         "operationId": "read_skills",
@@ -1341,7 +1397,9 @@
         }
       },
       "post": {
-        "tags": ["skills"],
+        "tags": [
+          "tools"
+        ],
         "summary": "Create Skill",
         "description": "Create new skill.",
         "operationId": "create_skill",
@@ -1384,9 +1442,11 @@
         }
       }
     },
-    "/api/v1/skills/{id}": {
+    "/api/v1/tools/{id}": {
       "get": {
-        "tags": ["skills"],
+        "tags": [
+          "tools"
+        ],
         "summary": "Read Skill",
         "description": "Get skill by ID.",
         "operationId": "read_skill",
@@ -1430,7 +1490,9 @@
         }
       },
       "put": {
-        "tags": ["skills"],
+        "tags": [
+          "tools"
+        ],
         "summary": "Update Skill",
         "description": "Update a skill.",
         "operationId": "update_skill",
@@ -1484,7 +1546,9 @@
         }
       },
       "delete": {
-        "tags": ["skills"],
+        "tags": [
+          "tools"
+        ],
         "summary": "Delete Skill",
         "description": "Delete a skill.",
         "operationId": "delete_skill",
@@ -1510,7 +1574,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Response Skills-Delete Skill"
+                  "title": "Response Tools-Delete Skill"
                 }
               }
             }
@@ -1528,9 +1592,11 @@
         }
       }
     },
-    "/api/v1/skills/validate": {
+    "/api/v1/tools/validate": {
       "post": {
-        "tags": ["skills"],
+        "tags": [
+          "tools"
+        ],
         "summary": "Validate Skill",
         "description": "Validate skill's tool definition.",
         "operationId": "validate_skill",
@@ -1550,7 +1616,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Response Skills-Validate Skill"
+                  "title": "Response Tools-Validate Skill"
                 }
               }
             }
@@ -1570,7 +1636,9 @@
     },
     "/api/v1/teams/{team_id}/threads/": {
       "get": {
-        "tags": ["threads"],
+        "tags": [
+          "threads"
+        ],
         "summary": "Read Threads",
         "description": "Retrieve threads",
         "operationId": "read_threads",
@@ -1634,7 +1702,9 @@
         }
       },
       "post": {
-        "tags": ["threads"],
+        "tags": [
+          "threads"
+        ],
         "summary": "Create Thread",
         "description": "Create new thread",
         "operationId": "create_thread",
@@ -1690,7 +1760,9 @@
     },
     "/api/v1/teams/{team_id}/threads/{id}": {
       "get": {
-        "tags": ["threads"],
+        "tags": [
+          "threads"
+        ],
         "summary": "Read Thread",
         "description": "Get thread and its last checkpoint by ID",
         "operationId": "read_thread",
@@ -1744,7 +1816,9 @@
         }
       },
       "put": {
-        "tags": ["threads"],
+        "tags": [
+          "threads"
+        ],
         "summary": "Update Thread",
         "description": "Update a thread.",
         "operationId": "update_thread",
@@ -1808,7 +1882,9 @@
         }
       },
       "delete": {
-        "tags": ["threads"],
+        "tags": [
+          "threads"
+        ],
         "summary": "Delete Thread",
         "description": "Delete a thread.",
         "operationId": "delete_thread",
@@ -1864,7 +1940,9 @@
     },
     "/api/v1/uploads/": {
       "get": {
-        "tags": ["uploads"],
+        "tags": [
+          "uploads"
+        ],
         "summary": "Read Uploads",
         "description": "Retrieve uploads.",
         "operationId": "read_uploads",
@@ -1935,7 +2013,9 @@
         }
       },
       "post": {
-        "tags": ["uploads"],
+        "tags": [
+          "uploads"
+        ],
         "summary": "Create Upload",
         "description": "Create upload",
         "operationId": "create_upload",
@@ -1992,7 +2072,9 @@
     },
     "/api/v1/uploads/{id}": {
       "put": {
-        "tags": ["uploads"],
+        "tags": [
+          "uploads"
+        ],
         "summary": "Update Upload",
         "description": "Update upload",
         "operationId": "update_upload",
@@ -2060,7 +2142,9 @@
         }
       },
       "delete": {
-        "tags": ["uploads"],
+        "tags": [
+          "uploads"
+        ],
         "summary": "Delete Upload",
         "operationId": "delete_upload",
         "security": [
@@ -2105,7 +2189,9 @@
     },
     "/api/v1/provider/": {
       "get": {
-        "tags": ["provider"],
+        "tags": [
+          "provider"
+        ],
         "summary": "Read Provider List With Models",
         "operationId": "read_provider_list_with_models",
         "responses": {
@@ -2122,7 +2208,9 @@
         }
       },
       "post": {
-        "tags": ["provider"],
+        "tags": [
+          "provider"
+        ],
         "summary": "Create Provider",
         "operationId": "create_provider",
         "requestBody": {
@@ -2161,7 +2249,9 @@
     },
     "/api/v1/provider/{model_provider_id}": {
       "get": {
-        "tags": ["provider"],
+        "tags": [
+          "provider"
+        ],
         "summary": "Read Provider",
         "operationId": "read_provider",
         "parameters": [
@@ -2199,7 +2289,9 @@
         }
       },
       "put": {
-        "tags": ["provider"],
+        "tags": [
+          "provider"
+        ],
         "summary": "Update Provider",
         "operationId": "update_provider",
         "parameters": [
@@ -2247,7 +2339,9 @@
         }
       },
       "delete": {
-        "tags": ["provider"],
+        "tags": [
+          "provider"
+        ],
         "summary": "Delete Provider",
         "operationId": "delete_provider",
         "parameters": [
@@ -2287,7 +2381,9 @@
     },
     "/api/v1/provider/withmodels/{model_provider_id}": {
       "get": {
-        "tags": ["provider"],
+        "tags": [
+          "provider"
+        ],
         "summary": "Read Provider With Models",
         "operationId": "read_provider_with_models",
         "parameters": [
@@ -2327,7 +2423,9 @@
     },
     "/api/v1/model/": {
       "get": {
-        "tags": ["model"],
+        "tags": [
+          "model"
+        ],
         "summary": "Read Models",
         "operationId": "read_models",
         "responses": {
@@ -2344,7 +2442,9 @@
         }
       },
       "post": {
-        "tags": ["model"],
+        "tags": [
+          "model"
+        ],
         "summary": "Create Models",
         "operationId": "create_models",
         "requestBody": {
@@ -2383,7 +2483,9 @@
     },
     "/api/v1/model/{provider_id}": {
       "get": {
-        "tags": ["model"],
+        "tags": [
+          "model"
+        ],
         "summary": "Read Model",
         "operationId": "read_model",
         "parameters": [
@@ -2423,7 +2525,9 @@
     },
     "/api/v1/model/{model_id}": {
       "delete": {
-        "tags": ["model"],
+        "tags": [
+          "model"
+        ],
         "summary": "Delete Model",
         "operationId": "delete_model",
         "parameters": [
@@ -2461,7 +2565,9 @@
         }
       },
       "put": {
-        "tags": ["model"],
+        "tags": [
+          "model"
+        ],
         "summary": "Update Model",
         "operationId": "update_model",
         "parameters": [
@@ -2511,7 +2617,9 @@
     },
     "/api/v1/teams/{team_id}/graphs/": {
       "get": {
-        "tags": ["graphs"],
+        "tags": [
+          "graphs"
+        ],
         "summary": "Read Graphs",
         "description": "Retrieve graphs from team.",
         "operationId": "read_graphs",
@@ -2575,7 +2683,9 @@
         }
       },
       "post": {
-        "tags": ["graphs"],
+        "tags": [
+          "graphs"
+        ],
         "summary": "Create Graph",
         "description": "Create new graph.",
         "operationId": "create_graph",
@@ -2631,7 +2741,9 @@
     },
     "/api/v1/teams/{team_id}/graphs/{id}": {
       "get": {
-        "tags": ["graphs"],
+        "tags": [
+          "graphs"
+        ],
         "summary": "Read Graph",
         "description": "Get graph by ID.",
         "operationId": "read_graph",
@@ -2684,7 +2796,9 @@
         }
       },
       "put": {
-        "tags": ["graphs"],
+        "tags": [
+          "graphs"
+        ],
         "summary": "Update Graph",
         "description": "Update graph by ID.",
         "operationId": "update_graph",
@@ -2747,7 +2861,9 @@
         }
       },
       "delete": {
-        "tags": ["graphs"],
+        "tags": [
+          "graphs"
+        ],
         "summary": "Delete Graph",
         "description": "Delete graph by ID.",
         "operationId": "delete_graph",
@@ -2852,7 +2968,10 @@
           }
         },
         "type": "object",
-        "required": ["username", "password"],
+        "required": [
+          "username",
+          "password"
+        ],
         "title": "Body_login-login_access_token"
       },
       "Body_uploads-create_upload": {
@@ -2966,12 +3085,18 @@
           }
         },
         "type": "object",
-        "required": ["type", "content"],
+        "required": [
+          "type",
+          "content"
+        ],
         "title": "ChatMessage"
       },
       "ChatMessageType": {
         "type": "string",
-        "enum": ["human", "ai"],
+        "enum": [
+          "human",
+          "ai"
+        ],
         "title": "ChatMessageType"
       },
       "ChatResponse": {
@@ -3048,7 +3173,11 @@
           }
         },
         "type": "object",
-        "required": ["type", "id", "name"],
+        "required": [
+          "type",
+          "id",
+          "name"
+        ],
         "title": "ChatResponse"
       },
       "GraphCreate": {
@@ -3081,10 +3210,19 @@
             "type": "string",
             "format": "date-time",
             "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
           }
         },
         "type": "object",
-        "required": ["name", "created_at"],
+        "required": [
+          "name",
+          "created_at",
+          "updated_at"
+        ],
         "title": "GraphCreate"
       },
       "GraphOut": {
@@ -3119,7 +3257,10 @@
           }
         },
         "type": "object",
-        "required": ["name", "id"],
+        "required": [
+          "name",
+          "id"
+        ],
         "title": "GraphOut"
       },
       "GraphUpdate": {
@@ -3161,7 +3302,9 @@
           }
         },
         "type": "object",
-        "required": ["updated_at"],
+        "required": [
+          "updated_at"
+        ],
         "title": "GraphUpdate"
       },
       "GraphsOut": {
@@ -3179,7 +3322,10 @@
           }
         },
         "type": "object",
-        "required": ["data", "count"],
+        "required": [
+          "data",
+          "count"
+        ],
         "title": "GraphsOut"
       },
       "HTTPValidationError": {
@@ -3213,12 +3359,18 @@
           }
         },
         "type": "object",
-        "required": ["decision"],
+        "required": [
+          "decision"
+        ],
         "title": "Interrupt"
       },
       "InterruptDecision": {
         "type": "string",
-        "enum": ["approved", "rejected", "replied"],
+        "enum": [
+          "approved",
+          "rejected",
+          "replied"
+        ],
         "title": "InterruptDecision"
       },
       "MemberCreate": {
@@ -3309,7 +3461,13 @@
           }
         },
         "type": "object",
-        "required": ["name", "role", "type", "position_x", "position_y"],
+        "required": [
+          "name",
+          "role",
+          "type",
+          "position_x",
+          "position_y"
+        ],
         "title": "MemberCreate"
       },
       "MemberOut": {
@@ -3651,7 +3809,10 @@
           }
         },
         "type": "object",
-        "required": ["data", "count"],
+        "required": [
+          "data",
+          "count"
+        ],
         "title": "MembersOut"
       },
       "Message": {
@@ -3662,7 +3823,9 @@
           }
         },
         "type": "object",
-        "required": ["message"],
+        "required": [
+          "message"
+        ],
         "title": "Message"
       },
       "ModelOut": {
@@ -3680,7 +3843,11 @@
           }
         },
         "type": "object",
-        "required": ["id", "ai_model_name", "provider"],
+        "required": [
+          "id",
+          "ai_model_name",
+          "provider"
+        ],
         "title": "ModelOut"
       },
       "ModelOutIdWithAndName": {
@@ -3695,7 +3862,10 @@
           }
         },
         "type": "object",
-        "required": ["id", "ai_model_name"],
+        "required": [
+          "id",
+          "ai_model_name"
+        ],
         "title": "ModelOutIdWithAndName"
       },
       "ModelProvider": {
@@ -3763,7 +3933,9 @@
           }
         },
         "type": "object",
-        "required": ["provider_name"],
+        "required": [
+          "provider_name"
+        ],
         "title": "ModelProvider"
       },
       "ModelProviderCreate": {
@@ -3813,7 +3985,10 @@
           }
         },
         "type": "object",
-        "required": ["provider_name", "description"],
+        "required": [
+          "provider_name",
+          "description"
+        ],
         "title": "ModelProviderCreate"
       },
       "ModelProviderOut": {
@@ -4043,7 +4218,10 @@
           }
         },
         "type": "object",
-        "required": ["ai_model_name", "provider_id"],
+        "required": [
+          "ai_model_name",
+          "provider_id"
+        ],
         "title": "Models"
       },
       "ModelsBase": {
@@ -4060,7 +4238,10 @@
           }
         },
         "type": "object",
-        "required": ["ai_model_name", "provider_id"],
+        "required": [
+          "ai_model_name",
+          "provider_id"
+        ],
         "title": "ModelsBase"
       },
       "ModelsOut": {
@@ -4078,7 +4259,10 @@
           }
         },
         "type": "object",
-        "required": ["data", "count"],
+        "required": [
+          "data",
+          "count"
+        ],
         "title": "ModelsOut"
       },
       "NewPassword": {
@@ -4093,7 +4277,10 @@
           }
         },
         "type": "object",
-        "required": ["token", "new_password"],
+        "required": [
+          "token",
+          "new_password"
+        ],
         "title": "NewPassword"
       },
       "ProvidersListWithModelsOut": {
@@ -4107,7 +4294,9 @@
           }
         },
         "type": "object",
-        "required": ["providers"],
+        "required": [
+          "providers"
+        ],
         "title": "ProvidersListWithModelsOut"
       },
       "Skill": {
@@ -4120,7 +4309,7 @@
             "type": "string",
             "title": "Description"
           },
-          "icon": {
+          "display_name": {
             "anyOf": [
               {
                 "type": "string"
@@ -4129,7 +4318,7 @@
                 "type": "null"
               }
             ],
-            "title": "Icon"
+            "title": "Display Name"
           },
           "managed": {
             "type": "boolean",
@@ -4171,7 +4360,10 @@
           }
         },
         "type": "object",
-        "required": ["name", "description"],
+        "required": [
+          "name",
+          "description"
+        ],
         "title": "Skill"
       },
       "SkillCreate": {
@@ -4184,7 +4376,7 @@
             "type": "string",
             "title": "Description"
           },
-          "icon": {
+          "display_name": {
             "anyOf": [
               {
                 "type": "string"
@@ -4193,7 +4385,7 @@
                 "type": "null"
               }
             ],
-            "title": "Icon"
+            "title": "Display Name"
           },
           "managed": {
             "type": "boolean",
@@ -4206,7 +4398,11 @@
           }
         },
         "type": "object",
-        "required": ["name", "description", "tool_definition"],
+        "required": [
+          "name",
+          "description",
+          "tool_definition"
+        ],
         "title": "SkillCreate"
       },
       "SkillOut": {
@@ -4219,7 +4415,7 @@
             "type": "string",
             "title": "Description"
           },
-          "icon": {
+          "display_name": {
             "anyOf": [
               {
                 "type": "string"
@@ -4228,7 +4424,7 @@
                 "type": "null"
               }
             ],
-            "title": "Icon"
+            "title": "Display Name"
           },
           "managed": {
             "type": "boolean",
@@ -4252,7 +4448,11 @@
           }
         },
         "type": "object",
-        "required": ["name", "description", "id"],
+        "required": [
+          "name",
+          "description",
+          "id"
+        ],
         "title": "SkillOut"
       },
       "SkillUpdate": {
@@ -4279,7 +4479,7 @@
             ],
             "title": "Description"
           },
-          "icon": {
+          "display_name": {
             "anyOf": [
               {
                 "type": "string"
@@ -4288,7 +4488,7 @@
                 "type": "null"
               }
             ],
-            "title": "Icon"
+            "title": "Display Name"
           },
           "managed": {
             "anyOf": [
@@ -4331,7 +4531,10 @@
           }
         },
         "type": "object",
-        "required": ["data", "count"],
+        "required": [
+          "data",
+          "count"
+        ],
         "title": "SkillsOut"
       },
       "TeamChat": {
@@ -4355,7 +4558,9 @@
           }
         },
         "type": "object",
-        "required": ["messages"],
+        "required": [
+          "messages"
+        ],
         "title": "TeamChat"
       },
       "TeamCreate": {
@@ -4393,7 +4598,10 @@
           }
         },
         "type": "object",
-        "required": ["name", "workflow"],
+        "required": [
+          "name",
+          "workflow"
+        ],
         "title": "TeamCreate"
       },
       "TeamOut": {
@@ -4439,7 +4647,12 @@
           }
         },
         "type": "object",
-        "required": ["name", "id", "owner_id", "workflow"],
+        "required": [
+          "name",
+          "id",
+          "owner_id",
+          "workflow"
+        ],
         "title": "TeamOut"
       },
       "TeamUpdate": {
@@ -4497,7 +4710,10 @@
           }
         },
         "type": "object",
-        "required": ["data", "count"],
+        "required": [
+          "data",
+          "count"
+        ],
         "title": "TeamsOut"
       },
       "ThreadCreate": {
@@ -4508,7 +4724,9 @@
           }
         },
         "type": "object",
-        "required": ["query"],
+        "required": [
+          "query"
+        ],
         "title": "ThreadCreate"
       },
       "ThreadOut": {
@@ -4529,7 +4747,11 @@
           }
         },
         "type": "object",
-        "required": ["id", "query", "updated_at"],
+        "required": [
+          "id",
+          "query",
+          "updated_at"
+        ],
         "title": "ThreadOut"
       },
       "ThreadRead": {
@@ -4557,7 +4779,12 @@
           }
         },
         "type": "object",
-        "required": ["id", "query", "updated_at", "messages"],
+        "required": [
+          "id",
+          "query",
+          "updated_at",
+          "messages"
+        ],
         "title": "ThreadRead"
       },
       "ThreadUpdate": {
@@ -4604,7 +4831,10 @@
           }
         },
         "type": "object",
-        "required": ["data", "count"],
+        "required": [
+          "data",
+          "count"
+        ],
         "title": "ThreadsOut"
       },
       "Token": {
@@ -4620,7 +4850,9 @@
           }
         },
         "type": "object",
-        "required": ["access_token"],
+        "required": [
+          "access_token"
+        ],
         "title": "Token"
       },
       "ToolCall": {
@@ -4646,13 +4878,19 @@
           },
           "type": {
             "type": "string",
-            "enum": ["tool_call"],
+            "enum": [
+              "tool_call"
+            ],
             "const": "tool_call",
             "title": "Type"
           }
         },
         "type": "object",
-        "required": ["name", "args", "id"],
+        "required": [
+          "name",
+          "args",
+          "id"
+        ],
         "title": "ToolCall",
         "description": "Represents a request to call a tool.\n\nExample:\n\n    .. code-block:: python\n\n        {\n            \"name\": \"foo\",\n            \"args\": {\"a\": 1},\n            \"id\": \"123\"\n        }\n\n    This represents a request to call the tool named \"foo\" with arguments {\"a\": 1}\n    and an identifier of \"123\"."
       },
@@ -4664,7 +4902,9 @@
           }
         },
         "type": "object",
-        "required": ["tool_definition"],
+        "required": [
+          "tool_definition"
+        ],
         "title": "ToolDefinitionValidate"
       },
       "UpdateLanguageMe": {
@@ -4690,7 +4930,10 @@
           }
         },
         "type": "object",
-        "required": ["current_password", "new_password"],
+        "required": [
+          "current_password",
+          "new_password"
+        ],
         "title": "UpdatePassword"
       },
       "Upload": {
@@ -4735,7 +4978,11 @@
           }
         },
         "type": "object",
-        "required": ["name", "description", "status"],
+        "required": [
+          "name",
+          "description",
+          "status"
+        ],
         "title": "Upload"
       },
       "UploadOut": {
@@ -4762,12 +5009,22 @@
           }
         },
         "type": "object",
-        "required": ["name", "description", "id", "last_modified", "status"],
+        "required": [
+          "name",
+          "description",
+          "id",
+          "last_modified",
+          "status"
+        ],
         "title": "UploadOut"
       },
       "UploadStatus": {
         "type": "string",
-        "enum": ["In Progress", "Completed", "Failed"],
+        "enum": [
+          "In Progress",
+          "Completed",
+          "Failed"
+        ],
         "title": "UploadStatus"
       },
       "UploadsOut": {
@@ -4785,7 +5042,10 @@
           }
         },
         "type": "object",
-        "required": ["data", "count"],
+        "required": [
+          "data",
+          "count"
+        ],
         "title": "UploadsOut"
       },
       "UserCreate": {
@@ -4826,7 +5086,10 @@
           }
         },
         "type": "object",
-        "required": ["email", "password"],
+        "required": [
+          "email",
+          "password"
+        ],
         "title": "UserCreate"
       },
       "UserCreateOpen": {
@@ -4852,7 +5115,10 @@
           }
         },
         "type": "object",
-        "required": ["email", "password"],
+        "required": [
+          "email",
+          "password"
+        ],
         "title": "UserCreateOpen"
       },
       "UserOut": {
@@ -4893,7 +5159,10 @@
           }
         },
         "type": "object",
-        "required": ["email", "id"],
+        "required": [
+          "email",
+          "id"
+        ],
         "title": "UserOut"
       },
       "UserUpdate": {
@@ -4993,7 +5262,10 @@
           }
         },
         "type": "object",
-        "required": ["data", "count"],
+        "required": [
+          "data",
+          "count"
+        ],
         "title": "UsersOut"
       },
       "ValidationError": {
@@ -5022,7 +5294,11 @@
           }
         },
         "type": "object",
-        "required": ["loc", "msg", "type"],
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
         "title": "ValidationError"
       }
     },

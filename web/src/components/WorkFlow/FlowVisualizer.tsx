@@ -59,7 +59,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     nameError,
   } = useFlowState(
     graphData?.data[0]?.config?.nodes,
-    graphData?.data[0]?.config?.edges,
+    graphData?.data[0]?.config?.edges
   );
 
   const { contextMenu, onNodeContextMenu, closeContextMenu } = useContextMenu();
@@ -70,7 +70,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     (event: React.MouseEvent, node: Node) => {
       setSelectedNodeId(node.id);
     },
-    [setSelectedNodeId],
+    [setSelectedNodeId]
   );
 
   const nodesWithSelection = useMemo(() => {
@@ -144,14 +144,13 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       // 防止重复连接
       const existingEdge = edges.find(
         (edge) =>
-          edge.source === connection.source &&
-          edge.target === connection.target,
+          edge.source === connection.source && edge.target === connection.target
       );
       if (existingEdge) return false;
       // 允许所有其他连接
       return true;
     },
-    [nodes, edges],
+    [nodes, edges]
   );
 
   const toggleEdgeType = useCallback(
@@ -165,15 +164,17 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
               type: newType,
               animated: newType !== "default",
               style: {
-                strokeDasharray: newType === "default" ? "none" : "5,5",
+                strokeWidth: 2,
+                stroke: newType === "default" ? "#3182ce" : "#0dac45",
+                strokeDasharray: newType === "default" ? "none" : "10,5",
               },
             };
           }
           return e;
-        }),
+        })
       );
     },
-    [setEdges],
+    [setEdges]
   );
 
   const onEdgeContextMenu = useCallback(
@@ -181,7 +182,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       event.preventDefault();
       toggleEdgeType(edge);
     },
-    [toggleEdgeType],
+    [toggleEdgeType]
   );
 
   const onKeyDown = useCallback(
@@ -191,7 +192,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         selectedEdges.forEach(toggleEdgeType);
       }
     },
-    [edges, toggleEdgeType],
+    [edges, toggleEdgeType]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -210,14 +211,14 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       }
       return newName;
     },
-    [nodes],
+    [nodes]
   );
 
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
       const type = event.dataTransfer.getData(
-        "application/reactflow",
+        "application/reactflow"
       ) as NodeType;
       if (typeof type === "undefined" || !type) return;
 
@@ -242,7 +243,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [nodes, reactFlowInstance, setNodes, onNodeDataChange, generateUniqueName],
+    [nodes, reactFlowInstance, setNodes, onNodeDataChange, generateUniqueName]
   );
   const closePropertiesPanel = useCallback(() => {
     setSelectedNodeId(null);
@@ -255,8 +256,8 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         eds.filter(
           (edge) =>
             edge.source !== contextMenu.nodeId &&
-            edge.target !== contextMenu.nodeId,
-        ),
+            edge.target !== contextMenu.nodeId
+        )
       );
     }
     closeContextMenu();
@@ -281,13 +282,13 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     graphName,
     graphDescription,
     nodes,
-    edges,
+    edges
   );
 
   const memoizedNodeTypes = useMemo(() => nodeTypes, [nodeTypes]);
   const memoizedDefaultEdgeOptions = useMemo(
     () => defaultEdgeOptions,
-    [defaultEdgeOptions],
+    [defaultEdgeOptions]
   );
   const { zoom } = useViewport();
 
@@ -330,7 +331,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
             ...edge,
             style: {
               ...edge.style,
-              strokeDasharray: edge.type === "default" ? "none" : "5,5",
+              strokeWidth: 2, // Increased thickness
+              stroke: edge.type === "default" ? "#3182ce" : "#0dac45", // Blue for solid, Red for dashed
+              strokeDasharray: edge.type === "default" ? "none" : "10,5",
             },
           }))}
           onNodesChange={onNodesChange}
@@ -346,9 +349,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
               type: MarkerType.ArrowClosed,
               width: 20,
               height: 20,
-              color: "#2970ff",
+              color: "#2970ff", // Keep the arrow color blue
             },
-            style: { strokeWidth: 2 },
+            style: { strokeWidth: 2 }, // I
           }}
           connectionLineType={ConnectionLineType.SmoothStep}
           onDragOver={onDragOver}
@@ -447,7 +450,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           />
 
           {getNodePropertiesComponent(
-            nodes.find((n) => n.id === selectedNodeId) || null,
+            nodes.find((n) => n.id === selectedNodeId) || null
           )}
         </Box>
       )}

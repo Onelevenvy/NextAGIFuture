@@ -61,12 +61,12 @@ def init_db(session: Session) -> None:
 
             if (
                 existing_skill.description != skill_info.description
-                or existing_skill.icon != skill_info.icon
+                or existing_skill.display_name != skill_info.display_name
             ):
 
                 # Update the existing skill's description
                 existing_skill.description = skill_info.description
-                existing_skill.icon = skill_info.icon
+                existing_skill.display_name = skill_info.display_name
                 session.add(existing_skill)  # Mark the modified object for saving
         else:
             new_skill = Skill(
@@ -74,6 +74,7 @@ def init_db(session: Session) -> None:
                 description=skill_info.description,
                 managed=True,
                 owner_id=user.id,
+                display_name=skill_info.display_name
             )
             session.add(new_skill)  # Prepare new skill for addition to the database
 

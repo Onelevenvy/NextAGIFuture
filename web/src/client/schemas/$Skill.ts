@@ -12,7 +12,7 @@ export const $Skill = {
             type: 'string',
             isRequired: true,
         },
-        icon: {
+        display_name: {
             type: 'any-of',
             contains: [{
                 type: 'string',

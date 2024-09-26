@@ -1,13 +1,17 @@
 "use client";
-import { type ApiError, SkillsService } from "@/client";
+import { type ApiError, ToolsService } from "@/client";
 import ActionsMenu from "@/components/Common/ActionsMenu";
 import {
   Badge,
   Box,
   Flex,
   Heading,
+  HStack,
   SimpleGrid,
   Spinner,
+  Tag,
+  TagLabel,
+  TagRightIcon,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
@@ -24,6 +28,8 @@ import TabSlider from "@/components/Common/TabSlider";
 import { useSkillsQuery } from "@/hooks/useSkillsQuery";
 import { useTabSearchParams } from "@/hooks/useTabSearchparams";
 import { useTranslation } from "react-i18next";
+import ToolsIcon from "@/components/Icons/Tools";
+import { MdSettings } from "react-icons/md";
 
 function Skills() {
   const showToast = useCustomToast();
@@ -58,7 +64,7 @@ function Skills() {
   });
 
   const filteredSkills = skills?.data.filter(
-    (skill) => skill.name !== "ask-human",
+    (skill) => skill.name !== "ask-human"
   );
   return (
     <>
@@ -110,14 +116,17 @@ function Skills() {
                       boxShadow="lg"
                       bg="white"
                     >
-                      <Heading size="md">{skill.name}</Heading>
-                      <Box
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                        whiteSpace="nowrap"
-                      >
-                        {skill.icon}
-                      </Box>
+                      <HStack spacing="16px">
+                        <ToolsIcon
+                          h="8"
+                          w="8"
+                          tools_name={skill
+                            .display_name!.toLowerCase()
+                            .replace(" ", "_")}
+                        />
+
+                        <Heading size="md">{skill.display_name}</Heading>
+                      </HStack>
                       <Box
                         overflow="hidden"
                         textOverflow="ellipsis"
@@ -129,7 +138,10 @@ function Skills() {
                         {!skill.managed ? (
                           <ActionsMenu type={"Skill"} value={skill} />
                         ) : (
-                          <Badge colorScheme="green"> Managed</Badge>
+                          <Tag variant="outline" colorScheme="green">
+                            <TagLabel>Built-in</TagLabel>
+                            <TagRightIcon as={MdSettings} />
+                          </Tag>
                         )}
                       </Box>
                     </Box>

@@ -6,7 +6,7 @@
 export type SkillUpdate = {
     name?: (string | null);
     description?: (string | null);
-    icon?: (string | null);
+    display_name?: (string | null);
     managed?: (boolean | null);
     tool_definition?: (Record<string, any> | null);
 };
