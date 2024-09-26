@@ -22,18 +22,11 @@ def validate_config(config: Dict[str, Any]) -> bool:
     return all(key in config for key in required_keys)
 
 
-class ToolsInfo(BaseModel):
-    description: str
-    tool: BaseTool
-
-
-tool_registry: dict[str, ToolsInfo] = managed_tools
-
-
 @lru_cache(maxsize=None)
 def get_tool(tool_name: str) -> BaseTool:
-    if tool_name in tool_registry:
-        return tool_registry[tool_name].tool
+    for _, tool in managed_tools.items():
+        if tool.display_name == tool_name:
+            return tool.tool
     raise ValueError(f"Unknown tool: {tool_name}")
 
 

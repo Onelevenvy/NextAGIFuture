@@ -12,19 +12,19 @@ class GoogleTranslateInput(BaseModel):
 
 def google_translate_invoke(content: str, dest: str) -> str:
     try:
-        # url = "https://translate.googleapis.com/translate_a/single"
-        # params = {"client": "gtx", "sl": "auto", "tl": dest, "dt": "t", "q": content}
+        url = "https://translate.googleapis.com/translate_a/single"
+        params = {"client": "gtx", "sl": "auto", "tl": dest, "dt": "t", "q": content}
 
-        # headers = {
-        #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)"
-        #     " Chrome/91.0.4472.124 Safari/537.36"
-        # }
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)"
+            " Chrome/91.0.4472.124 Safari/537.36"
+        }
 
-        # response_json = requests.get(url, params=params, headers=headers).json()
-        # result = response_json[0]
-        # translated_text = "".join([item[0] for item in result if item[0]])
-        # return str(translated_text)
-        return "aaaaaa"
+        response_json = requests.get(url, params=params, headers=headers).json()
+        result = response_json[0]
+        translated_text = "".join([item[0] for item in result if item[0]])
+        return str(translated_text)
+
     except Exception as e:
         return str(e)
 
