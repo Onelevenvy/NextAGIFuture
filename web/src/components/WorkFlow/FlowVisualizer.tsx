@@ -165,7 +165,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
               animated: newType !== "default",
               style: {
                 strokeWidth: 2,
-                stroke: newType === "default" ? "#3182ce" : "#0dac45",
+                stroke: newType === "default" ? "#5e5a6a" : "#517359",
                 strokeDasharray: newType === "default" ? "none" : "10,5",
               },
             };
@@ -332,8 +332,12 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
             style: {
               ...edge.style,
               strokeWidth: 2, // Increased thickness
-              stroke: edge.type === "default" ? "#3182ce" : "#0dac45", // Blue for solid, Red for dashed
-              strokeDasharray: edge.type === "default" ? "none" : "10,5",
+              stroke: edge.selected
+                ? "#2970ff"
+                : edge.type === "default"
+                  ? "#5e5a6a"
+                  : "#517359", // Blue for solid, Red for dashed
+              strokeDasharray: edge.type === "default" ? "none" : "5,5",
             },
           }))}
           onNodesChange={onNodesChange}
