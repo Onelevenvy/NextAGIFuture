@@ -2,12 +2,11 @@ import time
 from functools import lru_cache
 from typing import Any, Dict, Set
 
-from langchain.pydantic_v1 import BaseModel
 from langchain.tools import BaseTool
 from langchain_core.messages import AIMessage, AnyMessage
 from langchain_core.runnables import RunnableLambda
 from langgraph.checkpoint.base import BaseCheckpointSaver
-from langgraph.graph import END, StateGraph
+from langgraph.graph import END, START, StateGraph
 from langgraph.graph.graph import CompiledGraph
 from langgraph.prebuilt import ToolNode
 
@@ -200,23 +199,45 @@ def initialize_graph(
             source_node = next(node for node in nodes if node["id"] == edge["source"])
             target_node = next(node for node in nodes if node["id"] == edge["target"])
 
+            if source_node["type"] == "start":
+                if edge["type"] == "default":
+                    graph_builder.add_edge(START, edge["target"])
+                else:
+                    raise ValueError("Start node can only have normal edge.")
             if source_node["type"] == "llm":
                 if target_node["type"] == "tool":
-                    conditional_edges[source_node["id"]]["call_tools"][
-                        target_node["id"]
-                    ] = target_node["id"]
+                    if edge["type"] == "default":
+                        graph_builder.add_edge(edge["source"], edge["target"])
+                    else:
+                        conditional_edges[source_node["id"]]["call_tools"][
+                            target_node["id"]
+                        ] = target_node["id"]
                 elif target_node["type"] == "end":
-                    conditional_edges[source_node["id"]]["default"][END] = END
+                    if edge["type"] == "default":
+                        graph_builder.add_edge(edge["source"], END)
+                    else:
+                        conditional_edges[source_node["id"]]["default"][END] = END
+                elif target_node["type"] == "llm":
+                    if edge["type"] == "default":
+                        graph_builder.add_edge(edge["source"], edge["target"])
+                    else:
+                        conditional_edges[source_node["id"]]["default"][
+                            target_node["id"]
+                        ] = target_node["id"]
                 else:
-                    conditional_edges[source_node["id"]]["default"][
-                        target_node["id"]
-                    ] = target_node["id"]
+                    if edge["type"] == "default":
+                        graph_builder.add_edge(edge["source"], edge["target"])
+                    else:
+                        conditional_edges[source_node["id"]]["default"][
+                            target_node["id"]
+                        ] = target_node["id"]
 
             elif source_node["type"] == "tool" and target_node["type"] == "llm":
                 # Tool to LLM edge
                 graph_builder.add_edge(edge["source"], edge["target"])
 
         # Add conditional edges
+
         for llm_id, conditions in conditional_edges.items():
             edges_dict = {
                 "default": next(iter(conditions["default"].values()), END),
@@ -224,7 +245,8 @@ def initialize_graph(
             }
             if conditions["call_human"]:
                 edges_dict["call_human"] = next(iter(conditions["call_human"].values()))
-            graph_builder.add_conditional_edges(llm_id, should_continue, edges_dict)
+            if edges_dict != {"default": END}:
+                graph_builder.add_conditional_edges(llm_id, should_continue, edges_dict)
 
         # Set entry point
         graph_builder.set_entry_point(metadata["entry_point"])

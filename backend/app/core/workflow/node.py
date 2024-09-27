@@ -253,7 +253,7 @@ class LLMNode(BaseNode):
                         "If you are unable to perform the task, that's OK, you can ask human for help, or just say that you are unable to perform the task."
                         "Execute what you can to make progress. "
                         "And your role is:" + self.system_prompt + "\n"
-                        "And your name is:" + self.agent_name + "\n"
+                        "And your name is:" + self.agent_name + "please remember your name\n"
                         "Stay true to your role and use your tools if necessary.\n\n",
                     ),
                     (
