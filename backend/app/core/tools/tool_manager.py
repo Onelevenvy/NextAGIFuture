@@ -1,7 +1,9 @@
 import importlib
 import os
 from typing import Dict
-
+from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun
+from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
 from langchain.pydantic_v1 import BaseModel
 from langchain.tools import BaseTool
 
@@ -50,9 +52,6 @@ class ToolManager:
 
     def load_external_tools(self):
         # Add external tools that can't be automatically loaded
-        from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun
-        from langchain_community.tools.tavily_search import TavilySearchResults
-        from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
 
         external_tools = {
             "duckduckgo-search": ToolInfo(

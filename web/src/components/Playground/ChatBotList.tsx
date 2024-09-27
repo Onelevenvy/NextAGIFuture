@@ -18,13 +18,12 @@ import { useQuery } from "react-query";
 import { tqxIconLibrary } from "../Icons/TqxIcon";
 
 const ChatBotList = () => {
-  const [selectedTeamId, setSelectedTeamId] = useState<string>("1");
   const showToast = useCustomToast();
   const navigate = useRouter();
   const { t } = useTranslation();
   const selctedColor = useColorModeValue(
     "ui.selctedColor",
-    "ui.selctedColorDark",
+    "ui.selctedColorDark"
   );
 
   const {
@@ -32,23 +31,23 @@ const ChatBotList = () => {
     isError,
     error,
   } = useQuery("teams", () => TeamsService.readTeams({}));
-  const { setTeamId } = useChatTeamIdStore(); // 使用 Zustand store
-
+  const { teamId, setTeamId } = useChatTeamIdStore(); // 使用 Zustand store
+  const [selectedTeamId, setSelectedTeamId] = useState(teamId);
   if (isError) {
     const errDetail = (error as ApiError).body?.detail;
     showToast("Something went wrong.", `${errDetail}`, "error");
   }
   const { setMessages } = useChatMessageStore();
-  const handleRowClick = (teamId: string) => {
+  const handleRowClick = (teamId: number) => {
     setSelectedTeamId(teamId);
-    setTeamId(Number.parseInt(teamId)); // 更新 Zustand store 中的 teamId
+    setTeamId(teamId); // 更新 Zustand store 中的 teamId
     navigate.push(`/playground?teamId=${teamId}`);
     setMessages([]);
   };
 
   // 同步 selectedTeamId 和 Zustand store 中的 teamId
   useEffect(() => {
-    setTeamId(Number.parseInt(selectedTeamId));
+    setTeamId(selectedTeamId);
   }, [selectedTeamId, setTeamId]);
 
   return (
@@ -67,11 +66,9 @@ const ChatBotList = () => {
           width="full"
           _hover={{ cursor: "pointer", backgroundColor: selctedColor }}
           borderRadius="md"
-          onClick={() => handleRowClick("1")}
+          onClick={() => handleRowClick(1)}
           p={4}
-          backgroundColor={
-            selectedTeamId === "1" ? selctedColor : "transparent"
-          }
+          backgroundColor={selectedTeamId === 1 ? selctedColor : "transparent"}
           display="flex"
           alignItems="center"
         >
@@ -105,7 +102,7 @@ const ChatBotList = () => {
               <Box
                 width="full"
                 key={team.id}
-                onClick={() => handleRowClick(team.id.toString())}
+                onClick={() => handleRowClick(team.id)}
                 _hover={{
                   cursor: "pointer",
                   backgroundColor: selctedColor,
@@ -114,9 +111,7 @@ const ChatBotList = () => {
                 p={4}
                 mt={0.5}
                 backgroundColor={
-                  selectedTeamId === team.id.toString()
-                    ? selctedColor
-                    : "transparent"
+                  selectedTeamId === team.id ? selctedColor : "transparent"
                 }
                 display="flex"
                 alignItems="center"
