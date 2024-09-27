@@ -32,7 +32,7 @@ def google_translate_invoke(content: str, dest: str) -> str:
 googletranslate = StructuredTool.from_function(
     func=google_translate_invoke,
     name="Google Translate",
-    description="Useful for when you neet to translate text",
+    description="Useful for when you neet to translate.",
     args_schema=GoogleTranslateInput,
     return_direct=True,
 )

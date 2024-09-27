@@ -130,7 +130,7 @@ function Skills() {
                       <Box
                         overflow="hidden"
                         textOverflow="ellipsis"
-                        whiteSpace="nowrap"
+                        // whiteSpace="nowrap"
                       >
                         {skill.description}
                       </Box>
