@@ -13,13 +13,14 @@ A chatbot, RAG, agent, and multi-agent application project based on LangChain, L
 #### work flow
 ![image](https://github.com/user-attachments/assets/a4e33565-7acf-45d9-8e82-5a740cd88344)
 ![image](https://github.com/user-attachments/assets/4d5874f1-aeb0-47c5-b907-21878a2fa4d9)
+#### Image
+![image](https://github.com/user-attachments/assets/4097b087-0309-4aab-8be9-a06fdc9d4964)
+#### Human in the loop (human approval or let the LLM rethink or ask human for help)
 <p>
   <img src="https://github.com/user-attachments/assets/ec53f7de-10cb-4001-897a-2695da9cf6bf" alt="image" style="width: 49%; display: inline-block;">
   <img src="https://github.com/user-attachments/assets/1c7d383d-e6bf-42b8-94ec-9f0c37be19b8" alt="image" style="width: 49%; display: inline-block;">
 </p>
-<p>
-  <strong>Human in the loop (human approval or let the LLM rethink or ask human for help)</strong>  
-</p>
+
 
 
 NextAGIFuture aims to be an open-source platform for developing large language model (LLM) applications. It is an LLM-based application utilizing the concepts of
