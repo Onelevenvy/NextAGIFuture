@@ -359,6 +359,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
             key={index}
             message={message}
             onResume={onResumeHandler}
+            isPlayground = {isPlayground}
           />
         ))}
       </Box>

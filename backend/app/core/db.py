@@ -74,7 +74,7 @@ def init_db(session: Session) -> None:
                 description=skill_info.description,
                 managed=True,
                 owner_id=user.id,
-                display_name=skill_info.display_name
+                display_name=skill_info.display_name,
             )
             session.add(new_skill)  # Prepare new skill for addition to the database
 
@@ -99,11 +99,7 @@ def init_modelprovider_model_db(session: Session) -> None:
         (1, 'Ollama', 'fakeurl', 'fakeapikey', 'string', 'string fake'),
         (2, 'Siliconflow', 'fakeurl', 'fakeapikey', 'string', 'siliconflow'),
         (3, 'zhipuai', 'https://open.bigmodel.cn/api/paas/v4', 'fakeapikey', 'zhipuai', '智谱AI')
-    ON CONFLICT (id) DO UPDATE
-        SET base_url = EXCLUDED.base_url,
-            api_key = EXCLUDED.api_key,
-            icon = EXCLUDED.icon,
-            description = EXCLUDED.description;
+    ON CONFLICT (id) DO NOTHING;
     """
 
     # Insert Models data

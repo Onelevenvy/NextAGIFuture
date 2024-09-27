@@ -39,9 +39,10 @@ import Markdown from "../Markdown/Markdown";
 interface MessageBoxProps {
   message: ChatResponse;
   onResume: (decision: InterruptDecision, toolMessage: string | null) => void;
+  isPlayground?: boolean;
 }
 
-const MessageBox = ({ message, onResume }: MessageBoxProps) => {
+const MessageBox = ({ message, onResume, isPlayground }: MessageBoxProps) => {
   const { type, name, next, content, tool_calls, tool_output, documents } =
     message;
   const [decision, setDecision] = useState<InterruptDecision | null>(null);
@@ -89,10 +90,12 @@ const MessageBox = ({ message, onResume }: MessageBoxProps) => {
     <VStack spacing={0} my={4} onMouseEnter={onOpen} onMouseLeave={onClose}>
       <Box
         w="full"
-        ml={10}
-        mr={10}
-        pl={10}
-        pr={10}
+      
+        ml={isPlayground ? "10" : "0"}
+        mr={isPlayground ? "10" : "0"}
+        pl={isPlayground ? "10" : "0"}
+        pr={isPlayground ? "10" : "0"}
+       
         display="flex"
         alignItems="center"
         justifyContent={type === "human" ? "flex-end" : "flex-start"}
