@@ -36,16 +36,17 @@ def text2img(
 
         response = requests.post(url, json=payload, headers=headers)
 
-        return response.json()
+        return response.json()["images"][0]["url"]
 
     except Exception as e:
-        return json.dumps(f"Openweather API Key is invalid. {e}")
+        return json.dumps(f"There is a error occured . {e}")
 
 
 siliconflow = StructuredTool.from_function(
     func=text2img,
     name="Image Generation",
-    description="Image Generation is a tool that can generate images from text prompts.",
+    description="Siliconflow Image Generation is a tool that can generate images from text prompts using the Siliconflow API.",
     args_schema=Text2ImageInput,
     return_direct=True,
 )
+

@@ -122,7 +122,7 @@ function Skills() {
                           w="8"
                           tools_name={skill
                             .display_name!.toLowerCase()
-                            .replace(" ", "_")}
+                            .replace(/ /g, "_")}
                         />
 
                         <Heading size="md">{skill.display_name}</Heading>
@@ -130,7 +130,7 @@ function Skills() {
                       <Box
                         overflow="hidden"
                         textOverflow="ellipsis"
-                        whiteSpace="nowrap"
+                        // whiteSpace="nowrap"
                       >
                         {skill.description}
                       </Box>

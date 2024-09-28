@@ -55,17 +55,17 @@ class ToolManager:
 
         external_tools = {
             "duckduckgo-search": ToolInfo(
-                description="Searches the web using DuckDuckGo",
+                description="Searches the web using DuckDuckGo.",
                 tool=DuckDuckGoSearchRun(),
                 display_name="DuckDuckGo",
             ),
             "wikipedia": ToolInfo(
-                description="Searches Wikipedia",
+                description="Searches Wikipedia.",
                 tool=WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper()),
                 display_name="Wikipedia",
             ),
             "tavilysearch": ToolInfo(
-                description="tavily search useful when searching for information on the internet",
+                description="Tavily is useful when searching for information on the internet.",
                 tool=TavilySearchResults(max_results=1),
                 display_name="Tavily Search",
             ),

@@ -9,6 +9,7 @@ import {
   Flex,
   Icon,
   IconButton,
+  Image,
   Input,
   InputGroup,
   InputRightElement,
@@ -86,16 +87,28 @@ const MessageBox = ({ message, onResume, isPlayground }: MessageBoxProps) => {
     }
     return <Icon as={FaBook} w={hw} h={hw} />; // 如果 type 不是 'human', 'tools', 'ai'，则不显示任何图标
   };
+
+  function isImag(content: any): boolean {
+    if (typeof content === "string") {
+      // 检查是否为 data URL 或有效的图像 URL
+      return (
+        content.startsWith("data:image/") ||
+        content.startsWith("http://") ||
+        content.startsWith("https://")
+      );
+    }
+
+    return false;
+  }
+
   return (
     <VStack spacing={0} my={4} onMouseEnter={onOpen} onMouseLeave={onClose}>
       <Box
         w="full"
-      
         ml={isPlayground ? "10" : "0"}
         mr={isPlayground ? "10" : "0"}
         pl={isPlayground ? "10" : "0"}
         pr={isPlayground ? "10" : "0"}
-       
         display="flex"
         alignItems="center"
         justifyContent={type === "human" ? "flex-end" : "flex-start"}
@@ -256,8 +269,16 @@ const MessageBox = ({ message, onResume, isPlayground }: MessageBoxProps) => {
                             </AccordionButton>
                           </h2>
                           <AccordionPanel pb={4}>
-                            {/* <ReactMarkdown>{parsedOutput}</ReactMarkdown> */}
-                            <Markdown content={parsedOutput} />
+                            {isImag(content) ? (
+                              <Image
+                                src={content!}
+                                alt="img"
+                                width={"100%"}
+                                height={"100%"}
+                              />
+                            ) : (
+                              <Markdown content={parsedOutput} />
+                            )}
                           </AccordionPanel>
                         </AccordionItem>
                       );
