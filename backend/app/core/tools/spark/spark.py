@@ -103,28 +103,34 @@ def spark_response(text, appid, apisecret, apikey):
 
 
 def img_generation(prompt):
-    response = spark_response(
-        text=prompt,
-        appid=os.environ.get("SPARK_APPID"),
-        apisecret=os.environ.get("SPARK_APISECRET"),
-        apikey=os.environ.get("SPARK_APIKEY"),
-    )
-    try:
-        data = json.loads(response)
-        code = data["header"]["code"]
-        if code != 0:
-            return f"error: {code}, {data}"
-        else:
-            text = data["payload"]["choices"]["text"]
-            image_content = text[0]
-            image_base = image_content["content"]
-            bs64data = "data:image/jpeg;base64," + image_base
+    appid = os.environ.get("SPARK_APPID", "")
+    apisecret = os.environ.get("SPARK_APISECRET", "")
+    apikey = os.environ.get("SPARK_APIKEY", "")
+    if not appid or not apisecret or not apikey:
+        return "api key is not set or not correct"
+    else:
+        response = spark_response(
+            text=prompt,
+            appid=appid,
+            apisecret=apisecret,
+            apikey=apikey,
+        )
+        try:
+            data = json.loads(response)
+            code = data["header"]["code"]
+            if code != 0:
+                return f"error: {code}, {data}"
+            else:
+                text = data["payload"]["choices"]["text"]
+                image_content = text[0]
+                image_base = image_content["content"]
+                bs64data = "data:image/jpeg;base64," + image_base
 
-            return bs64data
-        # return aaa
+                return bs64data
+            # return aaa
 
-    except Exception as e:
-        return json.dumps(f"There is a error occured . {e}")
+        except Exception as e:
+            return json.dumps(f"There is a error occured . {e}")
 
 
 spark = StructuredTool.from_function(

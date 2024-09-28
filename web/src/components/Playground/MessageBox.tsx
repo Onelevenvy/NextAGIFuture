@@ -89,21 +89,15 @@ const MessageBox = ({ message, onResume, isPlayground }: MessageBoxProps) => {
   };
 
   function isImag(content: any): boolean {
-    if (content) {
-      // 检查是否为字符串并以 "data:image/" 开头
-      if (typeof content === "string" && content.startsWith("data:image/")) {
-        return true;
-      }
-
-      // 检查是否为对象并且包含 'images' 键
-      if (typeof content === "object" && content.images) {
-        const images = content.images;
-        // 确保 'images' 是一个非空数组，并检查第一个元素是否包含 'url' 键
-        if (Array.isArray(images) && images.length > 0 && "url" in images[0]) {
-          return true;
-        }
-      }
+    if (typeof content === "string") {
+      // 检查是否为 data URL 或有效的图像 URL
+      return (
+        content.startsWith("data:image/") ||
+        content.startsWith("http://") ||
+        content.startsWith("https://")
+      );
     }
+
     return false;
   }
 
@@ -277,7 +271,7 @@ const MessageBox = ({ message, onResume, isPlayground }: MessageBoxProps) => {
                           <AccordionPanel pb={4}>
                             {isImag(content) ? (
                               <Image
-                                src="content"
+                                src={content!}
                                 alt="img"
                                 width={"100%"}
                                 height={"100%"}

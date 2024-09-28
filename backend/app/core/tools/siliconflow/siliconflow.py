@@ -36,7 +36,7 @@ def text2img(
 
         response = requests.post(url, json=payload, headers=headers)
 
-        return response.json()
+        return response.json()["images"][0]["url"]
 
     except Exception as e:
         return json.dumps(f"There is a error occured . {e}")
