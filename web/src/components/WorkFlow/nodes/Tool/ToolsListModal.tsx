@@ -62,7 +62,7 @@ const ToolsList: React.FC<ToolsListProps> = ({
               <HStack key={skill.id} justifyContent="space-between">
                 <HStack spacing={"2"}>
                   <ToolsIcon
-                    tools_name={skill.display_name!.replace(" ", "_")}
+                    tools_name={skill.display_name!.replace(/ /g, "_")}
                     ml="2"
                   />
                   <Text>{skill.display_name}</Text>

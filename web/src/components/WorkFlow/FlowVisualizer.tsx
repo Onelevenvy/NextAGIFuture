@@ -22,6 +22,7 @@ import {
   Box,
   Button,
   CloseButton,
+  Image,
   Kbd,
   Menu,
   MenuButton,
