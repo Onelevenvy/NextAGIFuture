@@ -20,6 +20,7 @@ class ChatResponse(BaseModel):
     id: str
     name: str
     content: str | None = None
+    imgdata: str | None = None
     tool_calls: list[ToolCall] | None = None
     tool_output: str | None = None
     documents: str | None = None
