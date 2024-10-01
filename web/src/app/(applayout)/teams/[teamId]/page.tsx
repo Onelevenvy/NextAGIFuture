@@ -10,14 +10,10 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-
 import Flow from "@/components/ReactFlow/Flow";
-
-import ShowFlow from "@/app/flow/show/ShowFlow";
 import DebugPreview from "@/components/Teams/DebugPreview";
 import NormalTeamSettings from "@/components/Teams/NormalTeamSettings";
 import WorkflowTeamSettings from "@/components/Teams/WorkflowTeamSettings";
-import { color } from "framer-motion";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useRef } from "react";
@@ -32,7 +28,7 @@ function Team() {
     isError,
     error,
   } = useQuery(`team/${teamId}`, () =>
-    TeamsService.readTeam({ id: Number.parseInt(teamId) }),
+    TeamsService.readTeam({ id: Number.parseInt(teamId) })
   );
 
   if (isError) {
@@ -118,7 +114,7 @@ function Team() {
                   <WorkflowTeamSettings teamId={Number.parseInt(teamId)} />
                 </Box>
               ) : (
-                <Box h="full" maxH={"full"} borderRadius="md">
+                <Box h="full" maxH={"full"} borderRadius="md" minH={"full"}>
                   <NormalTeamSettings teamData={team} />
                 </Box>
               )}

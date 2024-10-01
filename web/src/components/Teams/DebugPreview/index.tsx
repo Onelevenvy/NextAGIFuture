@@ -19,6 +19,7 @@ function DebugPreview({
       borderRadius={"lg"}
       display={"flex"}
       flexDirection={"column"}
+      overflow={"hidden"}
     >
       <Box py="5" overflow={"hidden"}>
         <DebugPreviewHead
