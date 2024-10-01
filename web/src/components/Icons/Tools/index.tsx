@@ -1,5 +1,5 @@
 import { Icon, type IconProps, createIcon } from "@chakra-ui/icons";
-import { SiliconFlowIcon } from "../models";
+import { SiliconFlowIcon, ZhipuAIIcon } from "../models";
 
 const OpenWeather = createIcon({
   displayName: "OpenWeather",
@@ -367,6 +367,7 @@ const iconMap: { [key: string]: React.FC } = {
   math_calculator: calculator,
   image_generation: SiliconFlowIcon,
   spark_image_generation: spark,
+  image_understanding: ZhipuAIIcon,
 };
 
 const DefaultIcon = Wikipedia;
