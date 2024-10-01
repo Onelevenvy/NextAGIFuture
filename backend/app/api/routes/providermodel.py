@@ -2,11 +2,11 @@ from fastapi import APIRouter, HTTPException
 
 from app.api.deps import SessionDep
 from app.curd.models import (
-    create_model,
-    delete_model,
+    _create_model,
+    _delete_model,
     get_all_models,
     get_models_by_provider,
-    update_model,
+    _update_model,
 )
 from app.models import Models, ModelsBase, ModelsOut
 
@@ -16,7 +16,7 @@ router = APIRouter()
 # Routes for Models
 @router.post("/", response_model=ModelsBase)
 def create_models(model: ModelsBase, session: SessionDep):
-    return create_model(session, model)
+    return _create_model(session, model)
 
 
 @router.get("/{provider_id}", response_model=ModelsOut)
@@ -31,7 +31,7 @@ def read_models(session: SessionDep):
 
 @router.delete("/{model_id}", response_model=Models)
 def delete_model(model_id: int, session: SessionDep):
-    model = delete_model(session, model_id)
+    model = _delete_model(session, model_id)
     if model is None:
         raise HTTPException(status_code=404, detail="Model not found")
     return model
@@ -39,7 +39,7 @@ def delete_model(model_id: int, session: SessionDep):
 
 @router.put("/{model_id}", response_model=Models)
 def update_model(model_id: int, model_update: ModelsBase, session: SessionDep):
-    model = update_model(session, model_id, model_update)
+    model = _update_model(session, model_id, model_update)
     if model is None:
         raise HTTPException(status_code=404, detail="Model not found")
     return model

@@ -5,7 +5,7 @@ from sqlmodel import Session, func, select
 from ..models import ModelOut, ModelProviderOut, Models, ModelsBase, ModelsOut
 
 
-def create_model(session: Session, model: ModelsBase) -> Models:
+def _create_model(session: Session, model: ModelsBase) -> Models:
     try:
         db_model = Models(**model.model_dump())
         session.add(db_model)
@@ -92,7 +92,7 @@ def get_all_models(session: Session) -> ModelsOut:
     return ModelsOut(data=model_outs, count=total_count)
 
 
-def delete_model(session: Session, model_id: int) -> Optional[Models]:
+def _delete_model(session: Session, model_id: int) -> Optional[Models]:
     db_model = session.exec(select(Models).where(Models.id == model_id)).first()
     if db_model:
         session.delete(db_model)
@@ -100,7 +100,7 @@ def delete_model(session: Session, model_id: int) -> Optional[Models]:
     return db_model
 
 
-def update_model(
+def _update_model(
     session: Session, model_id: int, model_update: ModelsBase
 ) -> Optional[Models]:
     db_model = session.exec(select(Models).where(Models.id == model_id)).first()
