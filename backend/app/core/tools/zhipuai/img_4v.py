@@ -9,14 +9,26 @@ from langchain.tools import StructuredTool
 class ImageUnderstandingInput(BaseModel):
     """Input for the Image Understanding tool."""
 
+    image_url: str = Field(description="the path or the url of the image")
     text: str = Field(description="the input text for the Image Understanding tool")
 
 
-def img_4v(text: str):
-    img_path = "/Users/envys/Downloads/a.jpeg"
-    with open(img_path, "rb") as img_file:
-        img_base = base64.b64encode(img_file.read()).decode("utf-8")
+def img_4v(image_url: str, text: str):
+    if image_url is None:
+        return "Please provide an image path or url"
 
+    elif (
+        image_url.startswith("http")
+        or image_url.startswith("https")
+        or image_url.startswith("data:image/")
+    ):
+        img_base = image_url
+    else:
+        try:
+            with open(image_url, "rb") as img_file:
+                img_base = base64.b64encode(img_file.read()).decode("utf-8")
+        except Exception as e:
+            return "Error: " + str(e)
     client = ZhipuAI(
         api_key=os.environ.get("ZHIPUAI_API_KEY"),
     )  # 填写您自己的APIKey
