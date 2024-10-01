@@ -47,6 +47,7 @@ export default function NormalTeamSettings({
         <Box
           h="full"
           maxH={"full"}
+          minH={"full"}
           w="full"
           minW="full"
           display={"flex"}
@@ -72,7 +73,7 @@ export default function NormalTeamSettings({
               <Box w="full" mb={"2"}>
                 <TeamInforCard teamData={teamData} />
               </Box>
-              <Box h={"full"} maxH={"full"}>
+              <Box h={"full"} maxH={"full"} overflow={"auto"}>
                 {member?.map((member) => (
                   <EditTeamMember
                     key={member.id}

@@ -111,9 +111,15 @@ def init_modelprovider_model_db(session: Session) -> None:
         (3, 'gpt4o-mini', 4),
         (4, 'llama3.1:8b', 1),
         (5, 'Qwen/Qwen2-7B-Instruct', 2),
-        (6, 'glm-4', 3),
-        (7, 'glm-4-0520', 3),
-        (8, 'glm-4-flash', 3)
+      
+         (6, 'glm-4-alltools', 3),
+         (7, 'glm-4-flash', 3),
+        (8, 'glm-4-0520', 3),
+         (9, 'glm-4-plus', 3),
+         (10, 'glm-4v-plus', 3),
+          (11, 'glm-4', 3),
+           (12, 'glm-4v', 3)
+          
     ON CONFLICT (id) DO NOTHING;
     """
 

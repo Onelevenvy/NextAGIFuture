@@ -42,7 +42,7 @@ def text2img(
         return json.dumps(f"There is a error occured . {e}")
 
 
-siliconflow = StructuredTool.from_function(
+siliconflow_img_generation = StructuredTool.from_function(
     func=text2img,
     name="Image Generation",
     description="Siliconflow Image Generation is a tool that can generate images from text prompts using the Siliconflow API.",

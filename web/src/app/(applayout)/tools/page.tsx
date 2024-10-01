@@ -2,7 +2,7 @@
 import { type ApiError, ToolsService } from "@/client";
 import ActionsMenu from "@/components/Common/ActionsMenu";
 import {
-  Badge,
+  Text,
   Box,
   Flex,
   Heading,
@@ -125,14 +125,19 @@ function Skills() {
                             .replace(/ /g, "_")}
                         />
 
-                        <Heading size="md">{skill.display_name}</Heading>
+                        <Heading noOfLines={1} size="md">
+                          {skill.display_name}
+                        </Heading>
                       </HStack>
                       <Box
                         overflow="hidden"
-                        textOverflow="ellipsis"
-                        // whiteSpace="nowrap"
+                        minH={"55px"}
+                        h={"55px"}
+                        maxH={"55px"}
                       >
-                        {skill.description}
+                        <Text textOverflow="ellipsis" noOfLines={2}>
+                          {skill.description}
+                        </Text>
                       </Box>
                       <Box pt={4}>
                         {!skill.managed ? (
