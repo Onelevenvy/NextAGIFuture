@@ -60,7 +60,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const threadId = searchParams.get("threadId");
   const { t } = useTranslation();
   const { teamId } = useChatTeamIdStore();
-
+  const [imageData, setImageData] = useState<string | null>(null);
   const [currentThreadId, setCurrentThreadId] = useState<string | null>(
     searchParams.get("threadId"),
   );
@@ -275,6 +275,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
         type: "human",
         id: self.crypto.randomUUID(),
         content: data.messages[0].content,
+        img:imageData,
         name: "user",
       },
     ]);
@@ -305,6 +306,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
       e.preventDefault();
       mutation.mutate({ messages: [{ type: "human", content: input }] });
       setInput("");
+      setImageData("");
     },
     [input, mutation],
   );
@@ -384,6 +386,8 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
         onSubmit={onSubmit}
         isStreaming={isStreaming}
         newChatHandler={newChatHandler}
+        imageData={imageData}
+        setImageData={setImageData}
       />
     </Box>
   );

@@ -44,7 +44,7 @@ interface MessageBoxProps {
 }
 
 const MessageBox = ({ message, onResume, isPlayground }: MessageBoxProps) => {
-  const { type, name, next, content, tool_calls, tool_output, documents } =
+  const { type, name, next, content, imgdata, tool_calls, tool_output, documents } =
     message;
   const [decision, setDecision] = useState<InterruptDecision | null>(null);
   const [toolMessage, setToolMessage] = useState<string | null>(null);
@@ -184,6 +184,9 @@ const MessageBox = ({ message, onResume, isPlayground }: MessageBoxProps) => {
               overflowY="auto" // 使其可滚动
               overflowX="hidden"
             >
+              {imgdata && (
+                <Image src={imgdata} alt="img" height={"auto"} width={"auto"} />
+              )}
               {content && <Markdown content={content} />}
             </Box>
 
@@ -197,11 +200,13 @@ const MessageBox = ({ message, onResume, isPlayground }: MessageBoxProps) => {
                 alignItems="flex-start"
                 ml="10"
               >
-                <Box display="flex" flexDirection="row">
+                <Box display="flex" flexDirection="column">
                   {Object.keys(tool_call.args).map((attribute, index) => (
-                    <Text key={index} ml="2">
-                      {attribute}: {tool_call.args[attribute]}
-                    </Text>
+                    <Box key={index} ml="2">
+                      <Markdown
+                        content={`${attribute}: ${tool_call.args[attribute]}`}
+                      />
+                    </Box>
                   ))}
                 </Box>
               </Box>

@@ -22,6 +22,8 @@ interface MessageInputProps {
   onSubmit: (e: React.FormEvent) => void;
   isStreaming: boolean;
   newChatHandler?: () => void;
+  imageData: string | null;
+  setImageData: (value: string | null) => void;
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
@@ -30,8 +32,10 @@ const MessageInput: React.FC<MessageInputProps> = ({
   onSubmit,
   isStreaming,
   newChatHandler,
+  imageData,
+  setImageData,
 }) => {
-  const [imageData, setImageData] = useState<string | null>(null);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {

@@ -10,6 +10,7 @@ export type ChatResponse = {
     id: string;
     name: string;
     content?: (string | null);
+    imgdata?: (string | null);
     tool_calls?: (Array<ToolCall> | null);
     tool_output?: (string | null);
     documents?: (string | null);

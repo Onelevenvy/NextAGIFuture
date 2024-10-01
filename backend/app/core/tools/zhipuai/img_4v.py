@@ -9,11 +9,11 @@ from langchain.tools import StructuredTool
 class ImageUnderstandingInput(BaseModel):
     """Input for the Image Understanding tool."""
 
+    qry: str = Field(description="the input query for the Image Understanding tool")
     image_url: str = Field(description="the path or the url of the image")
-    text: str = Field(description="the input text for the Image Understanding tool")
 
 
-def img_4v(image_url: str, text: str):
+def img_4v(image_url: str, qry: str):
     if image_url is None:
         return "Please provide an image path or url"
 
@@ -39,7 +39,7 @@ def img_4v(image_url: str, text: str):
                 "role": "user",
                 "content": [
                     {"type": "image_url", "image_url": {"url": img_base}},
-                    {"type": "text", "text": text},
+                    {"type": "text", "text": qry},
                 ],
             }
         ],
