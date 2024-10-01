@@ -30,20 +30,27 @@ class ToolManager:
             ):
                 try:
                     module = importlib.import_module(
-                        f".{item}.{item}", package="app.core.tools"
+                        f".{item}", package="app.core.tools"
                     )
-                    # Try to get the tool instance directly
-                    tool_instance = getattr(module, item)
-                    if isinstance(tool_instance, BaseTool):
-                        formatted_name = self.format_tool_name(item)
-                        self.managed_tools[formatted_name] = ToolInfo(
-                            description=tool_instance.description,
-                            tool=tool_instance,
-                            display_name=tool_instance.name,
-                        )
 
+                    # Check if __all__ is defined in the module
+                    if hasattr(module, "__all__"):
+                        for tool_name in module.__all__:
+                            tool_instance = getattr(module, tool_name, None)
+                            if isinstance(tool_instance, BaseTool):
+                                formatted_name = self.format_tool_name(item)
+                                self.managed_tools[formatted_name] = ToolInfo(
+                                    description=tool_instance.description,
+                                    tool=tool_instance,
+                                    display_name=tool_instance.name,
+                                )
+                            else:
+                                print(
+                                    f"Warning: {tool_name} in {item} is not an instance of BaseTool"
+                                )
                     else:
-                        print(f"Warning: {item} is not an instance of BaseTool")
+                        print(f"Warning: {item} does not define __all__")
+
                 except (ImportError, AttributeError) as e:
                     print(f"Failed to load tool {item}: {e}")
 

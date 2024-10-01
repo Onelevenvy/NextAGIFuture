@@ -133,7 +133,7 @@ def img_generation(prompt):
             return json.dumps(f"There is a error occured . {e}")
 
 
-spark = StructuredTool.from_function(
+spark_img_generation = StructuredTool.from_function(
     func=img_generation,
     name="Spark Image Generation",
     description="Spark Image Generation is a tool that can generate images from text prompts using the Spark API.",

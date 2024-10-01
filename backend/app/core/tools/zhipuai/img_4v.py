@@ -36,7 +36,7 @@ def img_4v(text: str):
     return response.choices[0].message
 
 
-zhipuai = StructuredTool.from_function(
+img_understanding = StructuredTool.from_function(
     func=img_4v,
     name="Image Understanding",
     description="Users input an image and a question, and the LLM can identify objects, scenes, and other information in the image to answer the user's question.",
