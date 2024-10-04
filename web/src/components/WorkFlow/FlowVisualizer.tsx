@@ -13,8 +13,9 @@ import ReactFlow, {
   MarkerType,
   Panel,
   useViewport,
+  EdgeLabelRenderer,
 } from "reactflow";
-
+import { FaPlus } from "react-icons/fa";
 import { useContextMenu } from "@/hooks/graphs/useContextMenu";
 import { useFlowState } from "@/hooks/graphs/useFlowState";
 import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
@@ -30,6 +31,8 @@ import {
   MenuList,
   Text,
   useColorModeValue,
+  IconButton,
+  VStack,
 } from "@chakra-ui/react";
 import { MdBuild, MdOutlineHelp } from "react-icons/md";
 import { VscTriangleRight } from "react-icons/vsc";
@@ -39,6 +42,7 @@ import NodePalette from "./NodePalette";
 import BaseProperties from "./nodes/Base/Properties";
 import { type NodeType, nodeConfig } from "./nodes/nodeConfig";
 import type { CustomNode, FlowVisualizerProps } from "./types";
+import { calculateEdgeCenter } from './utils';
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -70,6 +74,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
       setSelectedNodeId(node.id);
+      setSelectedEdge(null); // 取消选中的边
     },
     [setSelectedNodeId]
   );
@@ -309,6 +314,96 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
   const [showDebugPreview, setShowDebugPreview] = useState(false);
 
+  const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
+  const [showNodeMenu, setShowNodeMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+
+  const onEdgeClick = useCallback(
+    (event: React.MouseEvent, edge: Edge) => {
+      event.stopPropagation();
+      setSelectedEdge(edge);
+
+      const sourceNode = nodes.find((node) => node.id === edge.source);
+      const targetNode = nodes.find((node) => node.id === edge.target);
+      if (sourceNode && targetNode) {
+        const centerPoint = calculateEdgeCenter(sourceNode, targetNode);
+        setMenuPosition(centerPoint);
+      }
+    },
+    [nodes]
+  );
+
+  const handleAddNodeClick = useCallback((event: React.MouseEvent) => {
+    event.stopPropagation();
+    setShowNodeMenu(true);
+  }, []);
+
+  const addNodeToEdge = useCallback(
+    (nodeType: NodeType) => {
+      if (!selectedEdge) return;
+
+      const sourceNode = nodes.find((node) => node.id === selectedEdge.source);
+      const targetNode = nodes.find((node) => node.id === selectedEdge.target);
+      if (!sourceNode || !targetNode) return;
+
+      const newNodeId = `${nodeType}-${nodes.length + 1}`;
+      const centerX = (sourceNode.position.x + targetNode.position.x) / 2;
+      const centerY = (sourceNode.position.y + targetNode.position.y) / 2;
+
+      const newNode: CustomNode = {
+        id: newNodeId,
+        type: nodeType,
+        position: { x: centerX, y: centerY },
+        data: {
+          label: generateUniqueName(nodeConfig[nodeType].display),
+          customName: generateUniqueName(nodeConfig[nodeType].display),
+          onChange: (key: string, value: any) =>
+            onNodeDataChange(newNodeId, key, value),
+          ...nodeConfig[nodeType].initialData,
+        },
+      };
+
+      const newEdge1: Edge = {
+        id: `e${selectedEdge.source}-${newNodeId}`,
+        source: selectedEdge.source,
+        target: newNodeId,
+        sourceHandle: "right",
+        targetHandle: "left",
+        type: selectedEdge.type,
+      };
+
+      const newEdge2: Edge = {
+        id: `e${newNodeId}-${selectedEdge.target}`,
+        source: newNodeId,
+        target: selectedEdge.target,
+        sourceHandle: "right",
+        targetHandle: "left",
+        type: selectedEdge.type,
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+      setEdges((eds) =>
+        eds.filter((e) => e.id !== selectedEdge.id).concat(newEdge1, newEdge2)
+      );
+      setSelectedEdge(null);
+      setShowNodeMenu(false);
+    },
+    [
+      selectedEdge,
+      nodes,
+      setNodes,
+      setEdges,
+      onNodeDataChange,
+      generateUniqueName,
+    ]
+  );
+
+  const onPaneClick = useCallback(() => {
+    setSelectedEdge(null);
+    setShowNodeMenu(false);
+    setSelectedNodeId(null); // 取消选中的节点
+  }, [setSelectedNodeId]);
+
   return (
     <Box
       display="flex"
@@ -362,6 +457,8 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           onDragOver={onDragOver}
           onDrop={onDrop}
           deleteKeyCode={["Backspace", "Delete"]}
+          onEdgeClick={onEdgeClick}
+          onPaneClick={onPaneClick}
         >
           <Controls />
 
@@ -389,6 +486,29 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
             )}
           </Panel>
           <ZoomDisplay />
+          <EdgeLabelRenderer>
+            {selectedEdge && (
+              <div
+                style={{
+                  position: "absolute",
+                  transform: `translate(-50%, -50%) translate(${menuPosition.x}px, ${menuPosition.y}px)`,
+                  pointerEvents: "all",
+                  zIndex: 1000,
+                }}
+              >
+                <IconButton
+                  aria-label="Add node"
+                  icon={<FaPlus />}
+                  size="xs"
+                  colorScheme="blue"
+                  onClick={handleAddNodeClick}
+                  isRound={true} // 使按钮变成圆形
+                  _hover={{ bg: "blue.500" }} // 悬停时的样式
+                  _active={{ bg: "blue.600" }} // 点击时的样式
+                />
+              </div>
+            )}
+          </EdgeLabelRenderer>
         </ReactFlow>
         {contextMenu.nodeId && (
           <Menu isOpen={true} onClose={closeContextMenu}>
@@ -484,6 +604,43 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
             triggerSubmit={() => {}}
             useDeployButton={false}
           />
+        </Box>
+      )}
+      {showNodeMenu && (
+        <Box
+          position="fixed"
+          left={`${menuPosition.x}px`}
+          top={`${menuPosition.y}px`}
+          zIndex={1000}
+          bg="white"
+          borderRadius="md"
+          boxShadow="md"
+          p={2}
+        >
+          <VStack spacing={2} align="stretch">
+            {Object.entries(nodeConfig).map(
+              ([nodeType, { display, icon: Icon, colorScheme }]) => (
+                <Box
+                  key={nodeType}
+                  border="1px solid #ddd"
+                  borderRadius="md"
+                  padding={2}
+                  cursor="pointer"
+                  onClick={() => addNodeToEdge(nodeType as NodeType)}
+                  _hover={{ bg: "gray.100" }}
+                >
+                  <IconButton
+                    aria-label={display}
+                    icon={<Icon />}
+                    colorScheme={colorScheme}
+                    size="xs"
+                    mr={2}
+                  />
+                  <Text display="inline">{display}</Text>
+                </Box>
+              )
+            )}
+          </VStack>
         </Box>
       )}
     </Box>
