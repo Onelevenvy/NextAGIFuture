@@ -66,18 +66,26 @@ class QdrantStore:
                 self._create_collection()
             else:
                 logger.info(f"Collection {self.collection_name} exists with correct dimension.")
-        except UnexpectedResponse:
-            logger.info(f"Collection {self.collection_name} does not exist. Creating new collection.")
-            self._create_collection()
+        except Exception as e:
+            if "Collection `kb_uploads` doesn't exist" in str(e):
+                logger.info(f"Collection {self.collection_name} does not exist. Creating new collection.")
+                self._create_collection()
+            else:
+                logger.error(f"Unexpected error when checking collection: {e}")
+                raise
 
     def _create_collection(self) -> None:
-        self.client.create_collection(
-            collection_name=self.collection_name,
-            vectors_config=models.VectorParams(
-                size=self.embeddings.dimension, distance=models.Distance.COSINE
-            ),
-        )
-        logger.info(f"Created new collection: {self.collection_name}")
+        try:
+            self.client.create_collection(
+                collection_name=self.collection_name,
+                vectors_config=models.VectorParams(
+                    size=self.embeddings.dimension, distance=models.Distance.COSINE
+                ),
+            )
+            logger.info(f"Created new collection: {self.collection_name}")
+        except Exception as e:
+            logger.error(f"Failed to create collection: {e}")
+            raise
 
     def add(
         self,
@@ -130,31 +138,12 @@ class QdrantStore:
                 metadata=metadata,
             )
         else:
-            try:
-                Qdrant.from_texts(
-                    doc_texts,
-                    self.embeddings,
-                    metadatas=metadata,
-                    location=self.url,
-                    collection_name=self.collection_name,
-                    api_key=settings.QDRANT_SERVICE_API_KEY,
-                    force_recreate=False,
-                )
-            except Exception as e:
-                if "Existing Qdrant collection is configured for vectors with" in str(e):
-                    logger.warning("Dimension mismatch detected. Recreating collection.")
-                    self._create_or_update_collection()
-                    Qdrant.from_texts(
-                        doc_texts,
-                        self.embeddings,
-                        metadatas=metadata,
-                        location=self.url,
-                        collection_name=self.collection_name,
-                        api_key=settings.QDRANT_SERVICE_API_KEY,
-                        force_recreate=True,
-                    )
-                else:
-                    raise
+            qdrant = Qdrant(
+                client=self.client,
+                collection_name=self.collection_name,
+                embeddings=self.embeddings,
+            )
+            qdrant.add_texts(doc_texts, metadatas=metadata)
 
         callback() if callback else None
 
@@ -193,17 +182,7 @@ class QdrantStore:
         callback() if callback else None
 
     def retriever(self, user_id: int, upload_id: int) -> QdrantRetriever:
-        """
-        Creates a VectorStoreRetriever that retrieves results containing the specified user_id and upload_id in the metadata.
-
-        Args:
-            user_id (int): Filters the retriever results to only include those belonging to this user.
-            upload_id (int): Filters the retriever results to only include those from this upload ID.
-
-        Returns:
-            QdrantRetriever: A QdrantRetriever instance.
-        """
-        retriever = QdrantRetriever(
+        return QdrantRetriever(
             client=self.client,
             collection_name=self.collection_name,
             embeddings=self.embeddings,
@@ -220,7 +199,6 @@ class QdrantStore:
                 ],
             ),
         )
-        return retriever
 
     def search(self, user_id: int, upload_ids: list[int], query: str) -> list[Document]:
         """

@@ -4,8 +4,7 @@ from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.embeddings import Embeddings
 from qdrant_client import QdrantClient, models
-from app.core.config import settings
-from app.core.graph.rag.embeddings import get_embedding_model
+from pydantic import Field
 
 class QdrantRetriever(BaseRetriever):
     """
@@ -29,11 +28,12 @@ class QdrantRetriever(BaseRetriever):
         VectorStoreRetriever: A retriever class for VectorStore.
     """
 
-    client: QdrantClient
-    collection_name: str
-    search_kwargs: models.Filter | None = None
-    k: int = 5
-    embeddings: Embeddings
+    client: QdrantClient = Field(...)
+    collection_name: str = Field(...)
+    search_kwargs: models.Filter | None = Field(default=None)
+    k: int = Field(default=5)
+    embeddings: Embeddings = Field(...)
+    qdrant: Qdrant = Field(...)
 
     def __init__(
         self,
@@ -43,19 +43,21 @@ class QdrantRetriever(BaseRetriever):
         search_kwargs: models.Filter | None = None,
         k: int = 5
     ):
-        super().__init__()
-        self.client = client
-        self.collection_name = collection_name
-        self.search_kwargs = search_kwargs
-        self.k = k
-        self.embeddings = embeddings
+        qdrant = Qdrant(
+            client=client,
+            collection_name=collection_name,
+            embeddings=embeddings,
+        )
+        super().__init__(
+            client=client,
+            collection_name=collection_name,
+            embeddings=embeddings,
+            search_kwargs=search_kwargs,
+            k=k,
+            qdrant=qdrant
+        )
 
     def _get_relevant_documents(
         self, query: str, *, run_manager: CallbackManagerForRetrieverRun
     ) -> list[Document]:
-        qdrant = Qdrant(
-            client=self.client,
-            collection_name=self.collection_name,
-            embeddings=self.embeddings,
-        )
-        return qdrant.similarity_search(query, filter=self.search_kwargs, k=self.k)
+        return self.qdrant.similarity_search(query, filter=self.search_kwargs, k=self.k)

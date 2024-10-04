@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class ZhipuAIEmbeddings(BaseModel, Embeddings):
     api_key: str = settings.ZHIPUAI_API_KEY
     model: str = "embedding-3"
-    dimension: int = 1024  # 添加这一行，设置默认维度
+    dimension: int = 2048  # 添加这一行，设置默认维度
 
     class Config:
         extra = Extra.forbid
@@ -33,8 +33,7 @@ class ZhipuAIEmbeddings(BaseModel, Embeddings):
 
 
 class SiliconFlowEmbeddings(BaseModel, Embeddings):
-    # api_key: str = settings.SILICONFLOW_API_KEY
-    api_key: str = "sk-uaxgsvfwwwpeuguzhsjpqigwopyhblsiesbptxnuxaoefqrb"
+    api_key: str = settings.SILICONFLOW_API_KEY
     model: str = "BAAI/bge-large-zh-v1.5"
 
     class Config:
@@ -104,7 +103,7 @@ def get_embedding_model(model_name: str) -> Embeddings:
         # 对于 ZhipuAIEmbeddings，我们不需要手动设置 dimension
         if not isinstance(embedding_model, ZhipuAIEmbeddings):
             embedding_model.dimension = get_embedding_dimension(embedding_model)
-        
+
         logger.info(f"Embedding model dimension: {embedding_model.dimension}")
 
         return embedding_model
