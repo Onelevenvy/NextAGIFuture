@@ -2,7 +2,7 @@
 <p align="center">
   <a href="./README.md">English</a> |
   <a href="./README_cn.md">简体中文</a> |
-  <a href="./README_docu.md">Getting Started</a>
+  <a href="#how-to-get-started">Getting Started</a>
 </p>
 
 A chatbot, RAG, agent, and multi-agent application project based on LangChain, LangGraph, and other frameworks, open-source, and capable of offline deployment.
@@ -58,9 +58,9 @@ Project tech stack: LangChain + LangGraph + React + Next.js + Chakra UI + Postgr
 
 3 Ohters
 
-- [x] Function call
+- [x] Tools Calling
 - [x] I18n
-- [ ] Langchin Templates
+- [ ] Langchain Templates
 
 ### 🏘️Highlights
 
