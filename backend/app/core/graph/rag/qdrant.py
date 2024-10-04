@@ -1,17 +1,23 @@
 import os
 from collections.abc import Callable
 from typing import Any
-
+from langchain_community.embeddings import HuggingFaceEmbeddings
 import pymupdf  # type: ignore[import-untyped]
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from qdrant_client import QdrantClient
+from qdrant_client import QdrantClient, models
 from qdrant_client.http import models as rest
+from qdrant_client.http.exceptions import UnexpectedResponse
 
+from langchain_community.vectorstores import Qdrant
 from app.core.config import settings
 from app.core.graph.rag.qdrant_retriever import QdrantRetriever
+from app.core.graph.rag.embeddings import get_embedding_model
+import logging
 
+# 获取特定于此模块的日志记录器
+logger = logging.getLogger(__name__)
 
 class QdrantStore:
     """
@@ -22,7 +28,56 @@ class QdrantStore:
     url = settings.QDRANT_URL
 
     def __init__(self) -> None:
-        self.client = self._create_collection()
+        logger.info("Initializing QdrantStore")
+        self.client = QdrantClient(
+            url=self.url, api_key=settings.QDRANT_SERVICE_API_KEY, prefer_grpc=True
+        )
+        try:
+            logger.info(f"Attempting to get embedding model: {settings.EMBEDDING_MODEL}")
+            self.embeddings = get_embedding_model(settings.EMBEDDING_MODEL)
+            logger.info(f"Embeddings model initialized: {type(self.embeddings)}")
+        except Exception as e:
+            logger.error(f"Failed to initialize embeddings model: {e}", exc_info=True)
+            logger.warning("Falling back to HuggingFaceEmbeddings")
+            try:
+                self.embeddings = HuggingFaceEmbeddings(
+                    model_name=settings.DENSE_EMBEDDING_MODEL,
+                    model_kwargs={"device": "cpu"}
+                )
+                logger.info(f"Fallback embeddings model initialized: {type(self.embeddings)}")
+            except Exception as e2:
+                logger.error(f"Failed to initialize fallback embeddings model: {e2}", exc_info=True)
+                self.embeddings = None
+        
+        if self.embeddings is None:
+            logger.error("Embeddings model is None. This will cause issues.")
+        else:
+            self._create_or_update_collection()
+
+    def _create_or_update_collection(self) -> None:
+        try:
+            collection_info = self.client.get_collection(self.collection_name)
+            existing_dim = collection_info.config.params.vectors.size
+            new_dim = self.embeddings.dimension
+
+            if existing_dim != new_dim:
+                logger.warning(f"Existing collection dimension ({existing_dim}) does not match new embedding dimension ({new_dim}). Recreating collection.")
+                self.client.delete_collection(self.collection_name)
+                self._create_collection()
+            else:
+                logger.info(f"Collection {self.collection_name} exists with correct dimension.")
+        except UnexpectedResponse:
+            logger.info(f"Collection {self.collection_name} does not exist. Creating new collection.")
+            self._create_collection()
+
+    def _create_collection(self) -> None:
+        self.client.create_collection(
+            collection_name=self.collection_name,
+            vectors_config=models.VectorParams(
+                size=self.embeddings.dimension, distance=models.Distance.COSINE
+            ),
+        )
+        logger.info(f"Created new collection: {self.collection_name}")
 
     def add(
         self,
@@ -68,36 +123,40 @@ class QdrantStore:
             doc_texts.append(doc.page_content)
             metadata.append(doc.metadata)
 
-        self.client.add(
-            collection_name=self.collection_name,
-            documents=doc_texts,
-            metadata=metadata,
-        )
+        if isinstance(self.embeddings, HuggingFaceEmbeddings):
+            self.client.add(
+                collection_name=self.collection_name,
+                documents=doc_texts,
+                metadata=metadata,
+            )
+        else:
+            try:
+                Qdrant.from_texts(
+                    doc_texts,
+                    self.embeddings,
+                    metadatas=metadata,
+                    location=self.url,
+                    collection_name=self.collection_name,
+                    api_key=settings.QDRANT_SERVICE_API_KEY,
+                    force_recreate=False,
+                )
+            except Exception as e:
+                if "Existing Qdrant collection is configured for vectors with" in str(e):
+                    logger.warning("Dimension mismatch detected. Recreating collection.")
+                    self._create_or_update_collection()
+                    Qdrant.from_texts(
+                        doc_texts,
+                        self.embeddings,
+                        metadatas=metadata,
+                        location=self.url,
+                        collection_name=self.collection_name,
+                        api_key=settings.QDRANT_SERVICE_API_KEY,
+                        force_recreate=True,
+                    )
+                else:
+                    raise
 
         callback() if callback else None
-
-    def _create_collection(self) -> QdrantClient:
-        """
-        Creates a collection in Qdrant if it does not already exist, configured for hybrid search.
-
-        The collection uses both dense and sparse vector models. Returns an instance of the Qdrant client.
-
-        Returns:
-            QdrantClient: An instance of the Qdrant client.
-        """
-        client = QdrantClient(
-            url=self.url, api_key=settings.QDRANT_SERVICE_API_KEY, prefer_grpc=True
-        )
-        client.set_model(settings.DENSE_EMBEDDING_MODEL)
-        client.set_sparse_model(settings.SPARSE_EMBEDDING_MODEL)
-
-        if not client.collection_exists(self.collection_name):
-            client.create_collection(
-                collection_name=self.collection_name,
-                vectors_config=client.get_fastembed_vector_params(),
-                sparse_vectors_config=client.get_fastembed_sparse_vector_params(),
-            )
-        return client
 
     def delete(self, upload_id: int, user_id: int) -> None:
         """Delete points from collection where upload_id and user_id in metadata matches."""
@@ -142,11 +201,12 @@ class QdrantStore:
             upload_id (int): Filters the retriever results to only include those from this upload ID.
 
         Returns:
-            VectorStoreRetriever: A VectorStoreRetriever instance.
+            QdrantRetriever: A QdrantRetriever instance.
         """
         retriever = QdrantRetriever(
             client=self.client,
             collection_name=self.collection_name,
+            embeddings=self.embeddings,
             search_kwargs=rest.Filter(
                 must=[
                     rest.FieldCondition(
@@ -174,27 +234,15 @@ class QdrantStore:
         Returns:
             List[Document]: A list of documents matching the search criteria.
         """
-        search_results = self.client.query(
+        qdrant = Qdrant(
+            client=self.client,
             collection_name=self.collection_name,
-            query_text=query,
-            query_filter=rest.Filter(
-                must=[
-                    rest.FieldCondition(
-                        key="user_id",
-                        match=rest.MatchValue(value=user_id),
-                    ),
-                    rest.FieldCondition(
-                        key="upload_id",
-                        match=rest.MatchAny(any=upload_ids),
-                    ),
-                ],
-            ),
+            embeddings=self.embeddings,
         )
-        documents: list[Document] = []
-        for result in search_results:
-            document = Document(
-                page_content=result.document,
-                metadata={"score": result.score},
-            )
-            documents.append(document)
-        return documents
+        filter_condition = {
+            "must": [
+                {"key": "user_id", "match": {"value": user_id}},
+                {"key": "upload_id", "match": {"any": upload_ids}},
+            ]
+        }
+        return qdrant.similarity_search(query, filter=filter_condition)

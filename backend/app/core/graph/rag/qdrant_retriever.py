@@ -1,8 +1,11 @@
+from langchain_community.vectorstores import Qdrant
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
+from langchain_core.embeddings import Embeddings
 from qdrant_client import QdrantClient, models
-
+from app.core.config import settings
+from app.core.graph.rag.embeddings import get_embedding_model
 
 class QdrantRetriever(BaseRetriever):
     """
@@ -30,30 +33,29 @@ class QdrantRetriever(BaseRetriever):
     collection_name: str
     search_kwargs: models.Filter | None = None
     k: int = 5
+    embeddings: Embeddings
+
+    def __init__(
+        self,
+        client: QdrantClient,
+        collection_name: str,
+        embeddings: Embeddings,
+        search_kwargs: models.Filter | None = None,
+        k: int = 5
+    ):
+        super().__init__()
+        self.client = client
+        self.collection_name = collection_name
+        self.search_kwargs = search_kwargs
+        self.k = k
+        self.embeddings = embeddings
 
     def _get_relevant_documents(
         self, query: str, *, run_manager: CallbackManagerForRetrieverRun
     ) -> list[Document]:
-        """
-        Retrieve relevant documents from the Qdrant VectorStore.
-
-        Args:
-            query (str): The query text for retrieving documents.
-
-        Returns:
-            list[Document]: A list of relevant Document objects.
-        """
-        search_results = self.client.query(
+        qdrant = Qdrant(
+            client=self.client,
             collection_name=self.collection_name,
-            query_text=query,
-            query_filter=self.search_kwargs,
+            embeddings=self.embeddings,
         )
-        documents: list[Document] = []
-        for result in search_results:
-            document = Document(
-                page_content=result.document,
-                metadata={"score": result.score},
-                limit=self.k,
-            )
-            documents.append(document)
-        return documents
+        return qdrant.similarity_search(query, filter=self.search_kwargs, k=self.k)

@@ -159,7 +159,7 @@ function Uploads() {
                         alignItems={"center"}
                       >
                         <Badge colorScheme="green"> {upload.status}</Badge>
-                        <ActionsMenu type={"Skill"} value={upload} />
+                        <ActionsMenu type={"Upload"} value={upload} />
                       </Box>
                     </Box>
                   ))}

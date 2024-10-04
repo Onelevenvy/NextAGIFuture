@@ -1,4 +1,5 @@
 import os
+import logging
 
 from sqlmodel import Session
 
@@ -6,6 +7,8 @@ from app.core.celery_app import celery_app
 from app.core.db import engine
 from app.core.graph.rag.qdrant import QdrantStore
 from app.models import Upload, UploadStatus
+
+logger = logging.getLogger(__name__)
 
 
 @celery_app.task
@@ -21,8 +24,9 @@ def add_upload(
             upload.status = UploadStatus.COMPLETED
             session.add(upload)
             session.commit()
+            logger.info(f"Upload {upload_id} completed successfully")
         except Exception as e:
-            print(f"add_upload failed: {e}")
+            logger.error(f"add_upload failed: {e}", exc_info=True)
             upload.status = UploadStatus.FAILED
             session.add(upload)
             session.commit()
@@ -40,14 +44,17 @@ def edit_upload(
         if not upload:
             raise ValueError("Upload not found")
         try:
-            QdrantStore().update(
+            qdrant_store = QdrantStore()
+            logger.info("QdrantStore initialized successfully")
+            qdrant_store.update(
                 file_path, upload_id, user_id, chunk_size, chunk_overlap
             )
             upload.status = UploadStatus.COMPLETED
             session.add(upload)
             session.commit()
+            logger.info(f"Upload {upload_id} updated successfully")
         except Exception as e:
-            print(f"edit_upload failed: {e}")
+            logger.error(f"Error in edit_upload task: {e}", exc_info=True)
             upload.status = UploadStatus.FAILED
             session.add(upload)
             session.commit()
@@ -66,5 +73,9 @@ def remove_upload(upload_id: int, user_id: int) -> None:
             QdrantStore().delete(upload_id, user_id)
             session.delete(upload)
             session.commit()
+            logger.info(f"Upload {upload_id} removed successfully")
         except Exception as e:
-            print(f"remove_upload failed: {e}")
+            logger.error(f"remove_upload failed: {e}", exc_info=True)
+            upload.status = UploadStatus.FAILED
+            session.add(upload)
+            session.commit()
