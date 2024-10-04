@@ -3,7 +3,7 @@
 <p align="center">
   <a href="./README_cn.md">简体中文</a> |
   <a href="./README.md">English</a> |
-  <a href="./README_cn.md#如何开始d">快速开始</a>
+  <a href="./README_cn.md#如何开始">快速开始</a>
 </p>
 
 一个基于 LangChain、LangGraph 和其他框架的聊天机器人、RAG、代理和多代理应用项目，开源且能够离线部署。
