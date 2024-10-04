@@ -14,11 +14,8 @@ import ReactFlow, {
   Panel,
   useViewport,
   EdgeLabelRenderer,
-  Position,
-  // getEdgeCenter
 } from "reactflow";
 import { FaPlus } from "react-icons/fa";
-import getEdgeCenter from "reactflow";
 import { useContextMenu } from "@/hooks/graphs/useContextMenu";
 import { useFlowState } from "@/hooks/graphs/useFlowState";
 import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
@@ -35,7 +32,6 @@ import {
   Text,
   useColorModeValue,
   IconButton,
-  Icon,
   VStack,
 } from "@chakra-ui/react";
 import { MdBuild, MdOutlineHelp } from "react-icons/md";
@@ -46,6 +42,7 @@ import NodePalette from "./NodePalette";
 import BaseProperties from "./nodes/Base/Properties";
 import { type NodeType, nodeConfig } from "./nodes/nodeConfig";
 import type { CustomNode, FlowVisualizerProps } from "./types";
+import { calculateEdgeCenter } from './utils';
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -77,6 +74,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
       setSelectedNodeId(node.id);
+      setSelectedEdge(null); // 取消选中的边
     },
     [setSelectedNodeId]
   );
@@ -324,18 +322,12 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     (event: React.MouseEvent, edge: Edge) => {
       event.stopPropagation();
       setSelectedEdge(edge);
-      setShowNodeMenu(false);
 
       const sourceNode = nodes.find((node) => node.id === edge.source);
       const targetNode = nodes.find((node) => node.id === edge.target);
       if (sourceNode && targetNode) {
-        const edgeCenter = getEdgeCenter({
-          sourceX: sourceNode.position.x,
-          sourceY: sourceNode.position.y,
-          targetX: targetNode.position.x,
-          targetY: targetNode.position.y,
-        });
-        setMenuPosition({ x: edgeCenter[0], y: edgeCenter[1] });
+        const centerPoint = calculateEdgeCenter(sourceNode, targetNode);
+        setMenuPosition(centerPoint);
       }
     },
     [nodes]
@@ -409,7 +401,8 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const onPaneClick = useCallback(() => {
     setSelectedEdge(null);
     setShowNodeMenu(false);
-  }, []);
+    setSelectedNodeId(null); // 取消选中的节点
+  }, [setSelectedNodeId]);
 
   return (
     <Box
@@ -509,6 +502,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
                   size="xs"
                   colorScheme="blue"
                   onClick={handleAddNodeClick}
+                  isRound={true} // 使按钮变成圆形
+                  _hover={{ bg: "blue.500" }} // 悬停时的样式
+                  _active={{ bg: "blue.600" }} // 点击时的样式
                 />
               </div>
             )}

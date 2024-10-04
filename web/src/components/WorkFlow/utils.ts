@@ -1,25 +1,13 @@
 import { Node } from 'reactflow';
 
-export const getEdgeParams = (source: Node, target: Node) => {
-  const sourceCenter = {
-    x: source.position.x + (source.width || 0) / 2,
-    y: source.position.y + (source.height || 0) / 2,
-  };
-
-  const targetCenter = {
-    x: target.position.x + (target.width || 0) / 2,
-    y: target.position.y + (target.height || 0) / 2,
-  };
-
-  const sx = sourceCenter.x;
-  const sy = sourceCenter.y;
-  const tx = targetCenter.x;
-  const ty = targetCenter.y;
+export const calculateEdgeCenter = (sourceNode: Node, targetNode: Node): { x: number, y: number } => {
+  const sourceX = sourceNode.position.x + (sourceNode.width ?? 0) / 2;
+  const sourceY = sourceNode.position.y + (sourceNode.height ?? 0) / 2;
+  const targetX = targetNode.position.x + (targetNode.width ?? 0) / 2;
+  const targetY = targetNode.position.y + (targetNode.height ?? 0) / 2;
 
   return {
-    sx,
-    sy,
-    tx,
-    ty,
+    x: (sourceX + targetX) / 2,
+    y: (sourceY + targetY) / 2
   };
 };
