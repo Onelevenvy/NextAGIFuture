@@ -142,9 +142,11 @@ class Settings(BaseSettings):
         return self
 
     # Qdrant
-    QDRANT_SERVICE_API_KEY: str | None = None
-    QDRANT_URL: str | None = None
-    QDRANT_COLLECTION: str | None = None
+    QDRANT_SERVICE_API_KEY: str | None = "XMj3HXm5GlBKQLwZuStOlkwZiOWTdd_IwZNDJINFh-w"
+    # QDRANT_URL: str = "http://localhost:6333"
+    QDRANT_URL: str = "http://127.0.0.1:6333"
+
+    QDRANT_COLLECTION: str | None = "kb_uploads"
 
     # LangSmith
     # USE_LANGSMITH: bool = True
@@ -154,9 +156,18 @@ class Settings(BaseSettings):
     # LANGCHAIN_PROJECT: str | None = None
 
     # Embeddings
-    DENSE_EMBEDDING_MODEL: str | None = None
-    SPARSE_EMBEDDING_MODEL: str | None = None
-    FASTEMBED_CACHE_PATH: str | None = None
+    # EMBEDDING_MODEL: str = "local"  # 或者你想使用的其他模型
+    EMBEDDING_MODEL: str = "zhipuai"  # 或者你想使用的其他模型
+
+    DENSE_EMBEDDING_MODEL: str = (
+        "sentence-transformers/all-MiniLM-L6-v2"  # 默认的密集嵌入模型
+    )
+    SPARSE_EMBEDDING_MODEL: str = (
+        "sentence-transformers/all-MiniLM-L6-v2"  # 默认的稀疏嵌入模型
+    )
+    ZHIPUAI_API_KEY: str | None = None
+    SILICONFLOW_API_KEY: str | None = None
+    OLLAMA_BASE_URL: str | None = None
 
     # Celery
     CELERY_BROKER_URL: str | None = None
@@ -165,6 +176,8 @@ class Settings(BaseSettings):
 
     RECURSION_LIMIT: int = 25
     TAVILY_API_KEY: str | None = None
+
+    OPENAI_API_KEY: str
 
 
 settings = Settings()  # type: ignore

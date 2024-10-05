@@ -83,7 +83,7 @@ def event_to_response(event: StreamEvent) -> ChatResponse | None:
             for doc in docs:
                 documents.append(
                     {
-                        "score": doc.metadata["score"],
+                        # "score": doc.metadata["score"],
                         "content": doc.page_content,
                     }
                 )
