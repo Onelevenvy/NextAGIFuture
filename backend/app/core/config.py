@@ -143,7 +143,7 @@ class Settings(BaseSettings):
 
     # Qdrant
     QDRANT_SERVICE_API_KEY: str | None = "XMj3HXm5GlBKQLwZuStOlkwZiOWTdd_IwZNDJINFh-w"
-    QDRANT_URL: str | None = "http://localhost:6333"
+    QDRANT_URL: str = "http://localhost:6333"  # 确保这里是正确的 URL
     QDRANT_COLLECTION: str | None = "kb_uploads"
 
     # LangSmith
@@ -154,7 +154,7 @@ class Settings(BaseSettings):
     # LANGCHAIN_PROJECT: str | None = None
 
     # Embeddings
-    # EMBEDDING_MODEL: str = "siliconflow"  # 或者你想使用的其他模型
+    # EMBEDDING_MODEL: str = "local"  # 或者你想使用的其他模型
     EMBEDDING_MODEL: str = "zhipuai"  # 或者你想使用的其他模型
 
     DENSE_EMBEDDING_MODEL: str = (
