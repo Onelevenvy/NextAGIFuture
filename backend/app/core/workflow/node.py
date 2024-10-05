@@ -18,7 +18,7 @@ from langgraph.graph import add_messages
 from pydantic import BaseModel, Field
 from typing_extensions import NotRequired, TypedDict
 
-from app.core.graph.rag.qdrant import QdrantStore
+from app.core.rag.qdrant import QdrantStore
 from app.core.tools import managed_tools
 from app.core.tools.api_tool import dynamic_api_tool
 from app.core.tools.retriever_tool import create_retriever_tool
@@ -253,7 +253,9 @@ class LLMNode(BaseNode):
                         "If you are unable to perform the task, that's OK, you can ask human for help, or just say that you are unable to perform the task."
                         "Execute what you can to make progress. "
                         "And your role is:" + self.system_prompt + "\n"
-                        "And your name is:" + self.agent_name + "please remember your name\n"
+                        "And your name is:"
+                        + self.agent_name
+                        + "please remember your name\n"
                         "Stay true to your role and use your tools if necessary.\n\n",
                     ),
                     (

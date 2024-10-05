@@ -1,6 +1,6 @@
 from collections.abc import Mapping, Sequence
 from typing import Annotated, Any
-from app.core.graph.rag.qdrant import QdrantStore
+from app.core.rag.qdrant import QdrantStore
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 from langchain.chat_models import init_chat_model
@@ -19,7 +19,7 @@ from langgraph.graph import add_messages
 from pydantic import BaseModel, Field
 from typing_extensions import NotRequired, TypedDict
 
-from app.core.graph.rag.qdrant import QdrantStore
+from app.core.rag.qdrant import QdrantStore
 from app.core.tools import managed_tools
 from app.core.tools.api_tool import dynamic_api_tool
 from app.core.tools.retriever_tool import create_retriever_tool

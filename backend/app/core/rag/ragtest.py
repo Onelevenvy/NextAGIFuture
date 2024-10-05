@@ -1,4 +1,4 @@
-from app.core.graph.rag.qdrant import QdrantStore
+from app.core.rag.qdrant import QdrantStore
 from app.core.tools.retriever_tool import create_retriever_tool
 import logging
 import json

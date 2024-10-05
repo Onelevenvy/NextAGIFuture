@@ -2,8 +2,8 @@ import sys
 
 sys.path.append("./")
 
-from app.core.graph.rag.qdrant import QdrantStore
-from app.core.graph.rag.embeddings import get_embedding_model
+from app.core.rag.qdrant import QdrantStore
+from app.core.rag.embeddings import get_embedding_model
 
 # 初始化 QdrantStore 和嵌入模型
 qdrant_store = QdrantStore()

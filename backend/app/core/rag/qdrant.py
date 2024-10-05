@@ -8,7 +8,7 @@ from qdrant_client.http import models as rest
 from qdrant_client.models import VectorParams, Distance
 import pymupdf
 from app.core.config import settings
-from app.core.graph.rag.embeddings import get_embedding_model
+from app.core.rag.embeddings import get_embedding_model
 
 import logging
 
