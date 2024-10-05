@@ -1,11 +1,9 @@
 from collections.abc import Mapping, Sequence
 from typing import Annotated, Any
 from app.core.graph.rag.qdrant import QdrantStore
-from app.core.tools.retriever_tool import create_retriever_tool
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 from langchain.chat_models import init_chat_model
-from langchain.tools.retriever import create_retriever_tool
 from langchain_core.messages import AIMessage, AnyMessage
 from langchain_core.output_parsers.openai_tools import JsonOutputKeyToolsParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -66,11 +64,8 @@ class GraphUpload(BaseModel):
     def tool(self) -> BaseTool:
         qdrant_store = QdrantStore()
         retriever = qdrant_store.retriever(self.owner_id, self.upload_id)
-        return create_retriever_tool(
-            retriever,
-            name=f"KnowledgeBase_{self.name}",
-            description=f"Query documents from {self.name}: {self.description}"
-        )
+        return create_retriever_tool(retriever)
+
 
 class GraphPerson(BaseModel):
     name: str = Field(description="The name of the person")

@@ -143,7 +143,9 @@ class Settings(BaseSettings):
 
     # Qdrant
     QDRANT_SERVICE_API_KEY: str | None = "XMj3HXm5GlBKQLwZuStOlkwZiOWTdd_IwZNDJINFh-w"
-    QDRANT_URL: str = "http://localhost:6333"  # 确保这里是正确的 URL
+    # QDRANT_URL: str = "http://localhost:6333"
+    QDRANT_URL: str = "http://127.0.0.1:6333"
+
     QDRANT_COLLECTION: str | None = "kb_uploads"
 
     # LangSmith

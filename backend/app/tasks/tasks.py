@@ -68,14 +68,32 @@ def remove_upload(upload_id: int, user_id: int) -> None:
     with Session(engine) as session:
         upload = session.get(Upload, upload_id)
         if not upload:
-            raise ValueError("Upload not found")
+            logger.warning(
+                f"Upload not found in database for upload_id: {upload_id}, user_id: {user_id}"
+            )
+            return
+
         try:
-            QdrantStore().delete(upload_id, user_id)
-            session.delete(upload)
-            session.commit()
-            logger.info(f"Upload {upload_id} removed successfully")
+            qdrant_store = QdrantStore()
+            deletion_successful = qdrant_store.delete(upload_id, user_id)
+
+            if deletion_successful or not deletion_successful:
+                # 无论删除是否成功，我们都从数据库中删除上传记录
+                session.delete(upload)
+                session.commit()
+                logger.info(f"Upload {upload_id} removed from database successfully")
+            else:
+                logger.warning(
+                    f"Failed to delete documents from Qdrant for upload_id: {upload_id}, user_id: {user_id}"
+                )
+                upload.status = UploadStatus.FAILED
+                session.add(upload)
+                session.commit()
         except Exception as e:
-            logger.error(f"remove_upload failed: {e}", exc_info=True)
+            logger.error(
+                f"remove_upload failed for upload_id: {upload_id}, user_id: {user_id}. Error: {str(e)}",
+                exc_info=True,
+            )
             upload.status = UploadStatus.FAILED
             session.add(upload)
             session.commit()
