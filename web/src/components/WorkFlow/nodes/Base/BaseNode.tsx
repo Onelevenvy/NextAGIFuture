@@ -3,7 +3,7 @@ import type React from "react";
 import type { NodeProps } from "reactflow";
 
 interface BaseNodeProps extends NodeProps {
-  icon: React.ReactElement;
+  icon?: React.ReactElement;
   colorScheme: string;
   children: React.ReactNode;
 }

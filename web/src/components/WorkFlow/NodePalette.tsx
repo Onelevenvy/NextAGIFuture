@@ -1,8 +1,9 @@
-import { Box, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack } from "@chakra-ui/react";
+import { Box, HStack, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack } from "@chakra-ui/react";
 import type React from "react";
 import { type NodeType, nodeConfig } from "./nodes/nodeConfig";
 import { useSkillsQuery } from "@/hooks/useSkillsQuery"; // 导入获取技能的钩子
 import { FaTools } from "react-icons/fa";
+import ToolsIcon from "../Icons/Tools";
 
 const NodePalette: React.FC = () => {
   const { data: tools, isLoading, isError, error } = useSkillsQuery(); // 获取工具列表
@@ -31,26 +32,29 @@ const NodePalette: React.FC = () => {
           <TabPanel>
             <VStack spacing={4} align="stretch">
               {Object.entries(nodeConfig).map(([nodeType, { display, icon: Icon, colorScheme }]) => (
-                <Box
-                  key={nodeType}
-                  border="1px solid #ddd"
-                  borderRadius="md"
-                  padding={2}
-                  textAlign="left"
-                  cursor="move"
-                  draggable
-                  onDragStart={(event) => onDragStart(event, nodeType as NodeType)}
-                >
-                  <IconButton
-                    aria-label={display}
-                    icon={<Icon />}
-                    colorScheme={colorScheme}
-                    size="xs"
-                  />
-                  <Text display="inline" ml={2}>
-                    {display}
-                  </Text>
-                </Box>
+                // 过滤掉 plugin 类型的节点
+                nodeType !== 'plugin' && (
+                  <Box
+                    key={nodeType}
+                    border="1px solid #ddd"
+                    borderRadius="md"
+                    padding={2}
+                    textAlign="left"
+                    cursor="move"
+                    draggable
+                    onDragStart={(event) => onDragStart(event, nodeType as NodeType)}
+                  >
+                    <IconButton
+                      aria-label={display}
+                      icon={<Icon />}
+                      colorScheme={colorScheme}
+                      size="xs"
+                    />
+                    <Text display="inline" ml={2}>
+                      {display}
+                    </Text>
+                  </Box>
+                )
               ))}
             </VStack>
           </TabPanel>
@@ -72,15 +76,14 @@ const NodePalette: React.FC = () => {
                     draggable
                     onDragStart={(event) => onDragStart(event, "plugin")} // 使用相同的类型
                   >
-                    <IconButton
-                      aria-label={"iconbutton"}
-                      icon={<FaTools />} // 你可以为每个工具选择不同的图标
-                      colorScheme="blue"
-                      size="xs"
-                    />
-                    <Text display="inline" ml={2}>
-                      {tool.display_name}
-                    </Text>
+                     <HStack spacing={"2"}>
+                  <ToolsIcon
+                    tools_name={tool.display_name!.replace(/ /g, "_")}
+                    ml="2"
+                   
+                  />
+                  <Text fontSize={"3xs"}>{tool.display_name}</Text>
+                </HStack>
                   </Box>
                 ))
               )}

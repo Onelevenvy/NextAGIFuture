@@ -55,18 +55,18 @@ def init_db(session: Session) -> None:
 
     # Add or update skills in the database
     for skill_name, skill_info in managed_tools.items():
-
         if skill_name in existing_skills_dict:
             existing_skill = existing_skills_dict[skill_name]
 
             if (
                 existing_skill.description != skill_info.description
                 or existing_skill.display_name != skill_info.display_name
+                or existing_skill.input_parameters != skill_info.input_parameters  # 检查输入参数是否变化
             ):
-
-                # Update the existing skill's description
+                # Update the existing skill's description and input parameters
                 existing_skill.description = skill_info.description
                 existing_skill.display_name = skill_info.display_name
+                existing_skill.input_parameters = skill_info.input_parameters  # 更新输入参数
                 session.add(existing_skill)  # Mark the modified object for saving
         else:
             new_skill = Skill(
@@ -75,6 +75,7 @@ def init_db(session: Session) -> None:
                 managed=True,
                 owner_id=user.id,
                 display_name=skill_info.display_name,
+                input_parameters=skill_info.input_parameters,  # 保存输入参数
             )
             session.add(new_skill)  # Prepare new skill for addition to the database
 
@@ -111,15 +112,13 @@ def init_modelprovider_model_db(session: Session) -> None:
         (3, 'gpt4o-mini', 4),
         (4, 'llama3.1:8b', 1),
         (5, 'Qwen/Qwen2-7B-Instruct', 2),
-      
-         (6, 'glm-4-alltools', 3),
-         (7, 'glm-4-flash', 3),
+        (6, 'glm-4-alltools', 3),
+        (7, 'glm-4-flash', 3),
         (8, 'glm-4-0520', 3),
-         (9, 'glm-4-plus', 3),
-         (10, 'glm-4v-plus', 3),
-          (11, 'glm-4', 3),
-           (12, 'glm-4v', 3)
-          
+        (9, 'glm-4-plus', 3),
+        (10, 'glm-4v-plus', 3),
+        (11, 'glm-4', 3),
+        (12, 'glm-4v', 3)
     ON CONFLICT (id) DO NOTHING;
     """
 
