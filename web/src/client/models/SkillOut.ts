@@ -9,6 +9,7 @@ export type SkillOut = {
     display_name?: (string | null);
     managed?: boolean;
     tool_definition?: (Record<string, any> | null);
+    input_parameters?: (Record<string, any> | null);
     id: number;
 };
 

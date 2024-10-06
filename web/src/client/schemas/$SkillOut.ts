@@ -35,6 +35,18 @@ export const $SkillOut = {
                 type: 'null',
             }],
         },
+        input_parameters: {
+            type: 'any-of',
+            contains: [{
+                type: 'dictionary',
+                contains: {
+                    properties: {
+                    },
+                },
+            }, {
+                type: 'null',
+            }],
+        },
         id: {
             type: 'number',
             isRequired: true,

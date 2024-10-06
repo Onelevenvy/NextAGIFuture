@@ -4396,6 +4396,17 @@
             ],
             "title": "Tool Definition"
           },
+          "input_parameters": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Parameters"
+          },
           "id": {
             "anyOf": [
               {
@@ -4455,6 +4466,17 @@
           "tool_definition": {
             "type": "object",
             "title": "Tool Definition"
+          },
+          "input_parameters": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Parameters"
           }
         },
         "type": "object",
@@ -4501,6 +4523,17 @@
               }
             ],
             "title": "Tool Definition"
+          },
+          "input_parameters": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Parameters"
           },
           "id": {
             "type": "integer",
@@ -4571,6 +4604,17 @@
               }
             ],
             "title": "Tool Definition"
+          },
+          "input_parameters": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Parameters"
           }
         },
         "type": "object",

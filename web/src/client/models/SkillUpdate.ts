@@ -9,5 +9,6 @@ export type SkillUpdate = {
     display_name?: (string | null);
     managed?: (boolean | null);
     tool_definition?: (Record<string, any> | null);
+    input_parameters?: (Record<string, any> | null);
 };
 

@@ -48,5 +48,17 @@ export const $SkillUpdate = {
                 type: 'null',
             }],
         },
+        input_parameters: {
+            type: 'any-of',
+            contains: [{
+                type: 'dictionary',
+                contains: {
+                    properties: {
+                    },
+                },
+            }, {
+                type: 'null',
+            }],
+        },
     },
 } as const;
