@@ -11,6 +11,7 @@ const NodePalette: React.FC = () => {
   const onDragStart = (event: React.DragEvent, tool: any, type: string) => {
     event.dataTransfer.setData("application/reactflow", JSON.stringify({ tool, type })); // 传递工具的完整信息和类型
     event.dataTransfer.effectAllowed = "move";
+    console.log(`Dragging type: ${type}`); // 添加调试信息
   };
 
   return (
@@ -42,7 +43,7 @@ const NodePalette: React.FC = () => {
                     textAlign="left"
                     cursor="move"
                     draggable
-                    onDragStart={(event) => onDragStart(event, nodeType, 'node')} // 传递节点类型
+                    onDragStart={(event) => onDragStart(event, nodeType, nodeType)} // 确保传递 nodeType
                   >
                     <IconButton
                       aria-label={display}

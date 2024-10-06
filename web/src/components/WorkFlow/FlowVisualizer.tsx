@@ -235,23 +235,26 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
       let newNode: CustomNode;
 
-      if (type === 'plugin') {
-        newNode = {
-          id: `${tool.display_name}-${nodes.length + 1}`, // 确保每个插件节点唯一
-          type: "plugin",
-          position,
-          data: {
-            label: tool.display_name,
-            toolName: tool.display_name,
-            args: {},
-            ...tool.initialData,
-          },
-        };
+      if (type !== 'plugin') {
+        const baseLabel = `${nodeConfig[type].display}`;
+      const uniqueName = generateUniqueName(baseLabel);
+      newNode = {
+        id: `${type}-${nodes.length + 1}`,
+        type,
+        position,
+        data: {
+          label: uniqueName, // 使用生成的唯一名称
+          customName: uniqueName,
+          onChange: (key: string, value: any) =>
+            onNodeDataChange(`${type}-${nodes.length + 1}`, key, value),
+          ...nodeConfig[type].initialData,
+        },
+      };
       } else {
         // 处理其他类型的节点（如 tools）
         newNode = {
-          id: `${tool.name}-${nodes.length + 1}`, // 确保每个工具节点唯一
-          type: "tool", // 假设工具节点的类型为 "tool"
+          id: `${tool.display_name}-${nodes.length + 1}`, // 确保每个插件节点唯一
+          type: "plugin",
           position,
           data: {
             label: tool.display_name,
