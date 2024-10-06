@@ -224,33 +224,29 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
-      const type = event.dataTransfer.getData(
-        "application/reactflow"
-      ) as NodeType;
-      if (typeof type === "undefined" || !type) return;
+      const toolData = event.dataTransfer.getData("application/reactflow");
+      if (!toolData) return;
 
+      const tool = JSON.parse(toolData); // 解析工具数据
       const position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
-      const baseLabel = `${nodeConfig[type].display}`;
-      const uniqueName = generateUniqueName(baseLabel);
       const newNode: CustomNode = {
-        id: `${type}-${nodes.length + 1}`,
-        type,
+        id: `${tool.name}-${nodes.length + 1}`, // 确保每个节点唯一
+        type: "plugin", // 确保类型为 plugin
         position,
         data: {
-          label: uniqueName, // 使用生成的唯一名称
-          customName: uniqueName,
-          onChange: (key: string, value: any) =>
-            onNodeDataChange(`${type}-${nodes.length + 1}`, key, value),
-          ...nodeConfig[type].initialData,
+          label: tool.display_name, // 使用工具的显示名称
+          toolName: tool.display_name, // 使用工具的名称
+          args: {}, // 初始化参数
+          ...tool.initialData, // 如果有初始数据
         },
       };
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [nodes, reactFlowInstance, setNodes, onNodeDataChange, generateUniqueName]
+    [nodes, reactFlowInstance, setNodes]
   );
   const closePropertiesPanel = useCallback(() => {
     setSelectedNodeId(null);

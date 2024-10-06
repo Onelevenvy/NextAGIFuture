@@ -8,8 +8,8 @@ import ToolsIcon from "../Icons/Tools";
 const NodePalette: React.FC = () => {
   const { data: tools, isLoading, isError, error } = useSkillsQuery(); // 获取工具列表
 
-  const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {
-    event.dataTransfer.setData("application/reactflow", nodeType);
+  const onDragStart = (event: React.DragEvent, tool: any) => {
+    event.dataTransfer.setData("application/reactflow", JSON.stringify(tool)); // 传递工具的完整信息
     event.dataTransfer.effectAllowed = "move";
   };
 
@@ -65,7 +65,7 @@ const NodePalette: React.FC = () => {
               ) : isError ? (
                 <Text>Error loading tools: {}</Text>
               ) : (
-                tools?.data.map((tool) => ( // 确保访问正确的属性
+                tools?.data.map((tool) => (
                   <Box
                     key={tool.display_name}
                     border="1px solid #ddd"
@@ -74,16 +74,15 @@ const NodePalette: React.FC = () => {
                     textAlign="left"
                     cursor="move"
                     draggable
-                    onDragStart={(event) => onDragStart(event, "plugin")} // 使用相同的类型
+                    onDragStart={(event) => onDragStart(event, tool)} // 传递工具对象
                   >
-                     <HStack spacing={"2"}>
-                  <ToolsIcon
-                    tools_name={tool.display_name!.replace(/ /g, "_")}
-                    ml="2"
-                   
-                  />
-                  <Text fontSize={"3xs"}>{tool.display_name}</Text>
-                </HStack>
+                    <HStack spacing={"2"}>
+                      <ToolsIcon
+                        tools_name={tool.display_name!.replace(/ /g, "_")}
+                        ml="2"
+                      />
+                      <Text fontSize={"3xs"}>{tool.display_name}</Text>
+                    </HStack>
                   </Box>
                 ))
               )}
