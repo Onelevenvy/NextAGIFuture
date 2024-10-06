@@ -81,7 +81,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
   plugin: {
     display: "Plugin",
     icon: TfiGithub, // 你需要定义一个图标
-    colorScheme: "blue",
+    colorScheme: "gray",
     properties: PluginNodeProperties, // 如果有特定的属性面板
     initialData: {
       toolName: "", // 工具名称

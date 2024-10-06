@@ -15,7 +15,9 @@ const PluginNodeProperties: React.FC<PluginNodePropertiesProps> = ({
 }) => {
   const { data: skills } = useSkillsQuery(); // 获取工具信息
   // 根据 node.data.toolName 匹配工具
-  const tool = skills?.data.find(skill => skill.display_name === node.data.toolName); // 获取当前工具
+  const tool = skills?.data.find(
+    (skill) => skill.display_name === node.data.toolName
+  ); // 获取当前工具
   const [loading, setLoading] = useState(false); // 加载状态
 
   const handleInvoke = async () => {
@@ -36,24 +38,24 @@ const PluginNodeProperties: React.FC<PluginNodePropertiesProps> = ({
   return (
     <VStack align="stretch" spacing={4}>
       <Box>
-        <Text fontWeight="bold">Tool Name:</Text>
-        <Text>{tool?.display_name || node.data.toolName}</Text> {/* 显示工具名称 */}
+        <Text fontWeight="bold">Input param:</Text>
       </Box>
-      {tool?.input_parameters && Object.entries(tool.input_parameters).map(([key, value]) => (
-        <Box key={key}>
-          <Text fontWeight="bold">{key}:</Text>
-          <Input
-            value={node.data.args[key] || ""}
-            onChange={(e) =>
-              onNodeDataChange(node.id, "args", {
-                ...node.data.args,
-                [key]: e.target.value,
-              })
-            }
-            placeholder={`Enter ${key}`}
-          />
-        </Box>
-      ))}
+      {tool?.input_parameters &&
+        Object.entries(tool.input_parameters).map(([key, value]) => (
+          <Box key={key}>
+            <Text fontWeight="bold">{key}:</Text>
+            <Input
+              value={node.data.args[key] || ""}
+              onChange={(e) =>
+                onNodeDataChange(node.id, "args", {
+                  ...node.data.args,
+                  [key]: e.target.value,
+                })
+              }
+              placeholder={`Enter ${key}`}
+            />
+          </Box>
+        ))}
       <Button onClick={handleInvoke} isLoading={loading}>
         Run Tool
       </Button>
