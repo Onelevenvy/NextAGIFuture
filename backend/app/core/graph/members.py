@@ -1,8 +1,6 @@
 from collections.abc import Mapping, Sequence
 from typing import Annotated, Any
-from app.core.rag.qdrant import QdrantStore
-from langchain_core.tools import BaseTool
-from pydantic import BaseModel, Field
+
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import AIMessage, AnyMessage
 from langchain_core.output_parsers.openai_tools import JsonOutputKeyToolsParser
@@ -40,9 +38,6 @@ class GraphSkill(BaseModel):
             return dynamic_api_tool(self.definition)
         else:
             raise ValueError("Skill is not managed and no definition provided.")
-
-
-
 
 
 class GraphUpload(BaseModel):

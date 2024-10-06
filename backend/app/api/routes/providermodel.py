@@ -4,9 +4,9 @@ from app.api.deps import SessionDep
 from app.curd.models import (
     _create_model,
     _delete_model,
+    _update_model,
     get_all_models,
     get_models_by_provider,
-    _update_model,
 )
 from app.models import Models, ModelsBase, ModelsOut
 

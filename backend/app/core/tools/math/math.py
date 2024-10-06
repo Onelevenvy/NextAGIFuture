@@ -1,8 +1,8 @@
 # This is an example showing how to create a simple calculator skill
 
+import numexpr as ne
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import StructuredTool
-import numexpr as ne
 
 
 class MathInput(BaseModel):
@@ -14,7 +14,7 @@ def math_cal(expression: str) -> str:
         result = ne.evaluate(expression)
         result_str = str(result)
         return f"{result_str}"
-    except Exception as e:
+    except Exception:
 
         return f"Error evaluating expression: {expression}"
 

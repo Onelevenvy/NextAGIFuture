@@ -58,5 +58,3 @@ openweather = StructuredTool.from_function(
     args_schema=WeatherSearchInput,
     return_direct=True,
 )
-
-

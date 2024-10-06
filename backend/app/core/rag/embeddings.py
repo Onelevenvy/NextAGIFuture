@@ -1,11 +1,13 @@
-from typing import List
-from langchain_core.embeddings import Embeddings
-from langchain_openai import OpenAIEmbeddings
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_core.pydantic_v1 import BaseModel, Extra
-import requests
-from app.core.config import settings
 import logging
+from typing import List
+
+import requests
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_core.embeddings import Embeddings
+from langchain_core.pydantic_v1 import BaseModel, Extra
+from langchain_openai import OpenAIEmbeddings
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
