@@ -224,25 +224,43 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
-      const toolData = event.dataTransfer.getData("application/reactflow");
-      if (!toolData) return;
+      const data = event.dataTransfer.getData("application/reactflow");
+      if (!data) return;
 
-      const tool = JSON.parse(toolData); // 解析工具数据
+      const { tool, type } = JSON.parse(data); // 解析工具数据和类型
       const position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
-      const newNode: CustomNode = {
-        id: `${tool.name}-${nodes.length + 1}`, // 确保每个节点唯一
-        type: "plugin", // 确保类型为 plugin
-        position,
-        data: {
-          label: tool.display_name, // 使用工具的显示名称
-          toolName: tool.display_name, // 使用工具的名称
-          args: {}, // 初始化参数
-          ...tool.initialData, // 如果有初始数据
-        },
-      };
+
+      let newNode: CustomNode;
+
+      if (type === 'plugin') {
+        newNode = {
+          id: `${tool.display_name}-${nodes.length + 1}`, // 确保每个插件节点唯一
+          type: "plugin",
+          position,
+          data: {
+            label: tool.display_name,
+            toolName: tool.display_name,
+            args: {},
+            ...tool.initialData,
+          },
+        };
+      } else {
+        // 处理其他类型的节点（如 tools）
+        newNode = {
+          id: `${tool.name}-${nodes.length + 1}`, // 确保每个工具节点唯一
+          type: "tool", // 假设工具节点的类型为 "tool"
+          position,
+          data: {
+            label: tool.display_name,
+            toolName: tool.display_name,
+            args: {},
+            ...tool.initialData,
+          },
+        };
+      }
 
       setNodes((nds) => nds.concat(newNode));
     },

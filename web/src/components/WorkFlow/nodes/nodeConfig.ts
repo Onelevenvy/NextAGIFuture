@@ -1,4 +1,5 @@
 import { FaPlay, FaRobot, FaStop, FaTools } from "react-icons/fa";
+import { TfiGithub } from "react-icons/tfi";
 import EndNodeProperties from "./End/Properties";
 import LLMNodeProperties from "./LLM/Properties";
 import QuestionClassifierProperties from "./QuestionClassifier/Properties";
@@ -79,7 +80,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
   },
   plugin: {
     display: "Plugin",
-    icon: FaRobot, // 你需要定义一个图标
+    icon: TfiGithub, // 你需要定义一个图标
     colorScheme: "blue",
     properties: PluginNodeProperties, // 如果有特定的属性面板
     initialData: {

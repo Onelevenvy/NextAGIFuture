@@ -1,15 +1,15 @@
 import { Box, HStack, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack } from "@chakra-ui/react";
 import type React from "react";
-import { type NodeType, nodeConfig } from "./nodes/nodeConfig";
+import { nodeConfig, type NodeType } from "./nodes/nodeConfig"; // 确保导入 NodeType
 import { useSkillsQuery } from "@/hooks/useSkillsQuery"; // 导入获取技能的钩子
 import { FaTools } from "react-icons/fa";
 import ToolsIcon from "../Icons/Tools";
 
 const NodePalette: React.FC = () => {
-  const { data: tools, isLoading, isError, error } = useSkillsQuery(); // 获取工具列表
+  const { data: tools, isLoading, isError } = useSkillsQuery(); // 获取工具列表
 
-  const onDragStart = (event: React.DragEvent, tool: any) => {
-    event.dataTransfer.setData("application/reactflow", JSON.stringify(tool)); // 传递工具的完整信息
+  const onDragStart = (event: React.DragEvent, tool: any, type: string) => {
+    event.dataTransfer.setData("application/reactflow", JSON.stringify({ tool, type })); // 传递工具的完整信息和类型
     event.dataTransfer.effectAllowed = "move";
   };
 
@@ -42,7 +42,7 @@ const NodePalette: React.FC = () => {
                     textAlign="left"
                     cursor="move"
                     draggable
-                    onDragStart={(event) => onDragStart(event, nodeType as NodeType)}
+                    onDragStart={(event) => onDragStart(event, nodeType, 'node')} // 传递节点类型
                   >
                     <IconButton
                       aria-label={display}
@@ -74,7 +74,7 @@ const NodePalette: React.FC = () => {
                     textAlign="left"
                     cursor="move"
                     draggable
-                    onDragStart={(event) => onDragStart(event, tool)} // 传递工具对象
+                    onDragStart={(event) => onDragStart(event, tool, 'plugin')} // 传递工具对象和类型
                   >
                     <HStack spacing={"2"}>
                       <ToolsIcon
