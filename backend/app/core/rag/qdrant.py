@@ -1,16 +1,16 @@
-from typing import List, Callable
+import logging
+from typing import Callable, List
+
 from langchain_community.document_loaders import PyMuPDFLoader, WebBaseLoader
 from langchain_core.documents import Document
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_qdrant import QdrantVectorStore
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest
-from qdrant_client.models import VectorParams, Distance
-import pymupdf
+from qdrant_client.models import Distance, VectorParams
+
 from app.core.config import settings
 from app.core.rag.embeddings import get_embedding_model
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 class QdrantStore:
     def __init__(self) -> None:
         self.collection_name = settings.QDRANT_COLLECTION
+        # self.url = "http://localhost:6333"
         self.url = settings.QDRANT_URL
         self.embedding_model = get_embedding_model(settings.EMBEDDING_MODEL)
 
@@ -33,7 +34,9 @@ class QdrantStore:
     def _initialize_vector_store(self):
         try:
             collections = self.client.get_collections().collections
-            if self.collection_name not in [collection.name for collection in collections]:
+            if self.collection_name not in [
+                collection.name for collection in collections
+            ]:
                 logger.info(f"Creating new collection: {self.collection_name}")
                 self.client.create_collection(
                     collection_name=self.collection_name,
@@ -113,7 +116,7 @@ class QdrantStore:
                             match=rest.MatchValue(value=upload_id),
                         ),
                     ],
-                )
+                ),
             )
             logger.info(f"Delete operation result: {result}")
             return True
@@ -136,46 +139,53 @@ class QdrantStore:
             callback()
 
     def search(self, user_id: int, upload_ids: List[int], query: str) -> List[Document]:
-        logger.info(f"Searching with query: '{query}' for user_id: {user_id}, upload_ids: {upload_ids}")
-        
+        logger.info(
+            f"Searching with query: '{query}' for user_id: {user_id}, upload_ids: {upload_ids}"
+        )
+
         query_vector = self.embedding_model.embed_query(query)
-        
+
         filter_condition = {
             "must": [
                 {"key": "metadata.user_id", "match": {"value": user_id}},
-                {"key": "metadata.upload_id", "match": {"any": upload_ids}}
+                {"key": "metadata.upload_id", "match": {"any": upload_ids}},
             ]
         }
         logger.info(f"Search filter condition: {filter_condition}")
-        
+
         search_results = self.client.search(
             collection_name=self.collection_name,
             query_vector=query_vector,
             query_filter=filter_condition,
-            limit=4
+            limit=4,
         )
-        
-        documents = [Document(page_content=result.payload.get('page_content', ''), metadata=result.payload.get('metadata', {})) for result in search_results]
-        
+
+        documents = [
+            Document(
+                page_content=result.payload.get("page_content", ""),
+                metadata=result.payload.get("metadata", {}),
+            )
+            for result in search_results
+        ]
+
         logger.info(f"Search results: {len(documents)} documents found")
         for doc in documents:
             logger.info(f"Document metadata: {doc.metadata}")
-        
+
         return documents
 
     def retriever(self, user_id: int, upload_id: int):
-        logger.info(f"Creating retriever for user_id: {user_id}, upload_id: {upload_id}")
+        logger.info(
+            f"Creating retriever for user_id: {user_id}, upload_id: {upload_id}"
+        )
         filter_condition = {
             "must": [
                 {"key": "metadata.user_id", "match": {"value": user_id}},
-                {"key": "metadata.upload_id", "match": {"value": upload_id}}
+                {"key": "metadata.upload_id", "match": {"value": upload_id}},
             ]
         }
         retriever = self.vector_store.as_retriever(
-            search_kwargs={
-                "filter": filter_condition,
-                "k": 5
-            },
+            search_kwargs={"filter": filter_condition, "k": 5},
             search_type="similarity",
         )
         logger.info(f"Retriever created: {retriever}")

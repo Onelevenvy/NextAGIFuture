@@ -2,11 +2,12 @@ import base64
 import hashlib
 import hmac
 import json
+import os
 from datetime import datetime
 from time import mktime
 from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
-import os
+
 import requests
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import StructuredTool

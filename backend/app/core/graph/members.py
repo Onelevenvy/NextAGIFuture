@@ -1,8 +1,6 @@
 from collections.abc import Mapping, Sequence
 from typing import Annotated, Any
-from app.core.rag.qdrant import QdrantStore
-from langchain_core.tools import BaseTool
-from pydantic import BaseModel, Field
+
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import AIMessage, AnyMessage
 from langchain_core.output_parsers.openai_tools import JsonOutputKeyToolsParser
@@ -40,18 +38,6 @@ class GraphSkill(BaseModel):
             return dynamic_api_tool(self.definition)
         else:
             raise ValueError("Skill is not managed and no definition provided.")
-
-
-# class GraphUpload(BaseModel):
-#     name: str = Field(description="Name of the upload")
-#     description: str = Field(description="Description of the upload")
-#     owner_id: int = Field(description="Id of the user that owns this upload")
-#     upload_id: int = Field(description="Id of the upload")
-
-#     @property
-#     def tool(self) -> BaseTool:
-#         retriever = QdrantStore().retriever(self.owner_id, self.upload_id)
-#         return create_retriever_tool(retriever)
 
 
 class GraphUpload(BaseModel):

@@ -828,7 +828,7 @@ async def generator(
                     formatted_output = f"data: {response.model_dump_json()}\n\n"
                     yield formatted_output
             snapshot = await root.aget_state(config)
-           
+
             if snapshot.next:
                 # Interrupt occured
                 message = snapshot.values["messages"][-1]
