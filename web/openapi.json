@@ -1634,6 +1634,60 @@
         }
       }
     },
+    "/api/v1/tools/invoke-tool": {
+      "post": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Invoke Tools",
+        "description": "Invoke a tool by name with the provided arguments.",
+        "operationId": "invoke_tools",
+        "parameters": [
+          {
+            "name": "tool_name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tool Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "Args"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolInvokeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/teams/{team_id}/threads/": {
       "get": {
         "tags": [
@@ -2108,12 +2162,7 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Body_uploads-update_upload"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/Body_uploads-update_upload"
               }
             }
           }
@@ -3123,6 +3172,17 @@
               }
             ],
             "title": "Content"
+          },
+          "imgdata": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imgdata"
           },
           "tool_calls": {
             "anyOf": [
@@ -4906,6 +4966,56 @@
           "tool_definition"
         ],
         "title": "ToolDefinitionValidate"
+      },
+      "ToolInvokeResponse": {
+        "properties": {
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/ToolMessages"
+            },
+            "type": "array",
+            "title": "Messages"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "messages"
+        ],
+        "title": "ToolInvokeResponse"
+      },
+      "ToolMessages": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "tool_call_id": {
+            "type": "string",
+            "title": "Tool Call Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content",
+          "name",
+          "tool_call_id"
+        ],
+        "title": "ToolMessages"
       },
       "UpdateLanguageMe": {
         "properties": {

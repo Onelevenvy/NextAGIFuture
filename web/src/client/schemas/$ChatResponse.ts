@@ -24,6 +24,14 @@ export const $ChatResponse = {
                 type: 'null',
             }],
         },
+        imgdata: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
+        },
         tool_calls: {
             type: 'any-of',
             contains: [{

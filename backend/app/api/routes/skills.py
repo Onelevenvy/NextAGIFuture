@@ -168,7 +168,7 @@ def validate_skill(tool_definition_in: ToolDefinitionValidate) -> Any:
 
 
 @router.post("/invoke-tool")
-def invoke_tool_route(tool_name: str, args: dict) -> ToolInvokeResponse:
+def invoke_tools(tool_name: str, args: dict) -> ToolInvokeResponse:
     """
     Invoke a tool by name with the provided arguments.
     """
