@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 class QdrantStore:
     def __init__(self) -> None:
         self.collection_name = settings.QDRANT_COLLECTION
+        # self.url = "http://localhost:6333"
         self.url = settings.QDRANT_URL
         self.embedding_model = get_embedding_model(settings.EMBEDDING_MODEL)
 

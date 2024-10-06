@@ -143,17 +143,10 @@ class Settings(BaseSettings):
 
     # Qdrant
     QDRANT_SERVICE_API_KEY: str | None = "XMj3HXm5GlBKQLwZuStOlkwZiOWTdd_IwZNDJINFh-w"
-    # QDRANT_URL: str = "http://localhost:6333"
-    QDRANT_URL: str = "http://127.0.0.1:6333"
+    QDRANT_URL: str = "http://localhost:6333"
+    # QDRANT_URL: str = "http://127.0.0.1:6333"
 
     QDRANT_COLLECTION: str | None = "kb_uploads"
-
-    # LangSmith
-    # USE_LANGSMITH: bool = True
-    # LANGCHAIN_TRACING_V2: bool = False
-    # LANGCHAIN_ENDPOINT: str | None = None
-    # LANGCHAIN_API_KEY: str | None = None
-    # LANGCHAIN_PROJECT: str | None = None
 
     # Embeddings
     # EMBEDDING_MODEL: str = "local"  # 或者你想使用的其他模型
@@ -178,6 +171,13 @@ class Settings(BaseSettings):
     TAVILY_API_KEY: str | None = None
 
     OPENAI_API_KEY: str
+
+    # LangSmith
+    # USE_LANGSMITH: bool = True
+    # LANGCHAIN_TRACING_V2: bool = False
+    # LANGCHAIN_ENDPOINT: str | None = None
+    # LANGCHAIN_API_KEY: str | None = None
+    # LANGCHAIN_PROJECT: str | None = None
 
 
 settings = Settings()  # type: ignore
