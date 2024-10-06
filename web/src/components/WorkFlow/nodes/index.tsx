@@ -5,13 +5,17 @@ import LLMNode from "./LLM/LLMNode";
 import QuestionClassifierNode from "./QuestionClassifier/QuestionClassifierNode";
 import StartNode from "./Start/StartNode";
 import ToolNode from "./Tool/ToolNode";
+import PluginNode from "./Plugin/PluginNode";
+
 import { type NodeType, nodeConfig } from "./nodeConfig";
+
 
 const nodeComponents: Record<NodeType, NamedExoticComponent<NodeProps>> = {
   start: StartNode,
   end: EndNode,
   llm: LLMNode,
   tool: ToolNode,
+  plugin:PluginNode,
   questionClassifier: QuestionClassifierNode,
 };
 

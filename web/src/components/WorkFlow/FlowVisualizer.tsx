@@ -44,6 +44,7 @@ import { type NodeType, nodeConfig } from "./nodes/nodeConfig";
 import type { CustomNode, FlowVisualizerProps } from "./types";
 import { calculateEdgeCenter } from './utils';
 
+
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
   defaultEdgeOptions,
@@ -291,7 +292,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     edges
   );
 
-  const memoizedNodeTypes = useMemo(() => nodeTypes, [nodeTypes]);
+  const memoizedNodeTypes = useMemo(() => ({
+    ...nodeTypes,
+  }), [nodeTypes]);
   const memoizedDefaultEdgeOptions = useMemo(
     () => defaultEdgeOptions,
     [defaultEdgeOptions]

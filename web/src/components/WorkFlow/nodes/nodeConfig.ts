@@ -4,6 +4,7 @@ import LLMNodeProperties from "./LLM/Properties";
 import QuestionClassifierProperties from "./QuestionClassifier/Properties";
 import StartNodeProperties from "./Start/Properties";
 import ToolNodeProperties from "./Tool/Properties";
+import PluginNodeProperties from "./Plugin/PluginNodeProperties"
 
 interface NodeConfigItem {
   display: string;
@@ -74,6 +75,20 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     allowedConnections: {
       sources: ["left", "right"],
       targets: ["left", "right"],
+    },
+  },
+  plugin: {
+    display: "Plugin",
+    icon: FaRobot, // 你需要定义一个图标
+    colorScheme: "blue",
+    properties: PluginNodeProperties, // 如果有特定的属性面板
+    initialData: {
+      toolName: "", // 工具名称
+      args: {}, // 参数
+    },
+    allowedConnections: {
+      sources: ["right"],
+      targets: ["left"],
     },
   },
 };

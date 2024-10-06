@@ -14,7 +14,7 @@ import {
   TagRightIcon,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useQuery } from "react-query";
+
 
 import useCustomToast from "@/hooks/useCustomToast";
 import React from "react";
