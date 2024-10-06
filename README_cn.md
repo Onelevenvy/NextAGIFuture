@@ -3,6 +3,7 @@
 <p align="center">
   <a href="./README_cn.md">简体中文</a> |
   <a href="./README.md">English</a> |
+  <a href="./README_ja.md">日本語</a> |
   <a href="./README_cn.md#如何开始">快速开始</a>
 </p>
 
