@@ -1,9 +1,9 @@
 from typing import Any
-
+from app.core.tools.tool_invoker import ToolInvokeResponse, invoke_tool
 from fastapi import APIRouter, HTTPException
 from pydantic import ValidationError
 from sqlmodel import col, func, or_, select
-
+from fastapi import APIRouter, HTTPException
 from app.api.deps import CurrentUser, SessionDep
 from app.core.tools.api_tool import ToolDefinition
 from app.models import (
@@ -165,3 +165,12 @@ def validate_skill(tool_definition_in: ToolDefinitionValidate) -> Any:
         raise HTTPException(status_code=400, detail=str(e.detail))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/invoke-tool")
+def invoke_tools(tool_name: str, args: dict) -> ToolInvokeResponse:
+    """
+    Invoke a tool by name with the provided arguments.
+    """
+    result = invoke_tool(tool_name, args)  # 调用工具函数
+    return result  # 直接返回自定义响应模型

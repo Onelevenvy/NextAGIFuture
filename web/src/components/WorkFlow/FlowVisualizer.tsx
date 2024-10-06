@@ -44,6 +44,7 @@ import { type NodeType, nodeConfig } from "./nodes/nodeConfig";
 import type { CustomNode, FlowVisualizerProps } from "./types";
 import { calculateEdgeCenter } from './utils';
 
+
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
   defaultEdgeOptions,
@@ -223,18 +224,21 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
-      const type = event.dataTransfer.getData(
-        "application/reactflow"
-      ) as NodeType;
-      if (typeof type === "undefined" || !type) return;
+      const data = event.dataTransfer.getData("application/reactflow");
+      if (!data) return;
 
+      const { tool, type } = JSON.parse(data); // 解析工具数据和类型
       const position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
-      const baseLabel = `${nodeConfig[type].display}`;
+
+      let newNode: CustomNode;
+
+      if (type !== 'plugin') {
+        const baseLabel = `${nodeConfig[type].display}`;
       const uniqueName = generateUniqueName(baseLabel);
-      const newNode: CustomNode = {
+      newNode = {
         id: `${type}-${nodes.length + 1}`,
         type,
         position,
@@ -246,10 +250,24 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           ...nodeConfig[type].initialData,
         },
       };
+      } else {
+        // 处理其他类型的节点（如 tools）
+        newNode = {
+          id: `${tool.display_name}-${nodes.length + 1}`, // 确保每个插件节点唯一
+          type: "plugin",
+          position,
+          data: {
+            label: tool.display_name,
+            toolName: tool.display_name,
+            args: {},
+            ...tool.initialData,
+          },
+        };
+      }
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [nodes, reactFlowInstance, setNodes, onNodeDataChange, generateUniqueName]
+    [nodes, reactFlowInstance, setNodes]
   );
   const closePropertiesPanel = useCallback(() => {
     setSelectedNodeId(null);
@@ -291,7 +309,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     edges
   );
 
-  const memoizedNodeTypes = useMemo(() => nodeTypes, [nodeTypes]);
+  const memoizedNodeTypes = useMemo(() => ({
+    ...nodeTypes,
+  }), [nodeTypes]);
   const memoizedDefaultEdgeOptions = useMemo(
     () => defaultEdgeOptions,
     [defaultEdgeOptions]

@@ -7,6 +7,7 @@ import type { SkillOut } from '../models/SkillOut';
 import type { SkillsOut } from '../models/SkillsOut';
 import type { SkillUpdate } from '../models/SkillUpdate';
 import type { ToolDefinitionValidate } from '../models/ToolDefinitionValidate';
+import type { ToolInvokeResponse } from '../models/ToolInvokeResponse';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -149,6 +150,33 @@ export class ToolsService {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/v1/tools/validate',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+
+    /**
+     * Invoke Tools
+     * Invoke a tool by name with the provided arguments.
+     * @returns ToolInvokeResponse Successful Response
+     * @throws ApiError
+     */
+    public static invokeTools({
+        toolName,
+        requestBody,
+    }: {
+        toolName: string,
+        requestBody: Record<string, any>,
+    }): CancelablePromise<ToolInvokeResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/tools/invoke-tool',
+            query: {
+                'tool_name': toolName,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {

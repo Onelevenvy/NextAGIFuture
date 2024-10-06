@@ -335,6 +335,9 @@ class SkillBase(SQLModel):
     tool_definition: dict[str, Any] | None = Field(
         default_factory=dict, sa_column=Column(JSON)
     )
+    input_parameters: dict[str, Any] | None = Field(
+        default_factory=dict, sa_column=Column(JSON)  # 用于存储输入参数
+    )
 
 
 class SkillCreate(SkillBase):
