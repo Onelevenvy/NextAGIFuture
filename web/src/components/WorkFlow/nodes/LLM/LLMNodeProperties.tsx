@@ -1,28 +1,44 @@
 import ModelSelect from "@/components/Common/ModelProvider";
 import { useModelQuery } from "@/hooks/useModelQuery";
-import { Box, Input, Text, Textarea, VStack } from "@chakra-ui/react";
+import { useVariableInsertion } from "@/hooks/graphs/useVariableInsertion";
+import {
+  Box,
+  Input,
+  Text,
+  VStack,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Button,
+  Textarea,
+} from "@chakra-ui/react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
+import { VariableReference } from "../../variableSystem";
 
 interface LLMNodePropertiesProps {
   node: any;
   onNodeDataChange: (nodeId: string, key: string, value: any) => void;
+  availableVariables: VariableReference[];
 }
 
 const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
   node,
   onNodeDataChange,
+  availableVariables,
 }) => {
   const [temperatureInput, setTemperatureInput] = useState("");
   const [systemPromptInput, setSystemPromptInput] = useState("");
+  const [showVariables, setShowVariables] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (node && node.data.temperature !== undefined) {
       setTemperatureInput(node.data.temperature.toString());
     }
     if (node && node.data.systemMessage !== undefined) {
-      setSystemPromptInput(node.data.systemMessage);
+      setSystemPromptInput(node.data.systemMessage || "");
     }
   }, [node]);
 
@@ -36,23 +52,23 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
   const onModelSelect = (modelName: string) => {
     onNodeDataChange(node.id, "model", modelName);
     const selectedModel = models?.data.find(
-      (model) => model.ai_model_name === modelName,
+      (model) => model.ai_model_name === modelName
     );
     if (selectedModel) {
       onNodeDataChange(
         node.id,
         "openai_api_key",
-        selectedModel.provider.api_key,
+        selectedModel.provider.api_key
       );
       onNodeDataChange(
         node.id,
         "provider",
-        selectedModel.provider.provider_name,
+        selectedModel.provider.provider_name
       );
       onNodeDataChange(
         node.id,
         "openai_api_base",
-        selectedModel.provider.base_url,
+        selectedModel.provider.base_url
       );
     }
     setValue("model", modelName);
@@ -60,6 +76,25 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
     setValue("provider", selectedModel?.provider.provider_name);
     setValue("openai_api_base", selectedModel?.provider.base_url);
   };
+
+  const handleSystemPromptChange = useCallback(
+    (value: string) => {
+      setSystemPromptInput(value);
+      onNodeDataChange(node.id, "systemMessage", value);
+    },
+    [node.id, onNodeDataChange]
+  );
+
+  const {
+    showVariables: showVariablesHook,
+    setShowVariables: setShowVariablesHook,
+    inputRef: inputRefHook,
+    handleKeyDown: handleKeyDownHook,
+    insertVariable: insertVariableHook,
+  } = useVariableInsertion<HTMLTextAreaElement>({
+    onValueChange: (value) => handleSystemPromptChange(value),
+    availableVariables,
+  });
 
   return (
     <VStack align="stretch" spacing={4}>
@@ -92,15 +127,40 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
       </Box>
       <Box>
         <Text fontWeight="bold">System Prompt:</Text>
-        <Textarea
-          bg="#edf2f7"
-          placeholder="Write your prompt here"
-          onChange={(e) => {
-            setSystemPromptInput(e.target.value);
-            onNodeDataChange(node.id, "systemMessage", e.target.value);
-          }}
-          value={systemPromptInput}
-        />
+        <Popover
+          isOpen={showVariablesHook}
+          onClose={() => setShowVariablesHook(false)}
+          placement="bottom-start"
+        >
+          <PopoverTrigger>
+            <Textarea
+              ref={inputRefHook}
+              value={systemPromptInput}
+              onChange={(e) => handleSystemPromptChange(e.target.value)}
+              onKeyDown={handleKeyDownHook}
+              placeholder="Write your prompt here. Use '/' to insert variables."
+              style={{
+                whiteSpace: "pre-wrap",
+                minHeight: "100px",
+              }}
+            />
+          </PopoverTrigger>
+          <PopoverContent>
+            <VStack align="stretch">
+              {availableVariables.map((v) => (
+                <Button
+                  key={`${v.nodeId}.${v.variableName}`}
+                  onClick={() =>
+                    insertVariableHook(`${v.nodeId}.${v.variableName}`)
+                  }
+                  size="sm"
+                >
+                  {v.nodeId}.{v.variableName}
+                </Button>
+              ))}
+            </VStack>
+          </PopoverContent>
+        </Popover>
       </Box>
     </VStack>
   );

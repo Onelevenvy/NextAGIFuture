@@ -1,11 +1,11 @@
 import { FaPlay, FaRobot, FaStop, FaTools } from "react-icons/fa";
 import { TfiGithub } from "react-icons/tfi";
-import EndNodeProperties from "./End/Properties";
-import LLMNodeProperties from "./LLM/Properties";
-import QuestionClassifierProperties from "./QuestionClassifier/Properties";
-import StartNodeProperties from "./Start/Properties";
-import ToolNodeProperties from "./Tool/Properties";
-import PluginNodeProperties from "./Plugin/PluginNodeProperties"
+import EndNodeProperties from "./End/EndNodeProperties";
+import LLMNodeProperties from "./LLM/LLMNodeProperties";
+
+import StartNodeProperties from "./Start/StartNodeProperties";
+import ToolNodeProperties from "./Tool/ToolNodeProperties";
+import PluginNodeProperties from "./Plugin/PluginNodeProperties";
 
 interface NodeConfigItem {
   display: string;
@@ -17,6 +17,8 @@ interface NodeConfigItem {
     targets: string[];
   };
   initialData?: Record<string, any>;
+  inputVariables: string[];
+  outputVariables: string[];
 }
 
 export const nodeConfig: Record<string, NodeConfigItem> = {
@@ -29,6 +31,8 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       sources: ["right"],
       targets: [],
     },
+    inputVariables: [],
+    outputVariables: ["query"],
   },
   end: {
     display: "End",
@@ -39,6 +43,8 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       sources: [],
       targets: ["left"],
     },
+    inputVariables: ["result"],
+    outputVariables: [],
   },
   llm: {
     display: "LLM",
@@ -54,6 +60,8 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       temperature: 0.1,
       systemMessage: null,
     },
+    inputVariables: [],
+    outputVariables: ["response"],
   },
   tool: {
     display: "Tool",
@@ -67,30 +75,24 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     initialData: {
       tools: ["Open Weather"],
     },
-  },
-  questionClassifier: {
-    display: "Q-Router",
-    icon: FaRobot,
-    colorScheme: "orange",
-    properties: QuestionClassifierProperties,
-    allowedConnections: {
-      sources: ["left", "right"],
-      targets: ["left", "right"],
-    },
+    inputVariables: [],
+    outputVariables: ["output"],
   },
   plugin: {
     display: "Plugin",
-    icon: TfiGithub, // 你需要定义一个图标
+    icon: TfiGithub,
     colorScheme: "gray",
-    properties: PluginNodeProperties, // 如果有特定的属性面板
+    properties: PluginNodeProperties,
     initialData: {
-      toolName: "", // 工具名称
-      args: {}, // 参数
+      toolName: "",
+      args: {},
     },
     allowedConnections: {
       sources: ["right"],
       targets: ["left"],
     },
+    inputVariables: [],
+    outputVariables: ["output"],
   },
 };
 
