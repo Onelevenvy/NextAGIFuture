@@ -267,7 +267,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [nodes, reactFlowInstance, setNodes]
+    [nodes, reactFlowInstance, setNodes,generateUniqueName,onNodeDataChange]
   );
   const closePropertiesPanel = useCallback(() => {
     setSelectedNodeId(null);

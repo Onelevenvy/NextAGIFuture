@@ -37,7 +37,7 @@ def should_continue(state: TeamState) -> str:
     messages: list[AnyMessage] = state["messages"]
     if messages and isinstance(messages[-1], AIMessage) and messages[-1].tool_calls:
         for tool_call in messages[-1].tool_calls:
-            if tool_call["name"] == "AskHuman":
+            if tool_call["name"] == "ask_human":
                 return "call_human"
             # 使用工具名称到节点ID的映射
             tool_name = tool_call["name"].lower()

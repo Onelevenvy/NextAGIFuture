@@ -302,7 +302,7 @@ def should_continue(state: TeamState) -> str:
     if messages and isinstance(messages[-1], AIMessage) and messages[-1].tool_calls:
         # TODO: what if multiple tool_calls?
         for tool_call in messages[-1].tool_calls:
-            if tool_call["name"] == "AskHuman":
+            if tool_call["name"] == "ask_human":
                 return "call_human"
         else:
             return "call_tools"
@@ -816,10 +816,10 @@ async def generator(
                             ToolMessage(
                                 tool_call_id=tool_call["id"],
                                 content=interrupt.tool_message,
-                                name="AskHuman",
+                                name="ask_human",
                             )
                             for tool_call in tool_calls
-                            if tool_call["name"] == "AskHuman"
+                            if tool_call["name"] == "ask_human"
                         ]
                     }
             async for event in root.astream_events(state, version="v2", config=config):
@@ -836,7 +836,7 @@ async def generator(
                     return
                 # Determine if should return default or askhuman interrupt based on whether AskHuman tool was called.
                 for tool_call in message.tool_calls:
-                    if tool_call["name"] == "AskHuman":
+                    if tool_call["name"] == "ask_human":
                         response = ChatResponse(
                             type="interrupt",
                             name="human",
