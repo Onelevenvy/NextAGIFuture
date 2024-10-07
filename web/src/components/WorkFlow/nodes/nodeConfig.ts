@@ -1,11 +1,11 @@
 import { FaPlay, FaRobot, FaStop, FaTools } from "react-icons/fa";
 import { TfiGithub } from "react-icons/tfi";
 import EndNodeProperties from "./End/Properties";
-import LLMNodeProperties from "./LLM/Properties";
+import LLMNodeProperties from "./LLM/LLMNodeProperties";
 import QuestionClassifierProperties from "./QuestionClassifier/Properties";
 import StartNodeProperties from "./Start/Properties";
 import ToolNodeProperties from "./Tool/Properties";
-import PluginNodeProperties from "./Plugin/PluginNodeProperties"
+import PluginNodeProperties from "./Plugin/PluginNodeProperties";
 
 interface NodeConfigItem {
   display: string;
@@ -80,12 +80,12 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
   },
   plugin: {
     display: "Plugin",
-    icon: TfiGithub, // 你需要定义一个图标
+    icon: TfiGithub,
     colorScheme: "gray",
-    properties: PluginNodeProperties, // 如果有特定的属性面板
+    properties: PluginNodeProperties,
     initialData: {
-      toolName: "", // 工具名称
-      args: {}, // 参数
+      toolName: "",
+      args: {},
     },
     allowedConnections: {
       sources: ["right"],
