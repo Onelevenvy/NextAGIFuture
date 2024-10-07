@@ -19,7 +19,7 @@ const translation = {
         "RAG app, retrieves information from knowledge base during each conversation",
     },
     workflow: {
-      title: "work flow",
+      title: "Work flow",
       description:
         "Organize generative applications in a workflow format to provide more customization capabilities.",
     },

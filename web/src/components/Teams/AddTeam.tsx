@@ -27,7 +27,7 @@ import { TbDatabaseSearch } from "react-icons/tb";
 import { useMutation, useQueryClient } from "react-query";
 import { type ApiError, type TeamCreate, TeamsService } from "../../client";
 import useCustomToast from "../../hooks/useCustomToast";
-
+import { SiVisualstudiocode } from "react-icons/si";
 import IconPicker from "@/components/Icons/TqxIcon";
 
 interface AddTeamProps {
@@ -91,6 +91,7 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
     "hierarchical",
     "sequential",
     "workflow",
+    "codeassistant",
   ];
 
   const cardIcons: Record<
@@ -137,6 +138,15 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
       icon: <GiTeamIdea size="24" />,
       title: t("team.teamcard.sagent.title"),
       descripthion: t("team.teamcard.sagent.description"),
+    },
+    codeassistant: {
+      colorScheme: "yellow",
+      backgroundColor: "#ad7f9a",
+      icon: <SiVisualstudiocode size="24" />,
+      // title: t("team.teamcard.sagent.title"),
+      // descripthion: t("team.teamcard.sagent.description"),
+      title: "Code assistant",
+      descripthion: "To be added",
     },
   };
 
