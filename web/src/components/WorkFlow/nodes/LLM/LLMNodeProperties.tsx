@@ -1,5 +1,6 @@
 import ModelSelect from "@/components/Common/ModelProvider";
 import { useModelQuery } from "@/hooks/useModelQuery";
+import { useVariableInsertion } from "@/hooks/graphs/useVariableInsertion";
 import {
   Box,
   Input,
@@ -76,27 +77,24 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
     setValue("openai_api_base", selectedModel?.provider.base_url);
   };
 
-  const handleSystemPromptChange = useCallback((value: string) => {
-    setSystemPromptInput(value);
-    onNodeDataChange(node.id, "systemMessage", value);
-  }, [node.id, onNodeDataChange]);
+  const handleSystemPromptChange = useCallback(
+    (value: string) => {
+      setSystemPromptInput(value);
+      onNodeDataChange(node.id, "systemMessage", value);
+    },
+    [node.id, onNodeDataChange]
+  );
 
-  const insertVariable = useCallback((variable: string) => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const text = textarea.value;
-      const before = text.substring(0, start);
-      const after = text.substring(end);
-      const newValue = before + `{${variable}}` + after;
-      setSystemPromptInput(newValue);
-      onNodeDataChange(node.id, "systemMessage", newValue);
-      setShowVariables(false);
-      textarea.focus();
-      textarea.setSelectionRange(start + variable.length + 2, start + variable.length + 2);
-    }
-  }, [node.id, onNodeDataChange]);
+  const {
+    showVariables: showVariablesHook,
+    setShowVariables: setShowVariablesHook,
+    inputRef: inputRefHook,
+    handleKeyDown: handleKeyDownHook,
+    insertVariable: insertVariableHook,
+  } = useVariableInsertion<HTMLTextAreaElement>({
+    onValueChange: (value) => handleSystemPromptChange(value),
+    availableVariables,
+  });
 
   return (
     <VStack align="stretch" spacing={4}>
@@ -130,25 +128,20 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
       <Box>
         <Text fontWeight="bold">System Prompt:</Text>
         <Popover
-          isOpen={showVariables}
-          onClose={() => setShowVariables(false)}
+          isOpen={showVariablesHook}
+          onClose={() => setShowVariablesHook(false)}
           placement="bottom-start"
         >
           <PopoverTrigger>
             <Textarea
-              ref={textareaRef}
+              ref={inputRefHook}
               value={systemPromptInput}
               onChange={(e) => handleSystemPromptChange(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === '/') {
-                  e.preventDefault();
-                  setShowVariables(true);
-                }
-              }}
+              onKeyDown={handleKeyDownHook}
               placeholder="Write your prompt here. Use '/' to insert variables."
               style={{
-                whiteSpace: 'pre-wrap',
-                minHeight: '100px',
+                whiteSpace: "pre-wrap",
+                minHeight: "100px",
               }}
             />
           </PopoverTrigger>
@@ -157,7 +150,9 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
               {availableVariables.map((v) => (
                 <Button
                   key={`${v.nodeId}.${v.variableName}`}
-                  onClick={() => insertVariable(`${v.nodeId}.${v.variableName}`)}
+                  onClick={() =>
+                    insertVariableHook(`${v.nodeId}.${v.variableName}`)
+                  }
                   size="sm"
                 >
                   {v.nodeId}.{v.variableName}

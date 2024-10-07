@@ -1,9 +1,19 @@
-import { Box, Text, VStack, Button, Popover, PopoverTrigger, PopoverContent, Input } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  VStack,
+  Button,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Input,
+} from "@chakra-ui/react";
 import type React from "react";
 import { ToolsService } from "@/client/services/ToolsService";
 import { useSkillsQuery } from "@/hooks/useSkillsQuery";
-import { useState, useRef, useCallback } from "react";
-import { VariableReference } from '../../variableSystem';
+import { useState, useCallback } from "react";
+import { VariableReference } from "../../variableSystem";
+import { useVariableInsertion } from "@/hooks/graphs/useVariableInsertion";
 
 interface PluginNodePropertiesProps {
   node: any;
@@ -21,8 +31,31 @@ const PluginNodeProperties: React.FC<PluginNodePropertiesProps> = ({
     (skill) => skill.display_name === node.data.toolName
   );
   const [loading, setLoading] = useState(false);
-  const [showVariables, setShowVariables] = useState<{[key: string]: boolean}>({});
-  const inputRefs = useRef<{[key: string]: HTMLInputElement}>({});
+
+  const handleInputChange = useCallback(
+    (key: string, value: string) => {
+      onNodeDataChange(node.id, "args", {
+        ...node.data.args,
+        [key]: value,
+      });
+    },
+    [node.id, node.data.args, onNodeDataChange]
+  );
+
+  // 为每个可能的输入参数创建一个 useVariableInsertion hook
+  const variableInsertionHooks: {
+    [key: string]: ReturnType<typeof useVariableInsertion<HTMLInputElement>>;
+  } = {};
+
+  if (tool?.input_parameters) {
+    Object.keys(tool.input_parameters).forEach((key) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      variableInsertionHooks[key] = useVariableInsertion<HTMLInputElement>({
+        onValueChange: (value) => handleInputChange(key, value),
+        availableVariables,
+      });
+    });
+  }
 
   const handleInvoke = async () => {
     setLoading(true);
@@ -39,29 +72,6 @@ const PluginNodeProperties: React.FC<PluginNodePropertiesProps> = ({
     }
   };
 
-  const handleInputChange = useCallback((key: string, value: string) => {
-    onNodeDataChange(node.id, "args", {
-      ...node.data.args,
-      [key]: value,
-    });
-  }, [node.id, node.data.args, onNodeDataChange]);
-
-  const insertVariable = useCallback((key: string, variable: string) => {
-    const input = inputRefs.current[key];
-    if (input) {
-      const start = input.selectionStart || 0;
-      const end = input.selectionEnd || 0;
-      const text = input.value;
-      const before = text.substring(0, start);
-      const after = text.substring(end);
-      const newValue = before + `{${variable}}` + after;
-      handleInputChange(key, newValue);
-      input.focus();
-      input.setSelectionRange(start + variable.length + 2, start + variable.length + 2);
-    }
-    setShowVariables(prev => ({...prev, [key]: false}));
-  }, [handleInputChange]);
-
   return (
     <VStack align="stretch" spacing={4}>
       <Box>
@@ -72,21 +82,18 @@ const PluginNodeProperties: React.FC<PluginNodePropertiesProps> = ({
           <Box key={key}>
             <Text fontWeight="bold">{key}:</Text>
             <Popover
-              isOpen={showVariables[key]}
-              onClose={() => setShowVariables(prev => ({...prev, [key]: false}))}
+              isOpen={variableInsertionHooks[key]?.showVariables}
+              onClose={() =>
+                variableInsertionHooks[key]?.setShowVariables(false)
+              }
               placement="bottom-start"
             >
               <PopoverTrigger>
                 <Input
-                  ref={el => {if (el) inputRefs.current[key] = el;}}
+                  ref={variableInsertionHooks[key]?.inputRef}
                   value={node.data.args[key] || ""}
                   onChange={(e) => handleInputChange(key, e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === '/') {
-                      e.preventDefault();
-                      setShowVariables(prev => ({...prev, [key]: true}));
-                    }
-                  }}
+                  onKeyDown={variableInsertionHooks[key]?.handleKeyDown}
                   placeholder={`Enter ${key}. Use '/' to insert variables.`}
                 />
               </PopoverTrigger>
@@ -95,7 +102,11 @@ const PluginNodeProperties: React.FC<PluginNodePropertiesProps> = ({
                   {availableVariables.map((v) => (
                     <Button
                       key={`${v.nodeId}.${v.variableName}`}
-                      onClick={() => insertVariable(key, `${v.nodeId}.${v.variableName}`)}
+                      onClick={() =>
+                        variableInsertionHooks[key]?.insertVariable(
+                          `${v.nodeId}.${v.variableName}`
+                        )
+                      }
                       size="sm"
                     >
                       {v.nodeId}.{v.variableName}
