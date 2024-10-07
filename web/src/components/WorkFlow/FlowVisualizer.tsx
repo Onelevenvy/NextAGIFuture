@@ -19,6 +19,7 @@ import { FaPlus } from "react-icons/fa";
 import { useContextMenu } from "@/hooks/graphs/useContextMenu";
 import { useFlowState } from "@/hooks/graphs/useFlowState";
 import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
+import { getAvailableVariables } from './variableSystem';
 import {
   Box,
   Button,
@@ -39,11 +40,10 @@ import { VscTriangleRight } from "react-icons/vsc";
 import "reactflow/dist/style.css";
 import DebugPreview from "../Teams/DebugPreview";
 import NodePalette from "./NodePalette";
-import BaseProperties from "./nodes/Base/Properties";
+import BaseProperties from "./nodes/Base/BaseNodeProperties";
 import { type NodeType, nodeConfig } from "./nodes/nodeConfig";
 import type { CustomNode, FlowVisualizerProps } from "./types";
-import { calculateEdgeCenter } from './utils';
-
+import { calculateEdgeCenter } from "./utils";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -97,6 +97,8 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     const nodeType = node.type as NodeType;
     const PropertiesComponent = nodeConfig[nodeType]?.properties;
     const { icon: Icon, colorScheme } = nodeConfig[nodeType];
+    const availableVariables = getAvailableVariables(node.id, nodes, edges);
+
     return (
       <BaseProperties
         icon={<Icon />}
@@ -106,11 +108,15 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           onNodeDataChange(node.id, "label", newName)
         }
         nameError={nameError}
+        node={node}
+        onNodeDataChange={onNodeDataChange}
+        availableVariables={availableVariables}
       >
         {PropertiesComponent && (
           <PropertiesComponent
             node={node}
             onNodeDataChange={onNodeDataChange}
+            availableVariables={availableVariables}
           />
         )}
       </BaseProperties>
@@ -235,21 +241,21 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
       let newNode: CustomNode;
 
-      if (type !== 'plugin') {
+      if (type !== "plugin") {
         const baseLabel = `${nodeConfig[type].display}`;
-      const uniqueName = generateUniqueName(baseLabel);
-      newNode = {
-        id: `${type}-${nodes.length + 1}`,
-        type,
-        position,
-        data: {
-          label: uniqueName, // 使用生成的唯一名称
-          customName: uniqueName,
-          onChange: (key: string, value: any) =>
-            onNodeDataChange(`${type}-${nodes.length + 1}`, key, value),
-          ...nodeConfig[type].initialData,
-        },
-      };
+        const uniqueName = generateUniqueName(baseLabel);
+        newNode = {
+          id: `${type}-${nodes.length + 1}`,
+          type,
+          position,
+          data: {
+            label: uniqueName, // 使用生成的唯一名称
+            customName: uniqueName,
+            onChange: (key: string, value: any) =>
+              onNodeDataChange(`${type}-${nodes.length + 1}`, key, value),
+            ...nodeConfig[type].initialData,
+          },
+        };
       } else {
         // 处理其他类型的节点（如 tools）
         newNode = {
@@ -267,7 +273,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [nodes, reactFlowInstance, setNodes,generateUniqueName,onNodeDataChange]
+    [nodes, reactFlowInstance, setNodes, generateUniqueName, onNodeDataChange]
   );
   const closePropertiesPanel = useCallback(() => {
     setSelectedNodeId(null);
@@ -309,9 +315,12 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     edges
   );
 
-  const memoizedNodeTypes = useMemo(() => ({
-    ...nodeTypes,
-  }), [nodeTypes]);
+  const memoizedNodeTypes = useMemo(
+    () => ({
+      ...nodeTypes,
+    }),
+    [nodeTypes]
+  );
   const memoizedDefaultEdgeOptions = useMemo(
     () => defaultEdgeOptions,
     [defaultEdgeOptions]

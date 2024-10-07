@@ -1,10 +1,9 @@
 import { FaPlay, FaRobot, FaStop, FaTools } from "react-icons/fa";
 import { TfiGithub } from "react-icons/tfi";
-import EndNodeProperties from "./End/Properties";
+import EndNodeProperties from "./End/EndNodeProperties";
 import LLMNodeProperties from "./LLM/LLMNodeProperties";
-import QuestionClassifierProperties from "./QuestionClassifier/Properties";
-import StartNodeProperties from "./Start/Properties";
-import ToolNodeProperties from "./Tool/Properties";
+import StartNodeProperties from "./Start/StartNodeProperties";
+import ToolNodeProperties from "./Tool/ToolNodeProperties";
 import PluginNodeProperties from "./Plugin/PluginNodeProperties";
 
 interface NodeConfigItem {
@@ -17,6 +16,8 @@ interface NodeConfigItem {
     targets: string[];
   };
   initialData?: Record<string, any>;
+  inputVariables: string[];
+  outputVariables: string[];
 }
 
 export const nodeConfig: Record<string, NodeConfigItem> = {
@@ -29,6 +30,8 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       sources: ["right"],
       targets: [],
     },
+    inputVariables: [],
+    outputVariables: ["sys.query"],
   },
   end: {
     display: "End",
@@ -39,6 +42,8 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       sources: [],
       targets: ["left"],
     },
+    inputVariables: ["result"],
+    outputVariables: [],
   },
   llm: {
     display: "LLM",
@@ -54,6 +59,8 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       temperature: 0.1,
       systemMessage: null,
     },
+    inputVariables: [],
+    outputVariables: ["response"],
   },
   tool: {
     display: "Tool",
@@ -67,16 +74,8 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     initialData: {
       tools: ["Open Weather"],
     },
-  },
-  questionClassifier: {
-    display: "Q-Router",
-    icon: FaRobot,
-    colorScheme: "orange",
-    properties: QuestionClassifierProperties,
-    allowedConnections: {
-      sources: ["left", "right"],
-      targets: ["left", "right"],
-    },
+    inputVariables: ["input"],
+    outputVariables: ["output"],
   },
   plugin: {
     display: "Plugin",
@@ -91,6 +90,8 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       sources: ["right"],
       targets: ["left"],
     },
+    inputVariables: ["input"],
+    outputVariables: ["output"],
   },
 };
 

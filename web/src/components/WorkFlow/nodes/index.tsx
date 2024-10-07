@@ -2,7 +2,6 @@ import type { NamedExoticComponent } from "react";
 import type { NodeProps } from "reactflow";
 import EndNode from "./End/EndNode";
 import LLMNode from "./LLM/LLMNode";
-import QuestionClassifierNode from "./QuestionClassifier/QuestionClassifierNode";
 import StartNode from "./Start/StartNode";
 import ToolNode from "./Tool/ToolNode";
 import PluginNode from "./Plugin/PluginNode";
@@ -16,7 +15,7 @@ const nodeComponents: Record<NodeType, NamedExoticComponent<NodeProps>> = {
   llm: LLMNode,
   tool: ToolNode,
   plugin:PluginNode,
-  questionClassifier: QuestionClassifierNode,
+
 };
 
 export const nodeTypes = Object.fromEntries(

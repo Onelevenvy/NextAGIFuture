@@ -36,23 +36,23 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
   const onModelSelect = (modelName: string) => {
     onNodeDataChange(node.id, "model", modelName);
     const selectedModel = models?.data.find(
-      (model) => model.ai_model_name === modelName,
+      (model) => model.ai_model_name === modelName
     );
     if (selectedModel) {
       onNodeDataChange(
         node.id,
         "openai_api_key",
-        selectedModel.provider.api_key,
+        selectedModel.provider.api_key
       );
       onNodeDataChange(
         node.id,
         "provider",
-        selectedModel.provider.provider_name,
+        selectedModel.provider.provider_name
       );
       onNodeDataChange(
         node.id,
         "openai_api_base",
-        selectedModel.provider.base_url,
+        selectedModel.provider.base_url
       );
     }
     setValue("model", modelName);
