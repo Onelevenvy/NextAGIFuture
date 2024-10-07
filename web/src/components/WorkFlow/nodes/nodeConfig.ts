@@ -2,6 +2,7 @@ import { FaPlay, FaRobot, FaStop, FaTools } from "react-icons/fa";
 import { TfiGithub } from "react-icons/tfi";
 import EndNodeProperties from "./End/EndNodeProperties";
 import LLMNodeProperties from "./LLM/LLMNodeProperties";
+
 import StartNodeProperties from "./Start/StartNodeProperties";
 import ToolNodeProperties from "./Tool/ToolNodeProperties";
 import PluginNodeProperties from "./Plugin/PluginNodeProperties";
@@ -31,7 +32,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       targets: [],
     },
     inputVariables: [],
-    outputVariables: ["sys.query"],
+    outputVariables: ["query"],
   },
   end: {
     display: "End",
@@ -74,7 +75,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     initialData: {
       tools: ["Open Weather"],
     },
-    inputVariables: ["input"],
+    inputVariables: [],
     outputVariables: ["output"],
   },
   plugin: {
@@ -90,7 +91,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       sources: ["right"],
       targets: ["left"],
     },
-    inputVariables: ["input"],
+    inputVariables: [],
     outputVariables: ["output"],
   },
 };

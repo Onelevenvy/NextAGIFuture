@@ -1,28 +1,43 @@
 import ModelSelect from "@/components/Common/ModelProvider";
 import { useModelQuery } from "@/hooks/useModelQuery";
-import { Box, Input, Text, Textarea, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Input,
+  Text,
+  VStack,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Button,
+  Textarea,
+} from "@chakra-ui/react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
+import { VariableReference } from "../../variableSystem";
 
 interface LLMNodePropertiesProps {
   node: any;
   onNodeDataChange: (nodeId: string, key: string, value: any) => void;
+  availableVariables: VariableReference[];
 }
 
 const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
   node,
   onNodeDataChange,
+  availableVariables,
 }) => {
   const [temperatureInput, setTemperatureInput] = useState("");
   const [systemPromptInput, setSystemPromptInput] = useState("");
+  const [showVariables, setShowVariables] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (node && node.data.temperature !== undefined) {
       setTemperatureInput(node.data.temperature.toString());
     }
     if (node && node.data.systemMessage !== undefined) {
-      setSystemPromptInput(node.data.systemMessage);
+      setSystemPromptInput(node.data.systemMessage || "");
     }
   }, [node]);
 
@@ -61,6 +76,28 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
     setValue("openai_api_base", selectedModel?.provider.base_url);
   };
 
+  const handleSystemPromptChange = useCallback((value: string) => {
+    setSystemPromptInput(value);
+    onNodeDataChange(node.id, "systemMessage", value);
+  }, [node.id, onNodeDataChange]);
+
+  const insertVariable = useCallback((variable: string) => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      const before = text.substring(0, start);
+      const after = text.substring(end);
+      const newValue = before + `{${variable}}` + after;
+      setSystemPromptInput(newValue);
+      onNodeDataChange(node.id, "systemMessage", newValue);
+      setShowVariables(false);
+      textarea.focus();
+      textarea.setSelectionRange(start + variable.length + 2, start + variable.length + 2);
+    }
+  }, [node.id, onNodeDataChange]);
+
   return (
     <VStack align="stretch" spacing={4}>
       <Box>
@@ -92,15 +129,43 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
       </Box>
       <Box>
         <Text fontWeight="bold">System Prompt:</Text>
-        <Textarea
-          bg="#edf2f7"
-          placeholder="Write your prompt here"
-          onChange={(e) => {
-            setSystemPromptInput(e.target.value);
-            onNodeDataChange(node.id, "systemMessage", e.target.value);
-          }}
-          value={systemPromptInput}
-        />
+        <Popover
+          isOpen={showVariables}
+          onClose={() => setShowVariables(false)}
+          placement="bottom-start"
+        >
+          <PopoverTrigger>
+            <Textarea
+              ref={textareaRef}
+              value={systemPromptInput}
+              onChange={(e) => handleSystemPromptChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === '/') {
+                  e.preventDefault();
+                  setShowVariables(true);
+                }
+              }}
+              placeholder="Write your prompt here. Use '/' to insert variables."
+              style={{
+                whiteSpace: 'pre-wrap',
+                minHeight: '100px',
+              }}
+            />
+          </PopoverTrigger>
+          <PopoverContent>
+            <VStack align="stretch">
+              {availableVariables.map((v) => (
+                <Button
+                  key={`${v.nodeId}.${v.variableName}`}
+                  onClick={() => insertVariable(`${v.nodeId}.${v.variableName}`)}
+                  size="sm"
+                >
+                  {v.nodeId}.{v.variableName}
+                </Button>
+              ))}
+            </VStack>
+          </PopoverContent>
+        </Popover>
       </Box>
     </VStack>
   );
