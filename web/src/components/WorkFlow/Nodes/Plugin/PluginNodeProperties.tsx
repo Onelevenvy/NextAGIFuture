@@ -28,7 +28,7 @@ const PluginNodeProperties: React.FC<PluginNodePropertiesProps> = ({
 }) => {
   const { data: skills } = useSkillsQuery();
   const tool = skills?.data.find(
-    (skill) => skill.display_name === node.data.toolName
+    (skill) => skill.name === node.data.toolName
   );
   const [loading, setLoading] = useState(false);
 

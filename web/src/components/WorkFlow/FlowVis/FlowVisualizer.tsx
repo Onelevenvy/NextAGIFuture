@@ -47,6 +47,7 @@ import { type NodeType, nodeConfig } from "../Nodes/nodeConfig";
 import type { CustomNode, FlowVisualizerProps } from "../types";
 import { calculateEdgeCenter } from "./utils";
 import NodeMenu from "./NodeMenu";
+import { useSkillsQuery } from "@/hooks/useSkillsQuery";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -75,6 +76,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const buttonColor = useColorModeValue("ui.main", "ui.main");
   const reactFlowInstance = useReactFlow();
   const toast = useToast();
+  const { data: tools } = useSkillsQuery();
 
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -245,7 +247,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       const data = event.dataTransfer.getData("application/reactflow");
       if (!data) return;
 
-      const { tool, type } = JSON.parse(data); // 解析工具数据和类型
+      const { tool, type } = JSON.parse(data);
       const position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
@@ -269,23 +271,33 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           },
         };
       } else {
-        // 处理其他类型的节点（如 tools）
+        // 处理插件节点
+        const uniqueName = generateUniqueName(tool);
+        const toolData = tools?.data.find((t: any) => t.name === tool);
         newNode = {
-          id: `${tool.display_name}-${nodes.length + 1}`, // 确保每个插件节点唯一
+          id: `${tool}-${nodes.length + 1}`,
           type: "plugin",
           position,
           data: {
-            label: tool.display_name,
-            toolName: tool.display_name,
-            args: {},
-            ...tool.initialData,
+            label: uniqueName,
+            toolName: tool,
+            customName: uniqueName,
+            args: toolData?.input_parameters
+              ? Object.keys(toolData.input_parameters).reduce(
+                  (acc, key) => {
+                    acc[key] = "";
+                    return acc;
+                  },
+                  {} as Record<string, string>
+                )
+              : {},
           },
         };
       }
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [nodes, reactFlowInstance, setNodes, generateUniqueName, onNodeDataChange]
+    [nodes, reactFlowInstance, setNodes, generateUniqueName, onNodeDataChange, tools]
   );
   const closePropertiesPanel = useCallback(() => {
     setSelectedNodeId(null);
@@ -404,79 +416,94 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     setShowNodeMenu(false);
   }, []);
 
-  const handleNodeSelect = useCallback((nodeType: NodeType | string, isPlugin: boolean) => {
-    if (!selectedEdge) return;
+  const handleNodeSelect = useCallback(
+    (nodeType: NodeType | string, isPlugin: boolean) => {
+      if (!selectedEdge) return;
 
-    const sourceNode = nodes.find((node) => node.id === selectedEdge.source);
-    const targetNode = nodes.find((node) => node.id === selectedEdge.target);
-    if (!sourceNode || !targetNode) return;
+      const sourceNode = nodes.find((node) => node.id === selectedEdge.source);
+      const targetNode = nodes.find((node) => node.id === selectedEdge.target);
+      if (!sourceNode || !targetNode) return;
 
-    const newNodeId = `${nodeType}-${nodes.length + 1}`;
-    const centerX = (sourceNode.position.x + targetNode.position.x) / 2;
-    const centerY = (sourceNode.position.y + targetNode.position.y) / 2;
+      const newNodeId = `${nodeType}-${nodes.length + 1}`;
+      const centerX = (sourceNode.position.x + targetNode.position.x) / 2;
+      const centerY = (sourceNode.position.y + targetNode.position.y) / 2;
 
-    let newNode: CustomNode;
+      let newNode: CustomNode;
 
-    if (!isPlugin) {
-      newNode = {
-        id: newNodeId,
-        type: nodeType as NodeType,
-        position: { x: centerX, y: centerY },
-        data: {
-          label: generateUniqueName(nodeConfig[nodeType as NodeType].display),
-          customName: generateUniqueName(
-            nodeConfig[nodeType as NodeType].display
-          ),
-          onChange: (key: string, value: any) =>
-            onNodeDataChange(newNodeId, key, value),
-          ...nodeConfig[nodeType as NodeType].initialData,
-        },
+      if (!isPlugin) {
+        newNode = {
+          id: newNodeId,
+          type: nodeType as NodeType,
+          position: { x: centerX, y: centerY },
+          data: {
+            label: generateUniqueName(nodeConfig[nodeType as NodeType].display),
+            customName: generateUniqueName(
+              nodeConfig[nodeType as NodeType].display
+            ),
+            onChange: (key: string, value: any) =>
+              onNodeDataChange(newNodeId, key, value),
+            ...nodeConfig[nodeType as NodeType].initialData,
+          },
+        };
+      } else {
+        const uniqueName = generateUniqueName(nodeType);
+        const toolData = tools?.data.find((t: any) => t.name === nodeType);
+        newNode = {
+          id: newNodeId,
+          type: "plugin",
+          position: { x: centerX, y: centerY },
+          data: {
+            label: uniqueName,
+            toolName: nodeType,
+            customName: uniqueName,
+            args: toolData?.input_parameters
+              ? Object.keys(toolData.input_parameters).reduce(
+                  (acc, key) => {
+                    acc[key] = "";
+                    return acc;
+                  },
+                  {} as Record<string, string>
+                )
+              : {},
+          },
+        };
+      }
+
+      const newEdge1: Edge = {
+        id: `e${selectedEdge.source}-${newNodeId}`,
+        source: selectedEdge.source,
+        target: newNodeId,
+        sourceHandle: "right",
+        targetHandle: "left",
+        type: selectedEdge.type,
       };
-    } else {
-      newNode = {
-        id: newNodeId,
-        type: "plugin",
-        position: { x: centerX, y: centerY },
-        data: {
-          label: nodeType,
-          toolName: nodeType,
-          args: {},
-        },
+
+      const newEdge2: Edge = {
+        id: `e${newNodeId}-${selectedEdge.target}`,
+        source: newNodeId,
+        target: selectedEdge.target,
+        sourceHandle: "right",
+        targetHandle: "left",
+        type: selectedEdge.type,
       };
-    }
 
-    const newEdge1: Edge = {
-      id: `e${selectedEdge.source}-${newNodeId}`,
-      source: selectedEdge.source,
-      target: newNodeId,
-      sourceHandle: "right",
-      targetHandle: "left",
-      type: selectedEdge.type,
-    };
-
-    const newEdge2: Edge = {
-      id: `e${newNodeId}-${selectedEdge.target}`,
-      source: newNodeId,
-      target: selectedEdge.target,
-      sourceHandle: "right",
-      targetHandle: "left",
-      type: selectedEdge.type,
-    };
-
-    setNodes((nds) => nds.concat(newNode));
-    setEdges((eds) =>
-      eds.filter((e) => e.id !== selectedEdge.id).concat(newEdge1, newEdge2)
-    );
-    setSelectedEdge(null);
-    setShowNodeMenu(false);
-  }, [
-    selectedEdge,
-    nodes,
-    setNodes,
-    setEdges,
-    onNodeDataChange,
-    generateUniqueName,
-  ]);
+      setNodes((nds) => nds.concat(newNode));
+      setEdges((eds) =>
+        eds.filter((e) => e.id !== selectedEdge.id).concat(newEdge1, newEdge2)
+      );
+      setSelectedEdge(null);
+      setShowNodeMenu(false);
+    },
+    [
+      selectedEdge,
+      nodes,
+      setNodes,
+      setEdges,
+      onNodeDataChange,
+      generateUniqueName,
+      tools
+    ]
+  );
 
   const onPaneClick = useCallback(() => {
     setSelectedEdge(null);
@@ -485,14 +512,21 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     setSelectedNodeId(null); // 取消选中的节点
   }, [setSelectedNodeId]);
 
-  const onDragStart = useCallback((event: React.DragEvent<HTMLDivElement>, nodeType: string, isPlugin: boolean) => {
-    event.dataTransfer.setData(
-      "application/reactflow",
-      JSON.stringify({ tool: nodeType, type: isPlugin ? "plugin" : nodeType })
-    );
-    event.dataTransfer.effectAllowed = "move";
-    console.log(`Dragging type: ${nodeType}, isPlugin: ${isPlugin}`);
-  }, []);
+  const onDragStart = useCallback(
+    (
+      event: React.DragEvent<HTMLDivElement>,
+      nodeType: string,
+      isPlugin: boolean
+    ) => {
+      event.dataTransfer.setData(
+        "application/reactflow",
+        JSON.stringify({ tool: nodeType, type: isPlugin ? "plugin" : nodeType })
+      );
+      event.dataTransfer.effectAllowed = "move";
+      console.log(`Dragging type: ${nodeType}, isPlugin: ${isPlugin}`);
+    },
+    []
+  );
 
   return (
     <Box
@@ -703,10 +737,10 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           top={`${menuPosition.y}px`}
           zIndex={1000}
         >
-          <NodeMenu 
-            onNodeSelect={handleNodeSelect} 
+          <NodeMenu
+            onNodeSelect={handleNodeSelect}
             onDragStart={onDragStart}
-            showStartEnd={false} 
+            showStartEnd={false}
           />
         </Box>
       )}
