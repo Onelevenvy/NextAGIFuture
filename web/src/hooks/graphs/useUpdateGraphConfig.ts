@@ -6,7 +6,7 @@ import { v4 } from "uuid";
 import {
   type NodeType,
   nodeConfig,
-} from "../../components/WorkFlow/nodes/nodeConfig";
+} from "../../components/WorkFlow/Nodes/nodeConfig";
 import type { CustomNode } from "../../components/WorkFlow/types";
 import { useGraphMutation } from "./useGraphMutation";
 

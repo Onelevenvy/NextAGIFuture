@@ -19,13 +19,13 @@ import { FaPlus } from "react-icons/fa";
 import { useContextMenu } from "@/hooks/graphs/useContextMenu";
 import { useFlowState } from "@/hooks/graphs/useFlowState";
 import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
-import { getAvailableVariables } from './variableSystem';
+import { getAvailableVariables } from "./variableSystem";
 import {
   Box,
   Button,
   CloseButton,
-  Image,
   Kbd,
+  useToast,
   Menu,
   MenuButton,
   MenuItem,
@@ -38,12 +38,13 @@ import {
 import { MdBuild, MdOutlineHelp } from "react-icons/md";
 import { VscTriangleRight } from "react-icons/vsc";
 import "reactflow/dist/style.css";
-import DebugPreview from "../Teams/DebugPreview";
+import DebugPreview from "../../Teams/DebugPreview";
 import NodePalette from "./NodePalette";
-import BaseProperties from "./nodes/Base/BaseNodeProperties";
-import { type NodeType, nodeConfig } from "./nodes/nodeConfig";
-import type { CustomNode, FlowVisualizerProps } from "./types";
+import BaseProperties from "../Nodes/Base/BaseNodeProperties";
+import { type NodeType, nodeConfig } from "../Nodes/nodeConfig";
+import type { CustomNode, FlowVisualizerProps } from "../types";
 import { calculateEdgeCenter } from "./utils";
+import SharedNodeMenu from "./SharedNodeMenu";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -71,7 +72,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const { contextMenu, onNodeContextMenu, closeContextMenu } = useContextMenu();
   const buttonColor = useColorModeValue("ui.main", "ui.main");
   const reactFlowInstance = useReactFlow();
-
+  const toast = useToast();
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
       setSelectedNodeId(node.id);
@@ -132,7 +133,13 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
       const sourceType = sourceNode.type as NodeType;
       const targetType = targetNode.type as NodeType;
-
+      // Prevent multiple connections from start node
+      if (sourceType === "start") {
+        const existingStartConnections = edges.filter(
+          (edge) => edge.source === connection.source
+        );
+        if (existingStartConnections.length > 0) return false;
+      }
       const sourceAllowedConnections =
         nodeConfig[sourceType].allowedConnections;
       const targetAllowedConnections =
@@ -281,6 +288,21 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
   const deleteNode = useCallback(() => {
     if (contextMenu.nodeId) {
+      const nodeToDelete = nodes.find((node) => node.id === contextMenu.nodeId);
+      if (
+        nodeToDelete &&
+        (nodeToDelete.type === "start" || nodeToDelete.type === "end")
+      ) {
+        toast({
+          title: "Cannot delete node",
+          description: `${nodeToDelete.type.charAt(0).toUpperCase() + nodeToDelete.type.slice(1)} node cannot be deleted.`,
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+        });
+        closeContextMenu();
+        return;
+      }
       setNodes((nds) => nds.filter((node) => node.id !== contextMenu.nodeId));
       setEdges((eds) =>
         eds.filter(
@@ -294,10 +316,12 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     closePropertiesPanel();
   }, [
     contextMenu.nodeId,
+    nodes,
     setNodes,
     setEdges,
     closeContextMenu,
     closePropertiesPanel,
+    toast,
   ]);
 
   const {
@@ -356,7 +380,16 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       const targetNode = nodes.find((node) => node.id === edge.target);
       if (sourceNode && targetNode) {
         const centerPoint = calculateEdgeCenter(sourceNode, targetNode);
-        setMenuPosition(centerPoint);
+
+        // 调整菜单位置，确保不会超出视口
+        const viewportHeight = window.innerHeight;
+        const menuHeight = 400; // SharedNodeMenu 的最大高度
+        const yPosition = Math.min(
+          centerPoint.y,
+          viewportHeight - menuHeight - 20
+        ); // 20px 作为底部边距
+
+        setMenuPosition({ x: centerPoint.x, y: yPosition });
       }
     },
     [nodes]
@@ -368,42 +401,60 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   }, []);
 
   const addNodeToEdge = useCallback(
-    (nodeType: NodeType) => {
+    (nodeType: NodeType | string, tool?: any) => {
       if (!selectedEdge) return;
 
       const sourceNode = nodes.find((node) => node.id === selectedEdge.source);
       const targetNode = nodes.find((node) => node.id === selectedEdge.target);
       if (!sourceNode || !targetNode) return;
 
-      const newNodeId = `${nodeType}-${nodes.length + 1}`;
       const centerX = (sourceNode.position.x + targetNode.position.x) / 2;
       const centerY = (sourceNode.position.y + targetNode.position.y) / 2;
 
-      const newNode: CustomNode = {
-        id: newNodeId,
-        type: nodeType,
-        position: { x: centerX, y: centerY },
-        data: {
-          label: generateUniqueName(nodeConfig[nodeType].display),
-          customName: generateUniqueName(nodeConfig[nodeType].display),
-          onChange: (key: string, value: any) =>
-            onNodeDataChange(newNodeId, key, value),
-          ...nodeConfig[nodeType].initialData,
-        },
-      };
+      let newNode: CustomNode;
+
+      if (nodeType === "plugin") {
+        newNode = {
+          id: `${tool.display_name}-${nodes.length + 1}`,
+          type: "plugin",
+          position: { x: centerX, y: centerY },
+          data: {
+            label: tool.display_name,
+            toolName: tool.display_name,
+            args: {},
+            ...tool.initialData,
+          },
+        };
+      } else {
+        const newNodeId = `${nodeType}-${nodes.length + 1}`;
+        newNode = {
+          id: newNodeId,
+          type: nodeType as NodeType,
+          position: { x: centerX, y: centerY },
+          data: {
+            label: generateUniqueName(nodeConfig[nodeType as NodeType].display),
+            customName: generateUniqueName(
+              nodeConfig[nodeType as NodeType].display
+            ),
+            onChange: (key: string, value: any) =>
+              onNodeDataChange(newNodeId, key, value),
+            ...nodeConfig[nodeType as NodeType].initialData,
+          },
+        };
+      }
 
       const newEdge1: Edge = {
-        id: `e${selectedEdge.source}-${newNodeId}`,
+        id: `e${selectedEdge.source}-${newNode.id}`,
         source: selectedEdge.source,
-        target: newNodeId,
+        target: newNode.id,
         sourceHandle: "right",
         targetHandle: "left",
         type: selectedEdge.type,
       };
 
       const newEdge2: Edge = {
-        id: `e${newNodeId}-${selectedEdge.target}`,
-        source: newNodeId,
+        id: `e${newNode.id}-${selectedEdge.target}`,
+        source: newNode.id,
         target: selectedEdge.target,
         sourceHandle: "right",
         targetHandle: "left",
@@ -641,35 +692,10 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           left={`${menuPosition.x}px`}
           top={`${menuPosition.y}px`}
           zIndex={1000}
-          bg="white"
-          borderRadius="md"
-          boxShadow="md"
-          p={2}
+          maxH="full"
+          overflowY="auto"
         >
-          <VStack spacing={2} align="stretch">
-            {Object.entries(nodeConfig).map(
-              ([nodeType, { display, icon: Icon, colorScheme }]) => (
-                <Box
-                  key={nodeType}
-                  border="1px solid #ddd"
-                  borderRadius="md"
-                  padding={2}
-                  cursor="pointer"
-                  onClick={() => addNodeToEdge(nodeType as NodeType)}
-                  _hover={{ bg: "gray.100" }}
-                >
-                  <IconButton
-                    aria-label={display}
-                    icon={<Icon />}
-                    colorScheme={colorScheme}
-                    size="xs"
-                    mr={2}
-                  />
-                  <Text display="inline">{display}</Text>
-                </Box>
-              )
-            )}
-          </VStack>
+          <SharedNodeMenu onNodeSelect={addNodeToEdge} isDraggable={false} />
         </Box>
       )}
     </Box>

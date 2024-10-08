@@ -15,7 +15,7 @@ import {
 import type React from "react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { VariableReference } from "../../variableSystem";
+import { VariableReference } from "../../FlowVis/variableSystem";
 
 interface LLMNodePropertiesProps {
   node: any;

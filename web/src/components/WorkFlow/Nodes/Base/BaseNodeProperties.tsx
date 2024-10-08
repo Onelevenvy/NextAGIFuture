@@ -10,7 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Node } from "reactflow";
-import { VariableReference } from "../../variableSystem";
+import { VariableReference } from "../../FlowVis/variableSystem";
 import { nodeConfig, NodeType } from "../nodeConfig";
 
 interface BasePropertiesProps {
