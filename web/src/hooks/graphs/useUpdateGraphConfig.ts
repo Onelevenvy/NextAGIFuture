@@ -16,7 +16,7 @@ export function useGraphConfig(
   graphName: string | undefined,
   graphDescription: string | undefined | null,
   nodes: CustomNode[],
-  edges: Edge[],
+  edges: Edge[]
 ) {
   const showToast = useCustomToast();
   const mutation = useGraphMutation(teamId, graphId);
@@ -24,7 +24,7 @@ export function useGraphConfig(
   const saveConfig = useCallback((): Record<string, any> => {
     const startEdge = edges.find((edge) => {
       const sourceNode = nodes.find(
-        (node) => node.id === edge.source && node.type === "start",
+        (node) => node.id === edge.source && node.type === "start"
       );
       return sourceNode !== undefined;
     });
@@ -38,6 +38,7 @@ export function useGraphConfig(
         const nodeType = node.type as NodeType;
         const initialData = nodeConfig[nodeType].initialData || {};
         const nodeData: Record<string, any> = {
+          ...node.data,
           label: node.data.label,
         };
 
@@ -67,8 +68,8 @@ export function useGraphConfig(
         start_connections: edges
           .filter((edge) =>
             nodes.find(
-              (node) => node.id === edge.source && node.type === "start",
-            ),
+              (node) => node.id === edge.source && node.type === "start"
+            )
           )
           .map((edge) => ({
             target: edge.target,
@@ -76,9 +77,7 @@ export function useGraphConfig(
           })),
         end_connections: edges
           .filter((edge) =>
-            nodes.find(
-              (node) => node.id === edge.target && node.type === "end",
-            ),
+            nodes.find((node) => node.id === edge.target && node.type === "end")
           )
           .map((edge) => ({
             source: edge.source,
@@ -93,7 +92,7 @@ export function useGraphConfig(
       showToast(
         "Something went wrong.",
         "No graph found for this team",
-        "error",
+        "error"
       );
       return;
     }
@@ -107,7 +106,7 @@ export function useGraphConfig(
       config: config,
       updated_at: currentDate,
     };
-
+    console.log(updateData);
     mutation.mutate(updateData);
   }, [graphId, graphName, graphDescription, saveConfig, mutation, showToast]);
 

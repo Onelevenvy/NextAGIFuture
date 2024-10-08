@@ -9,11 +9,11 @@ from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.graph import CompiledGraph
 from langgraph.prebuilt import ToolNode
-
+from .node.llmnode import GraphTeam
 from app.core.tools import managed_tools
-from app.core.workflow.db_utils import get_all_models_helper
+from app.core.workflow.utils.db_utils import get_all_models_helper
 
-from .node import LLMNode, SummariserNode, TeamState
+from .node.llmnode import LLMNode, TeamState
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
@@ -58,8 +58,8 @@ def initialize_graph(
         raise ValueError("Invalid configuration structure")
 
     try:
-        graph_builder = StateGraph(TeamState)
 
+        graph_builder = StateGraph(TeamState)
         nodes = build_config["nodes"]
         edges = build_config["edges"]
         metadata = build_config["metadata"]
@@ -159,6 +159,7 @@ def initialize_graph(
                     node_id,
                     RunnableLambda(
                         node_class(
+                            node_id,
                             provider=model_info["provider_name"],
                             model=model_info["ai_model_name"],
                             tools=tools_to_bind,
@@ -180,19 +181,6 @@ def initialize_graph(
             elif node_type == "tool":
                 tools = [get_tool(tool_name) for tool_name in node_data["tools"]]
                 graph_builder.add_node(node_id, ToolNode(tools))
-            elif node_type == "summariser":
-                graph_builder.add_node(
-                    node_id,
-                    RunnableLambda(
-                        SummariserNode(
-                            provider=node_data.get("provider", "zhipuai"),
-                            model=node_data["model"],
-                            openai_api_key="",
-                            openai_api_base="",
-                            temperature=node_data["temperature"],
-                        ).summarise
-                    ),
-                )
 
         # Add edges
         for edge in edges:
