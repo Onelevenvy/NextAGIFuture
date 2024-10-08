@@ -1,14 +1,12 @@
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from typing import Annotated, Any, Dict
 
 from langchain.chat_models import init_chat_model
 from langchain.tools.retriever import create_retriever_tool
 from langchain_core.messages import AIMessage, AnyMessage
-from langchain_core.output_parsers.openai_tools import JsonOutputKeyToolsParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import (
     RunnableConfig,
-    RunnableLambda,
     RunnableSerializable,
 )
 from langchain_core.tools import BaseTool
@@ -130,19 +128,25 @@ def format_messages(messages: list[AnyMessage]) -> str:
     return message_str
 
 
+def update_node_outputs(
+    node_outputs: Dict[str, Any], new_outputs: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Update node_outputs with new outputs. If new_outputs is empty, return the original node_outputs."""
+    if not new_outputs:
+        return node_outputs
+    else:
+        return {**node_outputs, **new_outputs}
+
+
 class TeamState(TypedDict):
-    all_messages: Annotated[
-        list[AnyMessage], add_messages
-    ]  # Stores all messages in this thread
+    all_messages: Annotated[list[AnyMessage], add_messages]
     messages: Annotated[list[AnyMessage], add_or_replace_messages]
     history: Annotated[list[AnyMessage], add_messages]
     team: GraphTeam
     next: str
     main_task: list[AnyMessage]
-    task: list[
-        AnyMessage
-    ]  # This is the current task to be perform by a team member. Its a list because Worker's MessagesPlaceholder only accepts list of messages.
-    node_outputs: Dict[str, Any]
+    task: list[AnyMessage]
+    node_outputs: Annotated[Dict[str, Any], update_node_outputs]  # 修改这一行
 
 
 # When returning teamstate, is it possible to exclude fields that you dont want to update
@@ -248,7 +252,7 @@ class BaseNode:
     def update_node_output(self, state: TeamState, node_id: str, output: Any):
         # state["node_outputs"][node_id]["response"] = output
         if node_id not in state["node_outputs"]:
-        # 如果不存在，则新增
+            # 如果不存在，则新增
             state["node_outputs"][node_id] = {"response": output}
         else:
             # 如果存在，则更新 response
@@ -259,10 +263,17 @@ class LLMNode(BaseNode):
     """Perform LLM Node actions"""
 
     async def work(self, state: TeamState, config: RunnableConfig) -> ReturnTeamState:
-        state["node_outputs"] = {
+        # 初始化 node_outputs，如果它不存在
+        if "node_outputs" not in state:
+            state["node_outputs"] = {}
+
+        # 更新 node_outputs
+        new_outputs = {
             "start": {"query": "我是tqx"},
             "llm": {"response": "我是大模型EE"},
         }
+        state["node_outputs"] = update_node_outputs(state["node_outputs"], new_outputs)
+
         if self.system_prompt:
             parsed_system_prompt = parse_variables(
                 self.system_prompt, state["node_outputs"]
@@ -314,11 +325,14 @@ class LLMNode(BaseNode):
         chain: RunnableSerializable[dict[str, Any], AnyMessage] = prompt | self.model
         result: AIMessage = await chain.ainvoke(state, config)
 
-        self.update_node_output(state, self.node_id, result.content)
+        # 更新 node_outputs
+        new_output = {self.node_id: {"response": result.content}}
+        state["node_outputs"] = update_node_outputs(state["node_outputs"], new_output)
+
         return_state: ReturnTeamState = {
             "history": history + [result],
             "messages": [result] if result.tool_calls else [],
             "all_messages": messages + [result],
-            "node_outputs": state.get("node_outputs", {}),
+            "node_outputs": state["node_outputs"],
         }
         return return_state

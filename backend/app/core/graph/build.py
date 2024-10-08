@@ -457,17 +457,6 @@ def create_hierarchical_graph(
         checkpointer=checkpointer, interrupt_before=interrupt_member_names, debug=True
     )
 
-    # try:
-    #     # 获取图像数据
-    #     img_data = graph.get_graph().draw_mermaid_png()
-
-    #     # 保存图像到文件
-    #     with open("hierarchical_graph_image.png", "wb") as f:
-    #         f.write(img_data)
-    # except Exception:
-    #     # 处理可能的异常
-    #     pass
-
     return graph
 
 
@@ -553,16 +542,7 @@ def create_sequential_graph(
         checkpointer=checkpointer,
         interrupt_before=interrupt_member_names,
     )
-    # try:
-    #     # 获取图像数据
-    #     img_data = graph.get_graph().draw_mermaid_png()
 
-    #     # 保存图像到文件
-    #     with open("seq_graph_image.png", "wb") as f:
-    #         f.write(img_data)
-    # except Exception:
-    #     # 处理可能的异常
-    #     pass
     return graph
 
 
@@ -760,7 +740,6 @@ async def generator(
                 }
             elif team.workflow in ["workflow"]:
 
-                # config = config_with_2_tool_router
                 config = team.graphs[0].config
 
                 root = initialize_graph(config, checkpointer, save_graph_img=False)
