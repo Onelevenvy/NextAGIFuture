@@ -42,8 +42,8 @@ import { VscTriangleRight } from "react-icons/vsc";
 import "reactflow/dist/style.css";
 import DebugPreview from "../../Teams/DebugPreview";
 import NodePalette from "./NodePalette";
-import BaseProperties from "../nodes/Base/BaseNodeProperties";
-import { type NodeType, nodeConfig } from "../nodes/nodeConfig";
+import BaseProperties from "../Nodes/Base/BaseNodeProperties";
+import { type NodeType, nodeConfig } from "../Nodes/nodeConfig";
 import type { CustomNode, FlowVisualizerProps } from "../types";
 import { calculateEdgeCenter } from "./utils";
 import NodeMenu from "./NodeMenu";
@@ -404,82 +404,79 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     setShowNodeMenu(false);
   }, []);
 
-  const handleNodeSelect = useCallback(
-    (nodeType: NodeType | string, isPlugin: boolean) => {
-      if (!selectedEdge) return;
+  const handleNodeSelect = useCallback((nodeType: NodeType | string, isPlugin: boolean) => {
+    if (!selectedEdge) return;
 
-      const sourceNode = nodes.find((node) => node.id === selectedEdge.source);
-      const targetNode = nodes.find((node) => node.id === selectedEdge.target);
-      if (!sourceNode || !targetNode) return;
+    const sourceNode = nodes.find((node) => node.id === selectedEdge.source);
+    const targetNode = nodes.find((node) => node.id === selectedEdge.target);
+    if (!sourceNode || !targetNode) return;
 
-      const newNodeId = `${nodeType}-${nodes.length + 1}`;
-      const centerX = (sourceNode.position.x + targetNode.position.x) / 2;
-      const centerY = (sourceNode.position.y + targetNode.position.y) / 2;
+    const newNodeId = `${nodeType}-${nodes.length + 1}`;
+    const centerX = (sourceNode.position.x + targetNode.position.x) / 2;
+    const centerY = (sourceNode.position.y + targetNode.position.y) / 2;
 
-      let newNode: CustomNode;
+    let newNode: CustomNode;
 
-      if (!isPlugin) {
-        newNode = {
-          id: newNodeId,
-          type: nodeType as NodeType,
-          position: { x: centerX, y: centerY },
-          data: {
-            label: generateUniqueName(nodeConfig[nodeType as NodeType].display),
-            customName: generateUniqueName(
-              nodeConfig[nodeType as NodeType].display
-            ),
-            onChange: (key: string, value: any) =>
-              onNodeDataChange(newNodeId, key, value),
-            ...nodeConfig[nodeType as NodeType].initialData,
-          },
-        };
-      } else {
-        newNode = {
-          id: newNodeId,
-          type: "plugin",
-          position: { x: centerX, y: centerY },
-          data: {
-            label: nodeType,
-            toolName: nodeType,
-            args: {},
-          },
-        };
-      }
-
-      const newEdge1: Edge = {
-        id: `e${selectedEdge.source}-${newNodeId}`,
-        source: selectedEdge.source,
-        target: newNodeId,
-        sourceHandle: "right",
-        targetHandle: "left",
-        type: selectedEdge.type,
+    if (!isPlugin) {
+      newNode = {
+        id: newNodeId,
+        type: nodeType as NodeType,
+        position: { x: centerX, y: centerY },
+        data: {
+          label: generateUniqueName(nodeConfig[nodeType as NodeType].display),
+          customName: generateUniqueName(
+            nodeConfig[nodeType as NodeType].display
+          ),
+          onChange: (key: string, value: any) =>
+            onNodeDataChange(newNodeId, key, value),
+          ...nodeConfig[nodeType as NodeType].initialData,
+        },
       };
-
-      const newEdge2: Edge = {
-        id: `e${newNodeId}-${selectedEdge.target}`,
-        source: newNodeId,
-        target: selectedEdge.target,
-        sourceHandle: "right",
-        targetHandle: "left",
-        type: selectedEdge.type,
+    } else {
+      newNode = {
+        id: newNodeId,
+        type: "plugin",
+        position: { x: centerX, y: centerY },
+        data: {
+          label: nodeType,
+          toolName: nodeType,
+          args: {},
+        },
       };
+    }
 
-      setNodes((nds) => nds.concat(newNode));
-      setEdges((eds) =>
-        eds.filter((e) => e.id !== selectedEdge.id).concat(newEdge1, newEdge2)
-      );
-      setSelectedEdge(null);
-      setShowNodeMenu(false);
-    },
-    [
-      selectedEdge,
-      nodes,
-      setNodes,
-      setEdges,
-      onNodeDataChange,
-      generateUniqueName,
-    ]
-  );
+    const newEdge1: Edge = {
+      id: `e${selectedEdge.source}-${newNodeId}`,
+      source: selectedEdge.source,
+      target: newNodeId,
+      sourceHandle: "right",
+      targetHandle: "left",
+      type: selectedEdge.type,
+    };
+
+    const newEdge2: Edge = {
+      id: `e${newNodeId}-${selectedEdge.target}`,
+      source: newNodeId,
+      target: selectedEdge.target,
+      sourceHandle: "right",
+      targetHandle: "left",
+      type: selectedEdge.type,
+    };
+
+    setNodes((nds) => nds.concat(newNode));
+    setEdges((eds) =>
+      eds.filter((e) => e.id !== selectedEdge.id).concat(newEdge1, newEdge2)
+    );
+    setSelectedEdge(null);
+    setShowNodeMenu(false);
+  }, [
+    selectedEdge,
+    nodes,
+    setNodes,
+    setEdges,
+    onNodeDataChange,
+    generateUniqueName,
+  ]);
 
   const onPaneClick = useCallback(() => {
     setSelectedEdge(null);
@@ -487,6 +484,15 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     setShowPluginMenu(false);
     setSelectedNodeId(null); // 取消选中的节点
   }, [setSelectedNodeId]);
+
+  const onDragStart = useCallback((event: React.DragEvent<HTMLDivElement>, nodeType: string, isPlugin: boolean) => {
+    event.dataTransfer.setData(
+      "application/reactflow",
+      JSON.stringify({ tool: nodeType, type: isPlugin ? "plugin" : nodeType })
+    );
+    event.dataTransfer.effectAllowed = "move";
+    console.log(`Dragging type: ${nodeType}, isPlugin: ${isPlugin}`);
+  }, []);
 
   return (
     <Box
@@ -697,7 +703,11 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           top={`${menuPosition.y}px`}
           zIndex={1000}
         >
-          <NodeMenu onNodeSelect={handleNodeSelect} showStartEnd={false} />
+          <NodeMenu 
+            onNodeSelect={handleNodeSelect} 
+            onDragStart={onDragStart}
+            showStartEnd={false} 
+          />
         </Box>
       )}
     </Box>

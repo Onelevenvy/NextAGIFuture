@@ -11,23 +11,35 @@ import {
   IconButton,
   HStack,
 } from "@chakra-ui/react";
-import { nodeConfig, type NodeType } from "../nodes/nodeConfig";
+import { nodeConfig, type NodeType } from "../Nodes/nodeConfig";
 import { useSkillsQuery } from "@/hooks/useSkillsQuery";
 import ToolsIcon from "../../Icons/Tools";
 
 interface NodeMenuProps {
-  onNodeSelect: (nodeType: NodeType | string, isPlugin: boolean) => void;
+  onDragStart: (event: React.DragEvent<HTMLDivElement>, nodeType: string, isPlugin: boolean) => void;
   showStartEnd?: boolean;
+  onNodeSelect?: (nodeType: NodeType | string, isPlugin: boolean) => void;
 }
 
-const NodeMenu: React.FC<NodeMenuProps> = ({
-  onNodeSelect,
-  showStartEnd = false,
-}) => {
+const NodeMenu: React.FC<NodeMenuProps> = ({ onDragStart, onNodeSelect, showStartEnd = false }) => {
   const { data: tools, isLoading, isError } = useSkillsQuery();
 
+  const handleNodeAction = (event: React.MouseEvent | React.DragEvent<HTMLDivElement>, nodeType: string, isPlugin: boolean) => {
+    if (event.type === 'dragstart') {
+      onDragStart(event as React.DragEvent<HTMLDivElement>, nodeType, isPlugin);
+    } else if (onNodeSelect) {
+      onNodeSelect(nodeType, isPlugin);
+    }
+  };
+
   return (
-    <Box bg="white" borderRadius="md" boxShadow="md" p={2} width="200px">
+    <Box
+      bg="white"
+      borderRadius="md"
+      boxShadow="md"
+      p={2}
+      width="200px"
+    >
       <Tabs variant="enclosed" isLazy>
         <TabList>
           <Tab>Nodes</Tab>
@@ -39,16 +51,16 @@ const NodeMenu: React.FC<NodeMenuProps> = ({
             <VStack spacing={2} align="stretch">
               {Object.entries(nodeConfig).map(
                 ([nodeType, { display, icon: Icon, colorScheme }]) =>
-                  (showStartEnd ||
-                    (nodeType !== "start" && nodeType !== "end")) &&
-                  nodeType !== "plugin" && (
+                  (showStartEnd || (nodeType !== "start" && nodeType !== "end")) && nodeType !== "plugin" && (
                     <Box
                       key={nodeType}
                       border="1px solid #ddd"
                       borderRadius="md"
                       padding={2}
-                      cursor="pointer"
-                      onClick={() => onNodeSelect(nodeType, false)}
+                      cursor="move"
+                      draggable
+                      onDragStart={(event) => handleNodeAction(event, nodeType, false)}
+                      onClick={(event) => handleNodeAction(event, nodeType, false)}
                       _hover={{ bg: "gray.100" }}
                     >
                       <IconButton
@@ -71,14 +83,16 @@ const NodeMenu: React.FC<NodeMenuProps> = ({
               ) : isError ? (
                 <Text>Error loading tools</Text>
               ) : (
-                tools!.data.map((tool) => (
+                tools?.data.map((tool) => (
                   <Box
                     key={tool.display_name}
                     border="1px solid #ddd"
                     borderRadius="md"
                     padding={2}
-                    cursor="pointer"
-                    onClick={() => onNodeSelect(tool.display_name!, true)}
+                    cursor="move"
+                    draggable
+                    onDragStart={(event) => handleNodeAction(event, tool.display_name!, true)}
+                    onClick={(event) => handleNodeAction(event, tool.display_name!, true)}
                     _hover={{ bg: "gray.100" }}
                   >
                     <HStack spacing={2}>
