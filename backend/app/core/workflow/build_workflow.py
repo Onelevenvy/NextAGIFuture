@@ -191,7 +191,7 @@ def initialize_graph(
                 if edge["type"] == "default":
                     graph_builder.add_edge(START, edge["target"])
                 else:
-                    raise ValueError("Start node can only support normal edge.")
+                    raise ValueError("Start node can only have normal edge.")
             if source_node["type"] == "llm":
                 if target_node["type"] == "tool":
                     if edge["type"] == "default":
