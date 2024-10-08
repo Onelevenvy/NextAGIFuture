@@ -133,6 +133,12 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       const sourceType = sourceNode.type as NodeType;
       const targetType = targetNode.type as NodeType;
 
+      // Prevent multiple connections from start node
+      if (sourceType === 'start') {
+        const existingStartConnections = edges.filter(edge => edge.source === connection.source);
+        if (existingStartConnections.length > 0) return false;
+      }
+
       const sourceAllowedConnections =
         nodeConfig[sourceType].allowedConnections;
       const targetAllowedConnections =
@@ -281,6 +287,12 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
   const deleteNode = useCallback(() => {
     if (contextMenu.nodeId) {
+      const nodeToDelete = nodes.find(node => node.id === contextMenu.nodeId);
+      if (nodeToDelete && (nodeToDelete.type === 'start' || nodeToDelete.type === 'end')) {
+        // Don't delete start or end nodes
+        closeContextMenu();
+        return;
+      }
       setNodes((nds) => nds.filter((node) => node.id !== contextMenu.nodeId));
       setEdges((eds) =>
         eds.filter(
@@ -294,6 +306,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     closePropertiesPanel();
   }, [
     contextMenu.nodeId,
+    nodes,
     setNodes,
     setEdges,
     closeContextMenu,

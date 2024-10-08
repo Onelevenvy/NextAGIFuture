@@ -48,8 +48,8 @@ const NodePalette: React.FC = () => {
             <VStack spacing={4} align="stretch">
               {Object.entries(nodeConfig).map(
                 ([nodeType, { display, icon: Icon, colorScheme }]) =>
-                  // 过滤掉 plugin 类型的节点
-                  nodeType !== "plugin" && (
+                  // Filter out start, end, and plugin nodes
+                  nodeType !== "start" && nodeType !== "end" && nodeType !== "plugin" && (
                     <Box
                       key={nodeType}
                       border="1px solid #ddd"
