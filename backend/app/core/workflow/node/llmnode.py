@@ -155,10 +155,10 @@ class ReturnTeamState(TypedDict):
     task: NotRequired[list[AnyMessage]]
 
 
-def parse_variables(text: str, state: TeamState) -> str:
+def parse_variables(text: str, node_outputs: Dict) -> str:
     def replace_variable(match):
         var_path = match.group(1).split(".")
-        value = state["node_outputs"]
+        value = node_outputs
         for key in var_path:
             if key in value:
                 value = value[key]
@@ -246,7 +246,13 @@ class BaseNode:
             )
 
     def update_node_output(self, state: TeamState, node_id: str, output: Any):
-        state["node_outputs"][node_id] = output
+        # state["node_outputs"][node_id]["response"] = output
+        if node_id not in state["node_outputs"]:
+        # 如果不存在，则新增
+            state["node_outputs"][node_id] = {"response": output}
+        else:
+            # 如果存在，则更新 response
+            state["node_outputs"][node_id]["response"] = output
 
 
 class LLMNode(BaseNode):
@@ -258,7 +264,9 @@ class LLMNode(BaseNode):
             "llm": {"response": "我是大模型EE"},
         }
         if self.system_prompt:
-            parsed_system_prompt = parse_variables(self.system_prompt, state)
+            parsed_system_prompt = parse_variables(
+                self.system_prompt, state["node_outputs"]
+            )
             llm_node_prompts = ChatPromptTemplate.from_messages(
                 [
                     (
@@ -306,10 +314,11 @@ class LLMNode(BaseNode):
         chain: RunnableSerializable[dict[str, Any], AnyMessage] = prompt | self.model
         result: AIMessage = await chain.ainvoke(state, config)
 
-        # self.update_node_output(state, self.node_id, result.content)
+        self.update_node_output(state, self.node_id, result.content)
         return_state: ReturnTeamState = {
             "history": history + [result],
             "messages": [result] if result.tool_calls else [],
             "all_messages": messages + [result],
+            "node_outputs": state.get("node_outputs", {}),
         }
         return return_state

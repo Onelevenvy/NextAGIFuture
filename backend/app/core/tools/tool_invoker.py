@@ -1,5 +1,5 @@
   # 导入自定义响应模型
-from app.core.workflow.init_graph import get_tool
+from app.core.workflow.build_workflow import get_tool
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import AIMessage
 import uuid

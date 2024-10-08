@@ -30,7 +30,7 @@ from app.core.graph.members import (
     WorkerNode,
 )
 from app.core.graph.messages import ChatResponse, event_to_response
-from app.core.workflow.init_graph import initialize_graph
+from app.core.workflow.build_workflow import initialize_graph
 from app.models import ChatMessage, Interrupt, InterruptDecision, Member, Team
 
 
