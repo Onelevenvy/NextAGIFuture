@@ -44,7 +44,7 @@ import BaseProperties from "../Nodes/Base/BaseNodeProperties";
 import { type NodeType, nodeConfig } from "../Nodes/nodeConfig";
 import type { CustomNode, FlowVisualizerProps } from "../types";
 import { calculateEdgeCenter } from "./utils";
-import NodeAddMenu from './NodeAddMenu';
+import SharedNodeMenu from "./SharedNodeMenu";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -380,7 +380,16 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       const targetNode = nodes.find((node) => node.id === edge.target);
       if (sourceNode && targetNode) {
         const centerPoint = calculateEdgeCenter(sourceNode, targetNode);
-        setMenuPosition(centerPoint);
+
+        // 调整菜单位置，确保不会超出视口
+        const viewportHeight = window.innerHeight;
+        const menuHeight = 400; // SharedNodeMenu 的最大高度
+        const yPosition = Math.min(
+          centerPoint.y,
+          viewportHeight - menuHeight - 20
+        ); // 20px 作为底部边距
+
+        setMenuPosition({ x: centerPoint.x, y: yPosition });
       }
     },
     [nodes]
@@ -424,7 +433,9 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           position: { x: centerX, y: centerY },
           data: {
             label: generateUniqueName(nodeConfig[nodeType as NodeType].display),
-            customName: generateUniqueName(nodeConfig[nodeType as NodeType].display),
+            customName: generateUniqueName(
+              nodeConfig[nodeType as NodeType].display
+            ),
             onChange: (key: string, value: any) =>
               onNodeDataChange(newNodeId, key, value),
             ...nodeConfig[nodeType as NodeType].initialData,
@@ -457,7 +468,14 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       setSelectedEdge(null);
       setShowNodeMenu(false);
     },
-    [selectedEdge, nodes, setNodes, setEdges, onNodeDataChange, generateUniqueName]
+    [
+      selectedEdge,
+      nodes,
+      setNodes,
+      setEdges,
+      onNodeDataChange,
+      generateUniqueName,
+    ]
   );
 
   const onPaneClick = useCallback(() => {
@@ -674,8 +692,10 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           left={`${menuPosition.x}px`}
           top={`${menuPosition.y}px`}
           zIndex={1000}
+          maxH="full"
+          overflowY="auto"
         >
-          <NodeAddMenu onAddNode={addNodeToEdge} />
+          <SharedNodeMenu onNodeSelect={addNodeToEdge} isDraggable={false} />
         </Box>
       )}
     </Box>

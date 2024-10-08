@@ -15,22 +15,51 @@ import { nodeConfig, type NodeType } from "../Nodes/nodeConfig";
 import { useSkillsQuery } from "@/hooks/useSkillsQuery";
 import ToolsIcon from "../../Icons/Tools";
 
-interface NodeAddMenuProps {
-  onAddNode: (nodeType: NodeType | string, tool?: any) => void;
+interface SharedNodeMenuProps {
+  onNodeSelect: (nodeType: NodeType | string, tool?: any) => void;
+  isDraggable?: boolean;
 }
 
-const NodeAddMenu: React.FC<NodeAddMenuProps> = ({ onAddNode }) => {
+const SharedNodeMenu: React.FC<SharedNodeMenuProps> = ({
+  onNodeSelect,
+  isDraggable = false,
+}) => {
   const { data: tools, isLoading, isError } = useSkillsQuery();
 
+  const handleNodeInteraction =
+    (nodeType: NodeType | string, tool?: any) =>
+    (event: React.MouseEvent | React.DragEvent) => {
+      if (isDraggable && event.type === "dragstart") {
+        const dragEvent = event as React.DragEvent;
+        dragEvent.dataTransfer.setData(
+          "application/reactflow",
+          JSON.stringify({
+            tool: nodeType === "plugin" ? tool : nodeType,
+            type: nodeType,
+          })
+        );
+        dragEvent.dataTransfer.effectAllowed = "move";
+      } else if (!isDraggable) {
+        onNodeSelect(nodeType, tool);
+      }
+    };
+
   return (
-    <Box width="200px" padding={2} bg="white" borderRadius="md" boxShadow="md">
+    <Box
+      width="200px"
+      bg="white"
+      borderRadius="md"
+      boxShadow="md"
+      h="full"
+      minH="full"
+    >
       <Tabs isLazy>
-        <TabList mb="1em">
+        <TabList mb="1em" position="sticky" top={0} bg="white" zIndex={1}>
           <Tab>Nodes</Tab>
           <Tab>Plugins</Tab>
         </TabList>
         <TabPanels>
-          <TabPanel>
+          <TabPanel h="full" overflowY="auto" px={2} py={0} minH={"400px"}>
             <VStack spacing={2} align="stretch">
               {Object.entries(nodeConfig).map(
                 ([nodeType, { display, icon: Icon, colorScheme }]) =>
@@ -42,8 +71,18 @@ const NodeAddMenu: React.FC<NodeAddMenuProps> = ({ onAddNode }) => {
                       border="1px solid #ddd"
                       borderRadius="md"
                       padding={2}
-                      cursor="pointer"
-                      onClick={() => onAddNode(nodeType as NodeType)}
+                      cursor={isDraggable ? "move" : "pointer"}
+                      onClick={
+                        !isDraggable
+                          ? handleNodeInteraction(nodeType as NodeType)
+                          : undefined
+                      }
+                      onDragStart={
+                        isDraggable
+                          ? handleNodeInteraction(nodeType as NodeType)
+                          : undefined
+                      }
+                      draggable={isDraggable}
                       _hover={{ bg: "gray.100" }}
                     >
                       <IconButton
@@ -61,7 +100,7 @@ const NodeAddMenu: React.FC<NodeAddMenuProps> = ({ onAddNode }) => {
               )}
             </VStack>
           </TabPanel>
-          <TabPanel>
+          <TabPanel h="full" overflowY="auto" px={2} py={0} minH={"400px"}>
             <VStack spacing={2} align="stretch">
               {isLoading ? (
                 <Text>Loading tools...</Text>
@@ -74,8 +113,18 @@ const NodeAddMenu: React.FC<NodeAddMenuProps> = ({ onAddNode }) => {
                     border="1px solid #ddd"
                     borderRadius="md"
                     p={2}
-                    cursor="pointer"
-                    onClick={() => onAddNode("plugin", tool)}
+                    cursor={isDraggable ? "move" : "pointer"}
+                    onClick={
+                      !isDraggable
+                        ? handleNodeInteraction("plugin", tool)
+                        : undefined
+                    }
+                    onDragStart={
+                      isDraggable
+                        ? handleNodeInteraction("plugin", tool)
+                        : undefined
+                    }
+                    draggable={isDraggable}
                     _hover={{ bg: "gray.100" }}
                   >
                     <HStack spacing="2">
@@ -95,4 +144,4 @@ const NodeAddMenu: React.FC<NodeAddMenuProps> = ({ onAddNode }) => {
   );
 };
 
-export default NodeAddMenu;
+export default SharedNodeMenu;
