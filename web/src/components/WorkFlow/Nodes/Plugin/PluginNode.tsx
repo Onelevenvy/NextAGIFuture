@@ -17,9 +17,7 @@ const PluginNode: React.FC<NodeProps> = (props) => {
   return (
     <BaseNode
       {...props}
-      icon={
-        <ToolsIcon tools_name={toolName.replace(/\s+/g, "_")} w={6} h={6} />
-      }
+      icon={<ToolsIcon tools_name={toolName.replace(/ /g, "_")} w={6} h={6} />}
       colorScheme={colorScheme}
     >
       <>
