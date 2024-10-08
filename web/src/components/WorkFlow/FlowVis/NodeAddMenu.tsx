@@ -8,84 +8,42 @@ import {
   Tabs,
   Text,
   VStack,
-  IconButton,
   HStack,
+  IconButton,
 } from "@chakra-ui/react";
 import { nodeConfig, type NodeType } from "../Nodes/nodeConfig";
 import { useSkillsQuery } from "@/hooks/useSkillsQuery";
 import ToolsIcon from "../../Icons/Tools";
 
-interface NodeMenuProps {
-  onDragStart: (
-    event: React.DragEvent<HTMLDivElement>,
-    nodeType: string,
-    isPlugin: boolean
-  ) => void;
-  showStartEnd?: boolean;
-  onNodeSelect?: (nodeType: NodeType | string, isPlugin: boolean) => void;
+interface NodeAddMenuProps {
+  onAddNode: (nodeType: NodeType | string, tool?: any) => void;
 }
 
-const NodeMenu: React.FC<NodeMenuProps> = ({
-  onDragStart,
-  onNodeSelect,
-  showStartEnd = false,
-}) => {
+const NodeAddMenu: React.FC<NodeAddMenuProps> = ({ onAddNode }) => {
   const { data: tools, isLoading, isError } = useSkillsQuery();
 
-  const handleNodeAction = (
-    event: React.MouseEvent | React.DragEvent<HTMLDivElement>,
-    nodeType: string,
-    isPlugin: boolean
-  ) => {
-    if (event.type === "dragstart" && "dataTransfer" in event) {
-      // 确保事件是 DragEvent
-      const dragEvent = event as React.DragEvent<HTMLDivElement>;
-      dragEvent.dataTransfer.setData(
-        "application/reactflow",
-        JSON.stringify({ tool: nodeType, type: isPlugin ? "plugin" : nodeType })
-      );
-    } else if (onNodeSelect) {
-      onNodeSelect(nodeType, isPlugin);
-    }
-  };
-
   return (
-    <Box
-      bg="white"
-      borderRadius="md"
-      boxShadow="md"
-      p={2}
-      width="200px"
-      h="100%"
-    >
+    <Box width="200px" padding={2} bg="white" borderRadius="md" boxShadow="md">
       <Tabs isLazy>
-        <TabList>
+        <TabList mb="1em">
           <Tab>Nodes</Tab>
           <Tab>Plugins</Tab>
         </TabList>
-
         <TabPanels>
           <TabPanel>
             <VStack spacing={2} align="stretch">
               {Object.entries(nodeConfig).map(
                 ([nodeType, { display, icon: Icon, colorScheme }]) =>
-                  (showStartEnd ||
-                    (nodeType !== "start" && nodeType !== "end")) &&
-                  nodeType !== "plugin" && (
+                  nodeType !== "plugin" &&
+                  nodeType !== "start" &&
+                  nodeType !== "end" && (
                     <Box
                       key={nodeType}
-                      overflow={"auto"}
                       border="1px solid #ddd"
                       borderRadius="md"
                       padding={2}
-                      cursor="move"
-                      draggable
-                      onDragStart={(event) =>
-                        handleNodeAction(event, nodeType, false)
-                      }
-                      onClick={(event) =>
-                        handleNodeAction(event, nodeType, false)
-                      }
+                      cursor="pointer"
+                      onClick={() => onAddNode(nodeType as NodeType)}
                       _hover={{ bg: "gray.100" }}
                     >
                       <IconButton
@@ -95,7 +53,9 @@ const NodeMenu: React.FC<NodeMenuProps> = ({
                         size="xs"
                         mr={2}
                       />
-                      <Text display="inline">{display}</Text>
+                      <Text display="inline" fontSize="sm">
+                        {display}
+                      </Text>
                     </Box>
                   )
               )}
@@ -113,18 +73,12 @@ const NodeMenu: React.FC<NodeMenuProps> = ({
                     key={tool.display_name}
                     border="1px solid #ddd"
                     borderRadius="md"
-                    padding={2}
-                    cursor="move"
-                    draggable
-                    onDragStart={(event) =>
-                      handleNodeAction(event, tool.name, true)
-                    }
-                    onClick={(event) =>
-                      handleNodeAction(event, tool.name, true)
-                    }
+                    p={2}
+                    cursor="pointer"
+                    onClick={() => onAddNode("plugin", tool)}
                     _hover={{ bg: "gray.100" }}
                   >
-                    <HStack spacing={2}>
+                    <HStack spacing="2">
                       <ToolsIcon
                         tools_name={tool.display_name!.replace(/ /g, "_")}
                       />
@@ -141,4 +95,4 @@ const NodeMenu: React.FC<NodeMenuProps> = ({
   );
 };
 
-export default NodeMenu;
+export default NodeAddMenu;

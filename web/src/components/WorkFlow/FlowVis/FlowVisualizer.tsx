@@ -44,6 +44,7 @@ import BaseProperties from "../Nodes/Base/BaseNodeProperties";
 import { type NodeType, nodeConfig } from "../Nodes/nodeConfig";
 import type { CustomNode, FlowVisualizerProps } from "../types";
 import { calculateEdgeCenter } from "./utils";
+import NodeAddMenu from './NodeAddMenu';
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -391,42 +392,58 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   }, []);
 
   const addNodeToEdge = useCallback(
-    (nodeType: NodeType) => {
+    (nodeType: NodeType | string, tool?: any) => {
       if (!selectedEdge) return;
 
       const sourceNode = nodes.find((node) => node.id === selectedEdge.source);
       const targetNode = nodes.find((node) => node.id === selectedEdge.target);
       if (!sourceNode || !targetNode) return;
 
-      const newNodeId = `${nodeType}-${nodes.length + 1}`;
       const centerX = (sourceNode.position.x + targetNode.position.x) / 2;
       const centerY = (sourceNode.position.y + targetNode.position.y) / 2;
 
-      const newNode: CustomNode = {
-        id: newNodeId,
-        type: nodeType,
-        position: { x: centerX, y: centerY },
-        data: {
-          label: generateUniqueName(nodeConfig[nodeType].display),
-          customName: generateUniqueName(nodeConfig[nodeType].display),
-          onChange: (key: string, value: any) =>
-            onNodeDataChange(newNodeId, key, value),
-          ...nodeConfig[nodeType].initialData,
-        },
-      };
+      let newNode: CustomNode;
+
+      if (nodeType === "plugin") {
+        newNode = {
+          id: `${tool.display_name}-${nodes.length + 1}`,
+          type: "plugin",
+          position: { x: centerX, y: centerY },
+          data: {
+            label: tool.display_name,
+            toolName: tool.display_name,
+            args: {},
+            ...tool.initialData,
+          },
+        };
+      } else {
+        const newNodeId = `${nodeType}-${nodes.length + 1}`;
+        newNode = {
+          id: newNodeId,
+          type: nodeType as NodeType,
+          position: { x: centerX, y: centerY },
+          data: {
+            label: generateUniqueName(nodeConfig[nodeType as NodeType].display),
+            customName: generateUniqueName(nodeConfig[nodeType as NodeType].display),
+            onChange: (key: string, value: any) =>
+              onNodeDataChange(newNodeId, key, value),
+            ...nodeConfig[nodeType as NodeType].initialData,
+          },
+        };
+      }
 
       const newEdge1: Edge = {
-        id: `e${selectedEdge.source}-${newNodeId}`,
+        id: `e${selectedEdge.source}-${newNode.id}`,
         source: selectedEdge.source,
-        target: newNodeId,
+        target: newNode.id,
         sourceHandle: "right",
         targetHandle: "left",
         type: selectedEdge.type,
       };
 
       const newEdge2: Edge = {
-        id: `e${newNodeId}-${selectedEdge.target}`,
-        source: newNodeId,
+        id: `e${newNode.id}-${selectedEdge.target}`,
+        source: newNode.id,
         target: selectedEdge.target,
         sourceHandle: "right",
         targetHandle: "left",
@@ -440,14 +457,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       setSelectedEdge(null);
       setShowNodeMenu(false);
     },
-    [
-      selectedEdge,
-      nodes,
-      setNodes,
-      setEdges,
-      onNodeDataChange,
-      generateUniqueName,
-    ]
+    [selectedEdge, nodes, setNodes, setEdges, onNodeDataChange, generateUniqueName]
   );
 
   const onPaneClick = useCallback(() => {
@@ -664,35 +674,8 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           left={`${menuPosition.x}px`}
           top={`${menuPosition.y}px`}
           zIndex={1000}
-          bg="white"
-          borderRadius="md"
-          boxShadow="md"
-          p={2}
         >
-          <VStack spacing={2} align="stretch">
-            {Object.entries(nodeConfig).map(
-              ([nodeType, { display, icon: Icon, colorScheme }]) => (
-                <Box
-                  key={nodeType}
-                  border="1px solid #ddd"
-                  borderRadius="md"
-                  padding={2}
-                  cursor="pointer"
-                  onClick={() => addNodeToEdge(nodeType as NodeType)}
-                  _hover={{ bg: "gray.100" }}
-                >
-                  <IconButton
-                    aria-label={display}
-                    icon={<Icon />}
-                    colorScheme={colorScheme}
-                    size="xs"
-                    mr={2}
-                  />
-                  <Text display="inline">{display}</Text>
-                </Box>
-              )
-            )}
-          </VStack>
+          <NodeAddMenu onAddNode={addNodeToEdge} />
         </Box>
       )}
     </Box>
