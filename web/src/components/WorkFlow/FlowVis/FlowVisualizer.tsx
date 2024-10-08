@@ -15,7 +15,7 @@ import ReactFlow, {
   useViewport,
   EdgeLabelRenderer,
 } from "reactflow";
-import { FaPlus, FaTools } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import { useContextMenu } from "@/hooks/graphs/useContextMenu";
 import { useFlowState } from "@/hooks/graphs/useFlowState";
 import { useGraphConfig } from "@/hooks/graphs/useUpdateGraphConfig";
@@ -24,7 +24,6 @@ import {
   Box,
   Button,
   CloseButton,
-  Image,
   Kbd,
   Menu,
   MenuButton,
@@ -33,8 +32,7 @@ import {
   Text,
   useColorModeValue,
   IconButton,
-  VStack,
-  HStack,
+  
   useToast,
 } from "@chakra-ui/react";
 import { MdBuild, MdOutlineHelp } from "react-icons/md";
@@ -386,7 +384,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [showNodeMenu, setShowNodeMenu] = useState(false);
-  const [showPluginMenu, setShowPluginMenu] = useState(false);
+
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
   const onEdgeClick = useCallback(
@@ -404,17 +402,6 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     [nodes]
   );
 
-  const handleAddNodeClick = useCallback((event: React.MouseEvent) => {
-    event.stopPropagation();
-    setShowNodeMenu(true);
-    setShowPluginMenu(false);
-  }, []);
-
-  const handleAddPluginClick = useCallback((event: React.MouseEvent) => {
-    event.stopPropagation();
-    setShowPluginMenu(true);
-    setShowNodeMenu(false);
-  }, []);
 
   const handleNodeSelect = useCallback(
     (nodeType: NodeType | string, isPlugin: boolean) => {
@@ -508,7 +495,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const onPaneClick = useCallback(() => {
     setSelectedEdge(null);
     setShowNodeMenu(false);
-    setShowPluginMenu(false);
+
     setSelectedNodeId(null); // 取消选中的节点
   }, [setSelectedNodeId]);
 

@@ -37,7 +37,7 @@ const NodeMenu: React.FC<NodeMenuProps> = ({
     nodeType: string,
     isPlugin: boolean
   ) => {
-    if (event.type === "dragstart" && 'dataTransfer' in event) {
+    if (event.type === "dragstart" && "dataTransfer" in event) {
       // 确保事件是 DragEvent
       const dragEvent = event as React.DragEvent<HTMLDivElement>;
       dragEvent.dataTransfer.setData(
@@ -50,8 +50,15 @@ const NodeMenu: React.FC<NodeMenuProps> = ({
   };
 
   return (
-    <Box bg="white" borderRadius="md" boxShadow="md" p={2} width="200px">
-      <Tabs variant="enclosed" isLazy>
+    <Box
+      bg="white"
+      borderRadius="md"
+      boxShadow="md"
+      p={2}
+      width="200px"
+      h="100%"
+    >
+      <Tabs isLazy>
         <TabList>
           <Tab>Nodes</Tab>
           <Tab>Plugins</Tab>
@@ -67,6 +74,7 @@ const NodeMenu: React.FC<NodeMenuProps> = ({
                   nodeType !== "plugin" && (
                     <Box
                       key={nodeType}
+                      overflow={"auto"}
                       border="1px solid #ddd"
                       borderRadius="md"
                       padding={2}
