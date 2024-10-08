@@ -47,6 +47,12 @@ def should_continue(state: TeamState) -> str:
     return "default"
 
 
+def InputNode(state: TeamState):
+    new_outputs = {"start": {"query": "我是tqx"}}
+    state["node_outputs"] = new_outputs
+    return state
+
+
 def initialize_graph(
     build_config: Dict[str, Any],
     checkpointer: BaseCheckpointSaver,
@@ -64,6 +70,7 @@ def initialize_graph(
         edges = build_config["edges"]
         metadata = build_config["metadata"]
 
+        graph_builder.add_node("InputNode", InputNode)
         # 创建工具名称到节点ID的映射
         tool_name_to_node_id = {}
         for node in nodes:
@@ -189,7 +196,8 @@ def initialize_graph(
 
             if source_node["type"] == "start":
                 if edge["type"] == "default":
-                    graph_builder.add_edge(START, edge["target"])
+                    graph_builder.add_edge(START, "InputNode")
+                    graph_builder.add_edge("InputNode", edge["target"])
                 else:
                     raise ValueError("Start node can only support normal edge.")
             if source_node["type"] == "llm":
@@ -237,7 +245,8 @@ def initialize_graph(
                 graph_builder.add_conditional_edges(llm_id, should_continue, edges_dict)
 
         # Set entry point
-        graph_builder.set_entry_point(metadata["entry_point"])
+        # graph_builder.set_entry_point(metadata["entry_point"])
+        graph_builder.set_entry_point("InputNode")
 
         # Compile graph
         interrupt_before = []
