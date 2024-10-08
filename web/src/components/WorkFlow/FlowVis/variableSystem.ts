@@ -1,5 +1,5 @@
 import { Node, Edge } from 'reactflow';
-import { nodeConfig, NodeType } from './nodes/nodeConfig';
+import { nodeConfig, NodeType } from '../nodes/nodeConfig';
 
 export interface VariableReference {
   nodeId: string;

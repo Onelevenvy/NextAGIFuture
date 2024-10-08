@@ -12,7 +12,7 @@ import type React from "react";
 import { ToolsService } from "@/client/services/ToolsService";
 import { useSkillsQuery } from "@/hooks/useSkillsQuery";
 import { useState, useCallback } from "react";
-import { VariableReference } from "../../variableSystem";
+import { VariableReference } from "../../FlowVis/variableSystem";
 import { useVariableInsertion } from "@/hooks/graphs/useVariableInsertion";
 
 interface PluginNodePropertiesProps {

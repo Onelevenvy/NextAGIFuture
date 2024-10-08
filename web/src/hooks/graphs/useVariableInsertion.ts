@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { VariableReference } from "../../components/WorkFlow/variableSystem";
+import { VariableReference } from "../../components/WorkFlow/FlowVis/variableSystem";
 
 interface UseVariableInsertionProps<
   T extends HTMLInputElement | HTMLTextAreaElement,
