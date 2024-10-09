@@ -173,7 +173,7 @@ def parse_variables(text: str, node_outputs: Dict) -> str:
     return re.sub(r"\{([^}]+)\}", replace_variable, text)
 
 
-class BaseNode:
+class LLMBaseNode:
     def __init__(
         self,
         node_id: str,
@@ -259,20 +259,13 @@ class BaseNode:
             state["node_outputs"][node_id]["response"] = output
 
 
-class LLMNode(BaseNode):
+class LLMNode(LLMBaseNode):
     """Perform LLM Node actions"""
 
     async def work(self, state: TeamState, config: RunnableConfig) -> ReturnTeamState:
         # 初始化 node_outputs，如果它不存在
         if "node_outputs" not in state:
             state["node_outputs"] = {}
-
-        # 更新 node_outputs
-        new_outputs = {
-            "start": {"query": "我是tqx"},
-            "llm": {"response": "我是大模型EE"},
-        }
-        state["node_outputs"] = update_node_outputs(state["node_outputs"], new_outputs)
 
         if self.system_prompt:
             parsed_system_prompt = parse_variables(

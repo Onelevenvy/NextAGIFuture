@@ -9,11 +9,11 @@ from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.graph import CompiledGraph
 from langgraph.prebuilt import ToolNode
-from .node.llmnode import GraphTeam
+from .node.llm_node import GraphTeam
 from app.core.tools import managed_tools
 from app.core.workflow.utils.db_utils import get_all_models_helper
 
-from .node.llmnode import LLMNode, TeamState
+from .node.llm_node import LLMNode, TeamState
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
@@ -48,8 +48,14 @@ def should_continue(state: TeamState) -> str:
 
 
 def InputNode(state: TeamState):
-    new_outputs = {"start": {"query": "我是tqx"}}
-    state["node_outputs"] = new_outputs
+    if "node_outputs" not in state:
+        state["node_outputs"] = {}
+    if isinstance(state, list):
+        human_message = state[-1].content
+    elif messages := state.get("all_messages", []):
+        human_message = messages[-1].content
+    inputnode_outputs = {"start": {"query": human_message}}
+    state["node_outputs"] = inputnode_outputs
     return state
 
 
