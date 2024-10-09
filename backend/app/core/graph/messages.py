@@ -14,8 +14,6 @@ from langchain_core.messages import (
 from langchain_core.runnables.schema import StreamEvent
 from pydantic import BaseModel
 
-# 添加一个全局变量来跟踪是否已经处理过答案
-answer_processed = False
 
 class ChatResponse(BaseModel):
     type: str  # ai | human | tool
@@ -113,10 +111,8 @@ def event_to_response(event: StreamEvent) -> ChatResponse | None:
     elif kind == "on_chain_end":
         output = event["data"]["output"]
         name = event.get("metadata", {}).get("langgraph_node", "")
-        print(name, "bbbb")
-        
-        if name and name.startswith("answer") and not answer_processed:
-            answer_processed = True  # 标记已处理答案
+        print("name==",name)
+        if name and name.startswith("answer"):
             if isinstance(output, dict):
                 # 只处理 AnswerNode 的输出
                 if "messages" in output and output["messages"]:
@@ -138,8 +134,3 @@ def event_to_response(event: StreamEvent) -> ChatResponse | None:
                 )
 
     return None
-
-# 在文件末尾添加一个重置函数
-def reset_answer_processed():
-    global answer_processed
-    answer_processed = False
