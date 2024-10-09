@@ -1,4 +1,11 @@
-import { FaPlay, FaRobot, FaStop, FaTools } from "react-icons/fa";
+import {
+  FaPlay,
+  FaRobot,
+  FaStop,
+  FaTools,
+  FaCommentDots,
+} from "react-icons/fa";
+
 import { TfiGithub } from "react-icons/tfi";
 import EndNodeProperties from "./End/EndNodeProperties";
 import LLMNodeProperties from "./LLM/LLMNodeProperties";
@@ -6,6 +13,7 @@ import LLMNodeProperties from "./LLM/LLMNodeProperties";
 import StartNodeProperties from "./Start/StartNodeProperties";
 import ToolNodeProperties from "./Tool/ToolNodeProperties";
 import PluginNodeProperties from "./Plugin/PluginNodeProperties";
+import AnswerNodeProperties from "./Answer/AnswerNodeProperties";
 
 interface NodeConfigItem {
   display: string;
@@ -43,7 +51,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       sources: [],
       targets: ["left"],
     },
-    inputVariables: ["result"],
+    inputVariables: [],
     outputVariables: [],
   },
   llm: {
@@ -90,6 +98,21 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     allowedConnections: {
       sources: ["right"],
       targets: ["left"],
+    },
+    inputVariables: [],
+    outputVariables: ["output"],
+  },
+  answer: {
+    display: "Answer",
+    icon: FaCommentDots,
+    colorScheme: "orange",
+    properties: AnswerNodeProperties,
+    initialData: {
+      answer: null,
+    },
+    allowedConnections: {
+      sources: ["left", "right"],
+      targets: ["left", "right"],
     },
     inputVariables: [],
     outputVariables: ["output"],

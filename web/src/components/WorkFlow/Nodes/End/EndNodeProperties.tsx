@@ -1,20 +1,14 @@
-import {
-  FormControl,
-  FormErrorMessage,
-  Input,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { FormControl, FormErrorMessage, VStack } from "@chakra-ui/react";
 import type React from "react";
 
-interface BasePropertiesProps {
+interface EndPropertiesProps {
   children: React.ReactNode;
   nodeName: string;
   onNameChange: (newName: string) => void;
   nameError: string | null;
 }
 
-const BaseProperties: React.FC<BasePropertiesProps> = ({
+const EndProperties: React.FC<EndPropertiesProps> = ({
   children,
   nameError,
 }) => {
@@ -28,4 +22,4 @@ const BaseProperties: React.FC<BasePropertiesProps> = ({
   );
 };
 
-export default BaseProperties;
+export default EndProperties;
