@@ -9,11 +9,11 @@ from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.graph import CompiledGraph
 from langgraph.prebuilt import ToolNode
-from .node.state import GraphTeam
 from app.core.tools import managed_tools
 from app.core.workflow.utils.db_utils import get_all_models_helper
-
-from .node.llm_node import LLMNode, TeamState
+from .node.answer_node import AnswerNode
+from .node.llm_node import LLMNode
+from .node.state import TeamState
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
@@ -74,7 +74,7 @@ def initialize_graph(
         graph_builder = StateGraph(TeamState)
         nodes = build_config["nodes"]
         edges = build_config["edges"]
-        metadata = build_config["metadata"]
+        # metadata = build_config["metadata"]
 
         graph_builder.add_node("InputNode", InputNode)
         # 创建工具名称到节点ID的映射
@@ -122,6 +122,17 @@ def initialize_graph(
             node_id = node["id"]
             node_type = node["type"]
             node_data = node["data"]
+
+            if node_type == "answer":
+                graph_builder.add_node(
+                    node_id,
+                    (
+                        AnswerNode(
+                            node_id,
+                            input_schema=node_data.get("answer", None),
+                        ).work
+                    ),
+                )
 
             if node_type == "llm":
                 model_name = node_data["model"]
@@ -206,7 +217,8 @@ def initialize_graph(
                     graph_builder.add_edge("InputNode", edge["target"])
                 else:
                     raise ValueError("Start node can only have normal edge.")
-            if source_node["type"] == "llm":
+
+            elif source_node["type"] == "llm":
                 if target_node["type"] == "tool":
                     if edge["type"] == "default":
                         graph_builder.add_edge(edge["source"], edge["target"])
@@ -238,6 +250,11 @@ def initialize_graph(
                 # Tool to LLM edge
                 graph_builder.add_edge(edge["source"], edge["target"])
 
+            elif source_node["type"] == "answer":
+                if target_node["type"] == "end":
+                    graph_builder.add_edge(edge["source"], END)
+                else:
+                    graph_builder.add_edge(edge["source"], edge["target"])
         # Add conditional edges
 
         for llm_id, conditions in conditional_edges.items():

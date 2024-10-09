@@ -1,5 +1,4 @@
 from typing import Annotated, Any, Dict
-from langchain.tools.retriever import create_retriever_tool
 from langchain_core.messages import AnyMessage
 from langchain_core.tools import BaseTool
 from langgraph.graph import add_messages
@@ -147,7 +146,7 @@ class ReturnTeamState(TypedDict):
     team: NotRequired[GraphTeam]
     next: NotRequired[str | None]  # Returning None is valid for sequential graphs only
     task: NotRequired[list[AnyMessage]]
-
+    node_outputs: Annotated[Dict[str, Any], update_node_outputs]  
 
 def parse_variables(text: str, node_outputs: Dict) -> str:
     def replace_variable(match):
