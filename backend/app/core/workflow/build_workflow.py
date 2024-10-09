@@ -9,7 +9,7 @@ from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.graph import CompiledGraph
 from langgraph.prebuilt import ToolNode
-from .node.llm_node import GraphTeam
+from .node.state import GraphTeam
 from app.core.tools import managed_tools
 from app.core.workflow.utils.db_utils import get_all_models_helper
 
