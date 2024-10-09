@@ -5,19 +5,18 @@ import LLMNode from "./LLM/LLMNode";
 import StartNode from "./Start/StartNode";
 import ToolNode from "./Tool/ToolNode";
 import PluginNode from "./Plugin/PluginNode";
-
+import AnswerNode from "./Answer/AnswerNode";
 import { type NodeType, nodeConfig } from "./nodeConfig";
-
 
 const nodeComponents: Record<NodeType, NamedExoticComponent<NodeProps>> = {
   start: StartNode,
   end: EndNode,
   llm: LLMNode,
   tool: ToolNode,
-  plugin:PluginNode,
-
+  plugin: PluginNode,
+  answer: AnswerNode,
 };
 
 export const nodeTypes = Object.fromEntries(
-  Object.keys(nodeConfig).map((key) => [key, nodeComponents[key as NodeType]]),
+  Object.keys(nodeConfig).map((key) => [key, nodeComponents[key as NodeType]])
 ) as Record<NodeType, NamedExoticComponent<NodeProps>>;

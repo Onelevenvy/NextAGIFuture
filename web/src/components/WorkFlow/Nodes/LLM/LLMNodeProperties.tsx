@@ -30,8 +30,7 @@ const LLMNodeProperties: React.FC<LLMNodePropertiesProps> = ({
 }) => {
   const [temperatureInput, setTemperatureInput] = useState("");
   const [systemPromptInput, setSystemPromptInput] = useState("");
-  const [showVariables, setShowVariables] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
 
   useEffect(() => {
     if (node && node.data.temperature !== undefined) {
