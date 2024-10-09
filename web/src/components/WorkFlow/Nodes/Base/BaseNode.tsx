@@ -13,6 +13,7 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
   icon,
   colorScheme,
   children,
+  id,
 }) => (
   <Box
     padding="10px"
@@ -32,6 +33,7 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
         size="xs"
       />
       <Text fontWeight="bold" fontSize="xs">
+        {/* {id} */}
         {data.label}
       </Text>
     </HStack>

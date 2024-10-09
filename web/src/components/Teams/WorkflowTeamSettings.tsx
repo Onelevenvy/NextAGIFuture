@@ -59,7 +59,7 @@ function WorkflowTeamSettings({ teamId }: WorkflowSettingProps) {
         ],
         edges: [
           {
-            id: "reactflow__edge-start-1right-llm-3left",
+            id: "edge-start-1right-llm-3left",
             source: "start",
             target: "llm",
             sourceHandle: "right",
@@ -67,7 +67,7 @@ function WorkflowTeamSettings({ teamId }: WorkflowSettingProps) {
             type: "default",
           },
           {
-            id: "reactflow__edge-llm-3right-end-5left",
+            id: "edge-llm-3right-end-5left",
             source: "llm",
             target: "end",
             sourceHandle: "right",
