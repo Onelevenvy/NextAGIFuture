@@ -498,6 +498,7 @@ class UploadOut(UploadBase):
     name: str
     last_modified: datetime
     status: UploadStatus
+    owner_id: int | None = Field(default=None, foreign_key="user.id", nullable=False)
 
 
 class UploadsOut(SQLModel):

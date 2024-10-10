@@ -22,9 +22,9 @@ class RetrieverTool(BaseTool):
         self, query: Annotated[str, "query to look up in retriever"]
     ) -> tuple[str, list[Document]]:
         """Retrieve documents from knowledge base."""
-        logger.info(f"Retrieving documents for query: {query}")
+        logger.debug(f"Retrieving documents for query: {query}")
         docs = self.retriever.invoke(query, config={"callbacks": self.callbacks})
-        logger.info(f"Retrieved {len(docs)} documents")
+        logger.debug(f"Retrieved {len(docs)} documents")
 
         if not docs:
             logger.warning("No documents retrieved")
@@ -33,7 +33,7 @@ class RetrieverTool(BaseTool):
         result_string = self.document_separator.join(
             [format_document(doc, self.document_prompt) for doc in docs]
         )
-        logger.info(
+        logger.debug(
             f"Formatted result string (first 100 chars): {result_string[:100]}..."
         )
         return result_string, docs

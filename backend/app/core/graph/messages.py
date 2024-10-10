@@ -41,9 +41,17 @@ def get_message_type(message: Any) -> str | None:
 
 def event_to_response(event: StreamEvent) -> ChatResponse | None:
     """Convert event to ChatResponse"""
-    global answer_processed  # 声明使用全局变量
+
     kind = event["event"]
     id = event["run_id"]
+
+    node_name = event.get("metadata", {}).get("langgraph_node", "")
+    name = event.get("name", "")
+    print("---------------------------")
+
+    print("event kind:", kind)
+    print("name:", name)
+    print("node_name data:", node_name)
 
     if kind == "on_chat_model_stream":
         name = event["metadata"]["langgraph_node"]
@@ -132,6 +140,34 @@ def event_to_response(event: StreamEvent) -> ChatResponse | None:
                 # 这里可能需要额外的逻辑来确定是否应该返回这个消息
                 return ChatResponse(
                     type="ai",
+                    id=id,
+                    name=name,
+                    content=output.content,
+                )
+    elif kind == "on_chain_stream":
+        output = event["data"]["chunk"]
+
+        # 只处理 Retrieval Node 的输出
+        name = event.get("name", "")
+        if name and name.startswith("retrieval"):
+            if isinstance(output, dict):
+                # 只处理 AnswerNode 的输出
+                if "messages" in output and output["messages"]:
+                    last_message = output["messages"][-1]
+                    if isinstance(last_message, ToolMessage):
+                        return ChatResponse(
+                            type="tool",
+                            id=id,
+                            name=name,
+                            # content=last_message.content,
+                            tool_output=json.dumps(
+                                last_message.content,
+                            ),
+                        )
+            elif isinstance(output, AIMessage):
+                # 这里可能需要额外的逻辑来确定是否应该返回这个消息
+                return ChatResponse(
+                    type="tool",
                     id=id,
                     name=name,
                     content=output.content,

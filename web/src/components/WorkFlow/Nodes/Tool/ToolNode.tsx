@@ -21,12 +21,11 @@ const ToolNode: React.FC<NodeProps> = (props) => {
           tools.map((tool: string, index: number) => (
             <HStack key={index} justifyContent="center" justifyItems={"center"}>
               <Box bg="#f2f4f7" borderRadius="md" w="full" p="1">
-              <HStack spacing={"2"}>
-              <ToolsIcon tools_name={tool.replace(/ /g, "_")} ml="2"/>
-                <Text fontWeight={"bold"}> {tool}</Text>
+                <HStack spacing={"2"}>
+                  <ToolsIcon tools_name={tool.replace(/ /g, "_")} ml="2" />
+                  <Text fontWeight={"bold"}> {tool}</Text>
                 </HStack>
               </Box>
-             
             </HStack>
           ))
         ) : (
