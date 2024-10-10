@@ -2,11 +2,12 @@ import React from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
 import { BaseNode } from "../Base/BaseNode";
 import { nodeConfig } from "../nodeConfig";
-import { Box, Text, VStack, HStack, Tag } from "@chakra-ui/react";
+import { Box, Text, VStack, HStack } from "@chakra-ui/react";
 import { ImFolderOpen } from "react-icons/im";
+
 const RetrievalNode: React.FC<NodeProps> = (props) => {
   const { icon: Icon, colorScheme } = nodeConfig.retrieval;
-  const selectedDatabases = props.data.knownledge_database || [];
+  const selectedDatabase = props.data.knownledge_database?.[0] || null;
 
   return (
     <BaseNode {...props} icon={<Icon />} colorScheme={colorScheme}>
@@ -15,20 +16,18 @@ const RetrievalNode: React.FC<NodeProps> = (props) => {
       <Handle type="source" position={Position.Left} id="left" />
       <Handle type="source" position={Position.Right} id="right" />
       <VStack spacing={1} align="stretch">
-        {selectedDatabases.length > 0 ? (
-          selectedDatabases.map((db: string, index: number) => (
-            <HStack key={index} justifyContent="center" justifyItems={"center"}>
-              <Box bg="#f2f4f7" borderRadius="md" w="full" p="1">
-                <HStack spacing={"2"} ml="2">
-                  <ImFolderOpen color="#434cf0" />
-                  <Text fontWeight={"bold"}> {db}</Text>
-                </HStack>
-              </Box>
-            </HStack>
-          ))
+        {selectedDatabase ? (
+          <HStack justifyContent="center" justifyItems={"center"}>
+            <Box bg="#f2f4f7" borderRadius="md" w="full" p="1">
+              <HStack spacing={"2"} ml="2">
+                <ImFolderOpen color="#434cf0" />
+                <Text fontWeight={"bold"}>{selectedDatabase}</Text>
+              </HStack>
+            </Box>
+          </HStack>
         ) : (
           <Text fontSize="xs" textAlign="center">
-            No tools selected
+            No knowledge base selected
           </Text>
         )}
       </VStack>
