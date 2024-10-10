@@ -17,6 +17,9 @@ import AnswerNodeProperties from "./Answer/AnswerNodeProperties";
 import { FaBookAtlas } from "react-icons/fa6";
 import RetrievalProperties from "./Retrieval/RetrievalNodeProperties";
 
+import { FaDatabase } from "react-icons/fa";
+import RetrievalToolNodeProperties from "./RetrievalTool/RetrievalToolNodeProperties";
+
 interface NodeConfigItem {
   display: string;
   icon: React.ComponentType;
@@ -137,6 +140,21 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     },
     inputVariables: [],
     outputVariables: ["result"],
+  },
+  toolretrieval: {
+    display: "Retrieval Tool",
+    icon: FaDatabase,
+    colorScheme: "cyan",
+    properties: RetrievalToolNodeProperties,
+    allowedConnections: {
+      sources: ["left", "right"],
+      targets: ["left", "right"],
+    },
+    initialData: {
+      knowledgeBases: [],
+    },
+    inputVariables: [],
+    outputVariables: ["output"],
   },
 };
 
