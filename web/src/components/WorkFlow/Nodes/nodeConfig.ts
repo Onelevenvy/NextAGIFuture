@@ -14,6 +14,8 @@ import StartNodeProperties from "./Start/StartNodeProperties";
 import ToolNodeProperties from "./Tool/ToolNodeProperties";
 import PluginNodeProperties from "./Plugin/PluginNodeProperties";
 import AnswerNodeProperties from "./Answer/AnswerNodeProperties";
+import { FaBookAtlas } from "react-icons/fa6";
+import RetrievalProperties from "./Retrieval/RetrievalNodeProperties";
 
 interface NodeConfigItem {
   display: string;
@@ -45,7 +47,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
   end: {
     display: "End",
     icon: FaStop,
-    colorScheme: "red",
+    colorScheme: "pink",
     properties: EndNodeProperties,
     allowedConnections: {
       sources: [],
@@ -116,6 +118,23 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     },
     inputVariables: [],
     outputVariables: ["output"],
+  },
+  retrieval: {
+    display: "Knowledge Retrieval",
+    icon: FaBookAtlas,
+    colorScheme: "teal",
+    properties: RetrievalProperties,
+    initialData: {
+      query: null,
+      rag_method: "Adaptive_RAG",
+      knownledge_database: [],
+    },
+    allowedConnections: {
+      sources: ["left", "right"],
+      targets: ["left", "right"],
+    },
+    inputVariables: [],
+    outputVariables: ["result"],
   },
 };
 
