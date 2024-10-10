@@ -77,7 +77,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     outputVariables: ["response"],
   },
   tool: {
-    display: "Tool",
+    display: "Tools",
     icon: FaTools,
     colorScheme: "purple",
     properties: ToolNodeProperties,
@@ -142,7 +142,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     outputVariables: ["result"],
   },
   toolretrieval: {
-    display: "Retrieval Tool",
+    display: "Retrieval Tools",
     icon: FaDatabase,
     colorScheme: "cyan",
     properties: RetrievalToolNodeProperties,
