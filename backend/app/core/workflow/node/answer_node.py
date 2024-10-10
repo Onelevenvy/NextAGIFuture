@@ -33,8 +33,6 @@ class AnswerNode:
         # 更新 node_outputs
         new_output = {self.node_id: {"response": result.content}}
         state["node_outputs"] = update_node_outputs(state["node_outputs"], new_output)
-
-        # 确保返回一个有效的 ReturnTeamState，并标记这是一个 AnswerNode 的响应
         return_state: ReturnTeamState = {
             "history": state.get("history", []) + [result],
             "messages": [result],

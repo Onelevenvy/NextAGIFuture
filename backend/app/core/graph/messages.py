@@ -44,6 +44,7 @@ def event_to_response(event: StreamEvent) -> ChatResponse | None:
     global answer_processed  # 声明使用全局变量
     kind = event["event"]
     id = event["run_id"]
+
     if kind == "on_chat_model_stream":
         name = event["metadata"]["langgraph_node"]
         message_chunk: AIMessageChunk = event["data"]["chunk"]
@@ -96,6 +97,7 @@ def event_to_response(event: StreamEvent) -> ChatResponse | None:
                 tool_output=json.dumps(tool_output.content),
                 documents=json.dumps(documents),
             )
+
     # elif kind == "on_parser_end":
     #     content: str = event["data"]["output"].get("task")
     #     next = event["data"]["output"].get("next")
@@ -110,8 +112,10 @@ def event_to_response(event: StreamEvent) -> ChatResponse | None:
 
     elif kind == "on_chain_end":
         output = event["data"]["output"]
-        name = event.get("metadata", {}).get("langgraph_node", "")
-        print("name==",name)
+
+        # 只处理 AnswerNode 的输出
+        # name = event.get("metadata", {}).get("langgraph_node", "")
+        name = event.get("name", "")
         if name and name.startswith("answer"):
             if isinstance(output, dict):
                 # 只处理 AnswerNode 的输出
