@@ -8,28 +8,28 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 user_id = 1
-upload_id = 26
-query = "东莞市博视自控科技有限公司"
+upload_id = 5
+query = "三姆森成立于哪一年"
 
 # 创建 QdrantStore 实例
 qdrant_store = QdrantStore()
 
 # 检查集合信息
-collection_info = qdrant_store.get_collection_info()
-logger.info(f"Collection info: {collection_info}")
+# collection_info = qdrant_store.get_collection_info()
+# logger.info(f"Collection info: {collection_info}")
 
-logger.info("Checking document content:")
-all_points = qdrant_store.client.scroll(
-    collection_name=qdrant_store.collection_name,
-    limit=10,
-    with_payload=True,
-    with_vectors=False,
-)
-for point in all_points[0]:
-    logger.info(f"Point ID: {point.id}")
-    logger.info(f"Payload: {point.payload}")
-    logger.info(f"user_id type: {type(point.payload['metadata']['user_id'])}")
-    logger.info(f"upload_id type: {type(point.payload['metadata']['upload_id'])}")
+# logger.info("Checking document content:")
+# all_points = qdrant_store.client.scroll(
+#     collection_name=qdrant_store.collection_name,
+#     limit=10,
+#     with_payload=True,
+#     with_vectors=False,
+# )
+# for point in all_points[0]:
+#     logger.info(f"Point ID: {point.id}")
+#     logger.info(f"Payload: {point.payload}")
+#     logger.info(f"user_id type: {type(point.payload['metadata']['user_id'])}")
+#     logger.info(f"upload_id type: {type(point.payload['metadata']['upload_id'])}")
 
 
 # 执行搜索
@@ -50,10 +50,10 @@ logger.info(f"Created retriever tool: {retriever_tool}")
 # 使用检索工具
 result, docs = retriever_tool._run(query)
 
-logger.info(f"Retriever tool result: {result[:100]}...")
-logger.info(f"Retriever tool found {len(docs)} documents")
-logger.info(f"Retriever search kwargs: {retriever.search_kwargs}")
-logger.info(f"Retriever vectorstore: {retriever.vectorstore}")
+logger.info(f"使用检索工具Retriever tool result: {result[:100]}...")
+# logger.info(f"使用检索工具Retriever tool found {len(docs)} documents")
+# logger.info(f"使用检索工具Retriever search kwargs: {retriever.search_kwargs}")
+# logger.info(f"使用检索工具Retriever vectorstore: {retriever.vectorstore}")
 
 for doc in docs:
     logger.info(f"Retrieved document content: {doc.page_content[:100]}...")
@@ -63,7 +63,7 @@ for doc in docs:
     logger.info("---")
 
 # 执行未过滤的搜索
-logger.info("Performing unfiltered search:")
+logger.info("执行未过滤的搜索:")
 unfiltered_results = qdrant_store.vector_store.similarity_search(query, k=5)
 for doc in unfiltered_results:
     logger.info(f"Unfiltered Content: {doc.page_content[:100]}...")
@@ -73,16 +73,15 @@ for doc in unfiltered_results:
     logger.info("---")
 
 # 执行不带过滤器的直接搜索
-logger.info("Performing search without filter:")
+logger.info(" 执行不带过滤器的直接搜索:")
 query_vector = qdrant_store.embedding_model.embed_query(query)
 unfiltered_results = qdrant_store.client.search(
     collection_name=qdrant_store.collection_name, query_vector=query_vector, limit=5
 )
 for result in unfiltered_results:
-    logger.info(f"Unfiltered search result: {result.payload}")
+    logger.info(f"执行不带过滤器的直接搜索: {result.payload}")
 
 
-# 在文件末尾添加这个新函数
 def perform_native_qdrant_search(qdrant_store, user_id, upload_id, query):
     logger.info("Performing native Qdrant API search with filter:")
     query_vector = qdrant_store.embedding_model.embed_query(query)

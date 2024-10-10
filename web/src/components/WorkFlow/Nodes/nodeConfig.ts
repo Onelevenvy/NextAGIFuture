@@ -128,6 +128,8 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       query: null,
       rag_method: "Adaptive_RAG",
       knownledge_database: [],
+      usr_id: "",
+      kb_id: "",
     },
     allowedConnections: {
       sources: ["left", "right"],

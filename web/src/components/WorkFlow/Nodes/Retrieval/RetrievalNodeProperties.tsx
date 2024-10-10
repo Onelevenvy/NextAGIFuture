@@ -65,10 +65,20 @@ const RetrievalProperties: React.FC<RetrievalPropertiesProps> = ({
       if (!selectedDatabases.includes(database)) {
         const newDatabases = [...selectedDatabases, database];
         setSelectedDatabases(newDatabases);
-        onNodeDataChange(node.id, "knownledge_database", newDatabases);
+
+        // Find the selected upload to get usr_id and uploadid (kb_id)
+        const selectedUpload = uploads?.data.find(
+          (upload) => upload.name === database
+        );
+
+        if (selectedUpload) {
+          onNodeDataChange(node.id, "knownledge_database", newDatabases);
+          onNodeDataChange(node.id, "usr_id", selectedUpload.owner_id);
+          onNodeDataChange(node.id, "kb_id", selectedUpload.id);
+        }
       }
     },
-    [selectedDatabases, node.id, onNodeDataChange]
+    [selectedDatabases, node.id, onNodeDataChange, uploads]
   );
 
   const removeDatabase = useCallback(
