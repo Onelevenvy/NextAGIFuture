@@ -14,6 +14,7 @@ from app.core.workflow.utils.db_utils import get_all_models_helper
 from .node.answer_node import AnswerNode
 from .node.llm_node import LLMNode
 from .node.state import TeamState
+from .node.retrieval_node import RetrievalNode
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
@@ -133,8 +134,20 @@ def initialize_graph(
                         ).work
                     ),
                 )
+            elif node_type == "retrieval":
+                graph_builder.add_node(
+                    node_id,
+                    (
+                        RetrievalNode(
+                            node_id,
+                            query=node_data["query"],
+                            user_id=node_data["usr_id"],
+                            kb_id=node_data["kb_id"],
+                        ).work
+                    ),
+                )
 
-            if node_type == "llm":
+            elif node_type == "llm":
                 model_name = node_data["model"]
                 all_models = get_all_models_helper()
                 model_info = None
@@ -247,6 +260,10 @@ def initialize_graph(
                         ] = target_node["id"]
 
             elif source_node["type"] == "tool" and target_node["type"] == "llm":
+                # Tool to LLM edge
+                graph_builder.add_edge(edge["source"], edge["target"])
+
+            elif source_node["type"] == "retrieval":
                 # Tool to LLM edge
                 graph_builder.add_edge(edge["source"], edge["target"])
 

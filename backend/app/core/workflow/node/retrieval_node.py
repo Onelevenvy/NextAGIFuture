@@ -1,3 +1,4 @@
+import uuid
 from app.core.rag.qdrant import QdrantStore
 from app.core.tools.retriever_tool import create_retriever_tool
 import logging
@@ -14,11 +15,11 @@ from app.core.workflow.node.state import (
     update_node_outputs,
 )
 
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, ToolMessage
 from langchain_core.runnables import RunnableConfig
 
 
-class AnswerNode:
+class RetrievalNode:
     def __init__(self, node_id: str, query: str, user_id: int, kb_id: int):
         self.node_id = node_id
         self.query = query
@@ -31,9 +32,15 @@ class AnswerNode:
         if "node_outputs" not in state:
             state["node_outputs"] = {}
 
-        if self.input_schema:
+        if self.query:
             parsed_input_schema = parse_variables(self.query, state["node_outputs"])
-            result = AIMessage(self._retrieval_work(parsed_input_schema))
+            retrieval_result = self._retrieval_work(parsed_input_schema)
+            result = ToolMessage(
+                content=retrieval_result,
+                # name="KnowledgeBase",
+                name="KnowledRetrievel",
+                tool_call_id=str(uuid.uuid4()),
+            )
         else:
             messages = state.get("all_messages", [])
             result = AIMessage(
@@ -41,7 +48,7 @@ class AnswerNode:
             )
 
         # 更新 node_outputs
-        new_output = {self.node_id: {"response": result.content}}
+        new_output = {self.node_id: {"result": result.content}}
         state["node_outputs"] = update_node_outputs(state["node_outputs"], new_output)
         return_state: ReturnTeamState = {
             "history": state.get("history", []) + [result],
@@ -52,14 +59,12 @@ class AnswerNode:
         return return_state
 
     def _retrieval_work(self, qry):
-        # 创建和使用检索工具
-        retriever = self.qdrant_store.retriever(self.user_id, self.kb_id)
-        logger.info(f"Created retriever: {retriever}")
-        retriever_tool = create_retriever_tool(retriever)
-        logger.info(f"Created retriever tool: {retriever_tool}")
 
-        # 使用检索工具
+        retriever = self.qdrant_store.retriever(self.user_id, self.kb_id)
+
+        retriever_tool = create_retriever_tool(retriever)
+
         result_string, docs = retriever_tool._run(qry)
 
-        logger.info(f"使用检索工具Retriever tool result: {result_string[:100]}...")
+        logger.info(f"Retriever tool result: {result_string[:100]}...")
         return result_string
