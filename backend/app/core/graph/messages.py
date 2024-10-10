@@ -41,6 +41,7 @@ def get_message_type(message: Any) -> str | None:
 
 def event_to_response(event: StreamEvent) -> ChatResponse | None:
     """Convert event to ChatResponse"""
+    global answer_processed  # 声明使用全局变量
     kind = event["event"]
     id = event["run_id"]
 
@@ -111,11 +112,11 @@ def event_to_response(event: StreamEvent) -> ChatResponse | None:
 
     elif kind == "on_chain_end":
         output = event["data"]["output"]
+
         # 只处理 AnswerNode 的输出
         # name = event.get("metadata", {}).get("langgraph_node", "")
         name = event.get("name", "")
         if name and name.startswith("answer"):
-
             if isinstance(output, dict):
                 # 只处理 AnswerNode 的输出
                 if "messages" in output and output["messages"]:
