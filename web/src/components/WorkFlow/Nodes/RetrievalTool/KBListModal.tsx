@@ -18,10 +18,17 @@ import type React from "react";
 import { useMemo, useState } from "react";
 import { FaDatabase } from "react-icons/fa";
 
+interface KBInfo {
+  name: string;
+  description: string;
+  usr_id: number;
+  kb_id: number;
+}
+
 interface KBListProps {
   uploads: any[]; // Replace 'any' with the correct type from useUploadsQuery
   onClose: () => void;
-  onAddKB: (kb: string) => void;
+  onAddKB: (kb: KBInfo) => void;
   selectedKBs: string[];
 }
 
@@ -65,7 +72,14 @@ const KBListModal: React.FC<KBListProps> = ({
                 </HStack>
                 <Button
                   size="sm"
-                  onClick={() => onAddKB(upload.name)}
+                  onClick={() =>
+                    onAddKB({
+                      name: upload.name,
+                      description: upload.description,
+                      usr_id: upload.owner_id,
+                      kb_id: upload.id,
+                    })
+                  }
                   isDisabled={selectedKBs.includes(upload.name)}
                 >
                   {selectedKBs.includes(upload.name) ? "Added" : "Add"}

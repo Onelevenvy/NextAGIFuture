@@ -151,7 +151,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
       targets: ["left", "right"],
     },
     initialData: {
-      knowledgeBases: [],
+      tools: [],
     },
     inputVariables: [],
     outputVariables: ["output"],

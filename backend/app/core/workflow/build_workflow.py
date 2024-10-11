@@ -1,6 +1,6 @@
 import time
 from functools import lru_cache
-from typing import Any, Dict, Set
+from typing import Any, Dict, Set, cast
 
 from langchain.tools import BaseTool
 from langchain_core.messages import AIMessage, AnyMessage
@@ -13,8 +13,9 @@ from app.core.tools import managed_tools
 from app.core.workflow.utils.db_utils import get_all_models_helper
 from .node.answer_node import AnswerNode
 from .node.llm_node import LLMNode
-from .node.state import TeamState
 from .node.retrieval_node import RetrievalNode
+from .node.input_node import InputNode
+from .node.state import TeamState, GraphUpload
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
@@ -28,6 +29,20 @@ def get_tool(tool_name: str) -> BaseTool:
         if tool.display_name == tool_name:
             return tool.tool
     raise ValueError(f"Unknown tool: {tool_name}")
+
+
+@lru_cache(maxsize=None)
+def get_retrieval_tool(
+    tool_name: str, description: str, owner_id: int, kb_id: int
+):
+    import uuid
+    from app.core.rag.qdrant import QdrantStore
+    from app.core.tools.retriever_tool import create_retriever_tool
+    import logging
+
+    retriever = QdrantStore().retriever(owner_id, kb_id)
+    return create_retriever_tool(retriever)
+   
 
 
 # 添加一个全局变量来存储工具名称到节点ID的映射
@@ -46,18 +61,6 @@ def should_continue(state: TeamState) -> str:
                 if tool_name in tools:
                     return node_id
     return "default"
-
-
-def InputNode(state: TeamState):
-    if "node_outputs" not in state:
-        state["node_outputs"] = {}
-    if isinstance(state, list):
-        human_message = state[-1].content
-    elif messages := state.get("all_messages", []):
-        human_message = messages[-1].content
-    inputnode_outputs = {"start": {"query": human_message}}
-    state["node_outputs"] = inputnode_outputs
-    return state
 
 
 def initialize_graph(
@@ -82,8 +85,13 @@ def initialize_graph(
         tool_name_to_node_id = {}
         for node in nodes:
             if node["type"] == "tool":
+                # if node["type"].startswith("tool"):
                 tool_name_to_node_id[node["id"]] = [
                     tool.lower() for tool in node["data"]["tools"]
+                ]
+            if node["type"] == "toolretrieval":
+                tool_name_to_node_id[node["id"]] = [
+                    tool["name"].lower() for tool in node["data"]["tools"]
                 ]
 
         # Determine graph type based on configuration structure
@@ -191,7 +199,18 @@ def initialize_graph(
                                     for tool_name in target_node["data"]["tools"]
                                 ]
                             )
-
+                        if target_node and target_node["type"] == "toolretrieval":
+                            tools_to_bind.extend(
+                                [
+                                    get_retrieval_tool(
+                                        tool["name"],
+                                        tool["description"],
+                                        tool["usr_id"],
+                                        tool["kb_id"],
+                                    )
+                                    for tool in target_node["data"]["tools"]
+                                ]
+                            )
                 graph_builder.add_node(
                     node_id,
                     RunnableLambda(
@@ -218,6 +237,8 @@ def initialize_graph(
             elif node_type == "tool":
                 tools = [get_tool(tool_name) for tool_name in node_data["tools"]]
                 graph_builder.add_node(node_id, ToolNode(tools))
+            elif node_type == "toolretrieval":
+                graph_builder.add_node(node_id, ToolNode(tools))
 
         # Add edges
         for edge in edges:
@@ -232,7 +253,8 @@ def initialize_graph(
                     raise ValueError("Start node can only have normal edge.")
 
             elif source_node["type"] == "llm":
-                if target_node["type"] == "tool":
+                # if target_node["type"] == "tool":
+                if target_node["type"].startswith("tool"):
                     if edge["type"] == "default":
                         graph_builder.add_edge(edge["source"], edge["target"])
                     else:
@@ -259,7 +281,9 @@ def initialize_graph(
                             target_node["id"]
                         ] = target_node["id"]
 
-            elif source_node["type"] == "tool" and target_node["type"] == "llm":
+            elif (
+                source_node["type"].startswith("tool") and target_node["type"] == "llm"
+            ):
                 # Tool to LLM edge
                 graph_builder.add_edge(edge["source"], edge["target"])
 
