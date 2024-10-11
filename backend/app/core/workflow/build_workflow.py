@@ -1,7 +1,9 @@
 import time
 from functools import lru_cache
 from typing import Any, Dict, Set, cast
+from app.core.rag.qdrant import QdrantStore
 
+# from app.core.tools.retriever_tool import create_retriever_tool
 from langchain.tools import BaseTool
 from langchain_core.messages import AIMessage, AnyMessage
 from langchain_core.runnables import RunnableLambda
@@ -15,7 +17,8 @@ from .node.answer_node import AnswerNode
 from .node.llm_node import LLMNode
 from .node.retrieval_node import RetrievalNode
 from .node.input_node import InputNode
-from .node.state import TeamState, GraphUpload
+from .node.state import TeamState
+from langchain.tools.retriever import create_retriever_tool
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
@@ -32,17 +35,9 @@ def get_tool(tool_name: str) -> BaseTool:
 
 
 @lru_cache(maxsize=None)
-def get_retrieval_tool(
-    tool_name: str, description: str, owner_id: int, kb_id: int
-):
-    import uuid
-    from app.core.rag.qdrant import QdrantStore
-    from app.core.tools.retriever_tool import create_retriever_tool
-    import logging
-
+def get_retrieval_tool(tool_name: str, description: str, owner_id: int, kb_id: int):
     retriever = QdrantStore().retriever(owner_id, kb_id)
-    return create_retriever_tool(retriever)
-   
+    return create_retriever_tool(retriever, name=tool_name, description=description)
 
 
 # 添加一个全局变量来存储工具名称到节点ID的映射
@@ -85,7 +80,6 @@ def initialize_graph(
         tool_name_to_node_id = {}
         for node in nodes:
             if node["type"] == "tool":
-                # if node["type"].startswith("tool"):
                 tool_name_to_node_id[node["id"]] = [
                     tool.lower() for tool in node["data"]["tools"]
                 ]
@@ -238,6 +232,15 @@ def initialize_graph(
                 tools = [get_tool(tool_name) for tool_name in node_data["tools"]]
                 graph_builder.add_node(node_id, ToolNode(tools))
             elif node_type == "toolretrieval":
+                tools = [
+                    get_retrieval_tool(
+                        tool["name"],
+                        tool["description"],
+                        tool["usr_id"],
+                        tool["kb_id"],
+                    )
+                    for tool in target_node["data"]["tools"]
+                ]
                 graph_builder.add_node(node_id, ToolNode(tools))
 
         # Add edges
