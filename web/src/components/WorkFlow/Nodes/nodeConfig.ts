@@ -142,7 +142,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
     outputVariables: ["result"],
   },
   toolretrieval: {
-    display: "Retrieval Tools",
+    display: "Retrieval As Tools",
     icon: FaDatabase,
     colorScheme: "cyan",
     properties: RetrievalToolNodeProperties,

@@ -1,9 +1,7 @@
 import time
 from functools import lru_cache
-from typing import Any, Dict, Set, cast
+from typing import Any, Dict, Set
 from app.core.rag.qdrant import QdrantStore
-
-# from app.core.tools.retriever_tool import create_retriever_tool
 from langchain.tools import BaseTool
 from langchain_core.messages import AIMessage, AnyMessage
 from langchain_core.runnables import RunnableLambda
@@ -256,7 +254,6 @@ def initialize_graph(
                     raise ValueError("Start node can only have normal edge.")
 
             elif source_node["type"] == "llm":
-                # if target_node["type"] == "tool":
                 if target_node["type"].startswith("tool"):
                     if edge["type"] == "default":
                         graph_builder.add_edge(edge["source"], edge["target"])
