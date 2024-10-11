@@ -8,7 +8,7 @@ import re
 from app.core.rag.qdrant import QdrantStore
 from app.core.tools import managed_tools
 from app.core.tools.api_tool import dynamic_api_tool
-from app.core.tools.retriever_tool import create_retriever_tool
+from app.core.tools.retriever_tool import create_retriever_tool_custom_modified
 
 
 class GraphSkill(BaseModel):
@@ -37,7 +37,7 @@ class GraphUpload(BaseModel):
     @property
     def tool(self) -> BaseTool:
         retriever = QdrantStore().retriever(self.owner_id, self.upload_id)
-        return create_retriever_tool(retriever)
+        return create_retriever_tool_custom_modified(retriever)
 
 
 class GraphPerson(BaseModel):

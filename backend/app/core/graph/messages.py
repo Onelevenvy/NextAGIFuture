@@ -45,13 +45,13 @@ def event_to_response(event: StreamEvent) -> ChatResponse | None:
     kind = event["event"]
     id = event["run_id"]
 
-    node_name = event.get("metadata", {}).get("langgraph_node", "")
-    name = event.get("name", "")
-    print("---------------------------")
+    # node_name = event.get("metadata", {}).get("langgraph_node", "")
+    # name = event.get("name", "")
+    # print("---------------------------")
 
-    print("event kind:", kind)
-    print("name:", name)
-    print("node_name data:", node_name)
+    # print("event kind:", kind)
+    # print("name:", name)
+    # print("node_name data:", node_name)
 
     if kind == "on_chat_model_stream":
         name = event["metadata"]["langgraph_node"]
@@ -122,11 +122,9 @@ def event_to_response(event: StreamEvent) -> ChatResponse | None:
         output = event["data"]["output"]
 
         # 只处理 AnswerNode 的输出
-        # name = event.get("metadata", {}).get("langgraph_node", "")
         name = event.get("name", "")
         if name and name.startswith("answer"):
             if isinstance(output, dict):
-                # 只处理 AnswerNode 的输出
                 if "messages" in output and output["messages"]:
                     last_message = output["messages"][-1]
                     if isinstance(last_message, AIMessage):
@@ -146,12 +144,10 @@ def event_to_response(event: StreamEvent) -> ChatResponse | None:
                 )
     elif kind == "on_chain_stream":
         output = event["data"]["chunk"]
-
         # 只处理 Retrieval Node 的输出
         name = event.get("name", "")
         if name and name.startswith("retrieval"):
             if isinstance(output, dict):
-                # 只处理 AnswerNode 的输出
                 if "messages" in output and output["messages"]:
                     last_message = output["messages"][-1]
                     if isinstance(last_message, ToolMessage):
@@ -159,7 +155,6 @@ def event_to_response(event: StreamEvent) -> ChatResponse | None:
                             type="tool",
                             id=id,
                             name=name,
-                            # content=last_message.content,
                             tool_output=json.dumps(
                                 last_message.content,
                             ),

@@ -1,6 +1,6 @@
 import uuid
 from app.core.rag.qdrant import QdrantStore
-from app.core.tools.retriever_tool import create_retriever_tool
+from app.core.tools.retriever_tool import create_retriever_tool_custom_modified
 import logging
 
 
@@ -62,7 +62,7 @@ class RetrievalNode:
 
         retriever = self.qdrant_store.retriever(self.user_id, self.kb_id)
 
-        retriever_tool = create_retriever_tool(retriever)
+        retriever_tool = create_retriever_tool_custom_modified(retriever)
 
         result_string, docs = retriever_tool._run(qry)
 

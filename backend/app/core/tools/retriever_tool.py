@@ -39,13 +39,12 @@ class RetrieverTool(BaseTool):
         return result_string, docs
 
 
-def create_retriever_tool(
+def create_retriever_tool_custom_modified(
     retriever: BaseRetriever,
     document_prompt: BasePromptTemplate | None = None,
     document_separator: str = "\n\n",
 ) -> BaseTool:
     document_prompt = document_prompt or PromptTemplate.from_template("{page_content}")
-    logger.info(f"Creating retriever tool with retriever type: {type(retriever)}")
     return RetrieverTool(
         retriever=retriever,
         document_prompt=document_prompt,

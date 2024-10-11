@@ -6,7 +6,8 @@ import StartNode from "./Start/StartNode";
 import ToolNode from "./Tool/ToolNode";
 import PluginNode from "./Plugin/PluginNode";
 import AnswerNode from "./Answer/AnswerNode";
-import Retrieval from "./Retrieval/RetrievalNode";
+import RetrievalNode from "./Retrieval/RetrievalNode";
+import RetrievalToolNode from "./RetrievalTool/RetrievalToolNode";
 import { type NodeType, nodeConfig } from "./nodeConfig";
 
 const nodeComponents: Record<NodeType, NamedExoticComponent<NodeProps>> = {
@@ -16,7 +17,8 @@ const nodeComponents: Record<NodeType, NamedExoticComponent<NodeProps>> = {
   tool: ToolNode,
   plugin: PluginNode,
   answer: AnswerNode,
-  retrieval:Retrieval
+  retrieval: RetrievalNode,
+  toolretrieval: RetrievalToolNode,
 };
 
 export const nodeTypes = Object.fromEntries(

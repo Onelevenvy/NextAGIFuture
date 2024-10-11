@@ -249,11 +249,12 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       let newNode: CustomNode;
 
       if (type !== "plugin") {
+        const nodeType = type === "retrievaltool" ? "tool" : type;
         const baseLabel = `${nodeConfig[type].display}`;
         const uniqueName = generateUniqueName(baseLabel);
         newNode = {
           id: `${type}-${nodes.length + 1}`,
-          type,
+          type: type,
           position,
           data: {
             label: uniqueName, // 使用生成的唯一名称
