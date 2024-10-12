@@ -1,13 +1,11 @@
 import logging
 from typing import Callable, List
-
-from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_core.documents import Document
 from langchain_qdrant import QdrantVectorStore
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest
 from qdrant_client.models import Distance, VectorParams
+from qdrant_client.http.models import UpdateResult
 
 from app.core.config import settings
 from app.core.rag.embeddings import get_embedding_model
@@ -45,14 +43,16 @@ class QdrantStore:
                         size=self.embedding_model.dimension, distance=Distance.COSINE
                     ),
                 )
+                logger.debug("Creating payload index for user_id")
                 self.client.create_payload_index(
                     collection_name=self.collection_name,
-                    field_name="user_id",
+                    field_name="metadata.user_id",
                     field_schema="integer",
                 )
+                logger.debug("Creating payload index for upload_id")
                 self.client.create_payload_index(
                     collection_name=self.collection_name,
-                    field_name="upload_id",
+                    field_name="metadata.upload_id",
                     field_schema="integer",
                 )
             else:
@@ -83,7 +83,47 @@ class QdrantStore:
             docs = load_and_split_document(
                 file_path_or_url, user_id, upload_id, chunk_size, chunk_overlap
             )
+            # Ensure metadata is correctly set
+            for doc in docs:
+                doc.metadata["user_id"] = user_id
+                doc.metadata["upload_id"] = upload_id
+
+            initial_count = self.client.count(
+                collection_name=self.collection_name,
+                count_filter=rest.Filter(
+                    must=[
+                        rest.FieldCondition(
+                            key="metadata.user_id", match=rest.MatchValue(value=user_id)
+                        ),
+                        rest.FieldCondition(
+                            key="metadata.upload_id",
+                            match=rest.MatchValue(value=upload_id),
+                        ),
+                    ]
+                ),
+            ).count
+
             self.vector_store.add_documents(docs)
+
+            final_count = self.client.count(
+                collection_name=self.collection_name,
+                count_filter=rest.Filter(
+                    must=[
+                        rest.FieldCondition(
+                            key="metadata.user_id", match=rest.MatchValue(value=user_id)
+                        ),
+                        rest.FieldCondition(
+                            key="metadata.upload_id",
+                            match=rest.MatchValue(value=upload_id),
+                        ),
+                    ]
+                ),
+            ).count
+
+            added_count = final_count - initial_count
+            logger.info(
+                f"Added {added_count} documents for upload_id: {upload_id}, user_id: {user_id}"
+            )
 
             if callback:
                 callback()
@@ -93,23 +133,58 @@ class QdrantStore:
 
     def delete(self, upload_id: int, user_id: int) -> bool:
         try:
-            result = self.client.delete(
+            logger.debug(
+                f"Attempting to delete points for upload_id: {upload_id}, user_id: {user_id}"
+            )
+            filter_condition = {
+                "must": [
+                    {"key": "metadata.user_id", "match": {"value": user_id}},
+                    {"key": "metadata.upload_id", "match": {"value": upload_id}},
+                ]
+            }
+            logger.debug(f"Delete filter condition: {filter_condition}")
+
+            initial_count = self.client.count(
                 collection_name=self.collection_name,
-                points_selector=rest.Filter(
-                    must=[
-                        rest.FieldCondition(
-                            key="user_id",
-                            match=rest.MatchValue(value=user_id),
-                        ),
-                        rest.FieldCondition(
-                            key="upload_id",
-                            match=rest.MatchValue(value=upload_id),
-                        ),
-                    ],
-                ),
+                count_filter=rest.Filter(**filter_condition),
+            ).count
+            logger.debug(f"Initial document count: {initial_count}")
+
+            result: UpdateResult = self.client.delete(
+                collection_name=self.collection_name,
+                points_selector=rest.Filter(**filter_condition),
             )
             logger.debug(f"Delete operation result: {result}")
-            return True
+
+            if isinstance(result, UpdateResult) and result.status == "completed":
+                final_count = self.client.count(
+                    collection_name=self.collection_name,
+                    count_filter=rest.Filter(**filter_condition),
+                ).count
+                logger.debug(f"Final document count: {final_count}")
+
+                deleted_count = initial_count - final_count
+
+                if deleted_count > 0:
+                    logger.info(
+                        f"Successfully deleted {deleted_count} points for upload_id: {upload_id}, user_id: {user_id}"
+                    )
+                    return True
+                elif initial_count == 0:
+                    logger.info(
+                        f"No documents found to delete for upload_id: {upload_id}, user_id: {user_id}"
+                    )
+                    return True  # Consider this a successful operation as there's nothing to delete
+                else:
+                    logger.warning(
+                        f"No points were deleted for upload_id: {upload_id}, user_id: {user_id}"
+                    )
+                    return False
+            else:
+                logger.error(
+                    f"Delete operation failed or returned unexpected result: {result}"
+                )
+                return False
         except Exception as e:
             logger.error(f"Error deleting documents: {str(e)}", exc_info=True)
             return False
@@ -123,7 +198,12 @@ class QdrantStore:
         chunk_overlap: int = 50,
         callback: Callable[[], None] | None = None,
     ) -> None:
-        self.delete(upload_id, user_id)
+        deletion_successful = self.delete(upload_id, user_id)
+        if not deletion_successful:
+            logger.warning(
+                f"Failed to delete existing documents for upload_id: {upload_id}, user_id: {user_id}. Proceeding with add operation."
+            )
+
         self.add(file_path_or_url, upload_id, user_id, chunk_size, chunk_overlap)
         if callback:
             callback()
