@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Uploa
 from sqlalchemy import ColumnElement
 from sqlmodel import and_, func, select
 from starlette import status
-
+import logging
 from app.api.deps import CurrentUser, SessionDep
 from app.core.config import settings
 from app.models import (
@@ -22,8 +22,11 @@ from app.models import (
     UploadUpdate,
 )
 from app.tasks.tasks import add_upload, edit_upload, remove_upload
+import aiofiles
 
 router = APIRouter()
+
+logger = logging.getLogger(__name__)
 
 
 async def valid_content_length(
@@ -110,49 +113,108 @@ def read_uploads(
     return UploadsOut(data=uploads, count=count)
 
 
+def get_file_type(filename: str) -> str:
+    extension = filename.split('.')[-1].lower()
+    file_types = {
+        'pdf': 'pdf',
+        'docx': 'docx',
+        'pptx': 'pptx',
+        'xlsx': 'xlsx',
+        'txt': 'txt',
+        'html': 'html',
+        'md': 'md'
+    }
+    return file_types.get(extension, 'unknown')
+
+
 @router.post("/", response_model=UploadOut)
-def create_upload(
+async def create_upload(
     session: SessionDep,
     current_user: CurrentUser,
     name: Annotated[str, Form()],
     description: Annotated[str, Form()],
-    file: UploadFile,
-    chunk_size: Annotated[int, Form(ge=0)],
-    chunk_overlap: Annotated[int, Form(ge=0)],
-    file_size: int = Depends(valid_content_length),
+    file_type: Annotated[str, Form()],
+    chunk_size: Annotated[int, Form()],
+    chunk_overlap: Annotated[int, Form()],
+    web_url: Annotated[str | None, Form()] = None,
+    file: UploadFile | None = None,
 ) -> Any:
     """Create upload"""
-    if file.content_type not in ["application/pdf"]:
-        raise HTTPException(status_code=400, detail="Invalid document type")
-
-    temp_file = save_file_if_within_size_limit(file, file_size)
-    upload = Upload.model_validate(
-        UploadCreate(name=name, description=description),
-        update={"owner_id": current_user.id, "status": UploadStatus.IN_PROGRESS},
-    )
-    session.add(upload)
-    session.commit()
+    logger.info(f"Received upload request: file_type={file_type}, name={name}")
 
     try:
-        # To appease type-checking. This should never happen.
-        if current_user.id is None or upload.id is None:
-            raise HTTPException(
-                status_code=500, detail="Failed to retrieve user and upload ID"
-            )
+        if file_type not in ["file", "web"]:
+            raise HTTPException(status_code=400, detail=f"Invalid file type: {file_type}")
 
-        if not file.filename or not isinstance(temp_file.name, str):
-            raise HTTPException(status_code=500, detail="Failed to upload file")
+        if file_type == "web" and not web_url:
+            raise HTTPException(status_code=400, detail="Web URL is required for web uploads")
+        
+        if file_type == "file" and not file:
+            raise HTTPException(status_code=400, detail="File is required for file uploads")
 
-        file_path = move_upload_to_shared_folder(file.filename, temp_file.name)
-        add_upload.delay(
-            file_path, upload.id, current_user.id, chunk_size, chunk_overlap
+        try:
+            chunk_size = int(chunk_size)
+            chunk_overlap = int(chunk_overlap)
+            if chunk_size <= 0 or chunk_overlap < 0:
+                raise ValueError()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid chunk size or overlap")
+
+        if file_type == "file":
+            actual_file_type = get_file_type(file.filename)
+            if actual_file_type == 'unknown':
+                raise HTTPException(status_code=400, detail="Unsupported file type")
+        else:
+            actual_file_type = 'web'
+
+        upload = Upload.model_validate(
+            UploadCreate(
+                name=name,
+                description=description,
+                file_type=actual_file_type,
+                web_url=web_url,
+                chunk_size=chunk_size,
+                chunk_overlap=chunk_overlap
+            ),
+            update={"owner_id": current_user.id, "status": UploadStatus.IN_PROGRESS},
         )
-    except Exception as e:
-        session.delete(upload)
+        session.add(upload)
         session.commit()
-        raise e
 
-    return upload
+        if current_user.id is None or upload.id is None:
+            raise HTTPException(status_code=500, detail="Failed to retrieve user and upload ID")
+
+        if file_type == "web":
+            # 处理网页上传
+            add_upload.delay(web_url, upload.id, current_user.id, chunk_size, chunk_overlap)
+        else:
+            # 处理文件上传
+            if not file or not file.filename:
+                raise HTTPException(status_code=400, detail="File is required")
+            
+            file_path = await save_upload_file(file)
+            add_upload.delay(file_path, upload.id, current_user.id, chunk_size, chunk_overlap)
+        
+        logger.info(f"Upload created successfully: id={upload.id}")
+        return upload
+    except Exception as e:
+        logger.error(f"Error processing upload: {str(e)}")
+        if 'upload' in locals():
+            session.delete(upload)
+            session.commit()
+        raise HTTPException(status_code=500, detail=f"Failed to process upload: {str(e)}")
+
+
+async def save_upload_file(file: UploadFile) -> str:
+    file_name = f"{uuid.uuid4()}-{file.filename}"
+    file_path = f"./app/{file_name}"
+
+    async with aiofiles.open(file_path, "wb") as out_file:
+        content = await file.read()
+        await out_file.write(content)
+
+    os.chmod(file_path, 0o775)
+    return file_path
 
 
 @router.put("/{id}", response_model=UploadOut)
@@ -162,8 +224,10 @@ def update_upload(
     id: int,
     name: str | None = Form(None),
     description: str | None = Form(None),
+    file_type: str | None = Form(None),
     chunk_size: Annotated[int, Form(ge=0)] | None = Form(None),
     chunk_overlap: Annotated[int, Form(ge=0)] | None = Form(None),
+    web_url: str | None = Form(None),
     file: UploadFile | None = File(None),
     file_size: int = Depends(valid_content_length),
 ) -> Any:
@@ -174,30 +238,55 @@ def update_upload(
     if not current_user.is_superuser and upload.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not enough permissions")
 
-    update_data: dict[str, str | datetime] = {}
+    update_data: dict[str, Any] = {}
     if name is not None:
         update_data["name"] = name
     if description is not None:
         update_data["description"] = description
+    if file_type is not None:
+        update_data["file_type"] = file_type
+    if web_url is not None:
+        update_data["web_url"] = web_url
+    if chunk_size is not None:
+        update_data["chunk_size"] = chunk_size
+    if chunk_overlap is not None:
+        update_data["chunk_overlap"] = chunk_overlap
+
     if update_data:
         update_data["last_modified"] = datetime.now()
         update_dict = UploadUpdate(**update_data).model_dump(exclude_unset=True)
         upload.sqlmodel_update(update_dict)
         session.add(upload)
 
-    if file:
-        if file.content_type not in ["application/pdf"]:
-            raise HTTPException(status_code=400, detail="Invalid document type")
+    if file_type == "web" and web_url:
+        # 处理网页更新
+        upload.status = UploadStatus.IN_PROGRESS
+        session.add(upload)
+        session.commit()
+        edit_upload.delay(
+            web_url,
+            id,
+            upload.owner_id,
+            chunk_size or upload.chunk_size,
+            chunk_overlap or upload.chunk_overlap,
+        )
+    elif file:
+        # 处理文件更新
+        if file.content_type not in [
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "text/plain",
+            "text/html",
+            "text/markdown",
+        ]:
+            raise HTTPException(status_code=400, detail="Invalid file type")
+
         temp_file = save_file_if_within_size_limit(file, file_size)
         if upload.owner_id is None:
             raise HTTPException(status_code=500, detail="Failed to retrieve owner ID")
-        if chunk_overlap is None or chunk_size is None:
-            raise HTTPException(
-                status_code=400,
-                detail="If file is provided, chunk size and chunk overlap must be provided.",
-            )
 
-        # Set upload status to in progress
         upload.status = UploadStatus.IN_PROGRESS
         session.add(upload)
         session.commit()
@@ -206,7 +295,13 @@ def update_upload(
             raise HTTPException(status_code=500, detail="Failed to upload file")
 
         file_path = move_upload_to_shared_folder(file.filename, temp_file.name)
-        edit_upload.delay(file_path, id, upload.owner_id, chunk_size, chunk_overlap)
+        edit_upload.delay(
+            file_path,
+            id,
+            upload.owner_id,
+            chunk_size or upload.chunk_size,
+            chunk_overlap or upload.chunk_overlap,
+        )
 
     session.commit()
     session.refresh(upload)

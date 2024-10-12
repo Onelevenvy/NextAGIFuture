@@ -51,18 +51,13 @@ export class UploadsService {
      * @throws ApiError
      */
     public static createUpload({
-        contentLength,
         formData,
     }: {
-        contentLength: number,
         formData: Body_uploads_create_upload,
     }): CancelablePromise<UploadOut> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/v1/uploads/',
-            headers: {
-                'content-length': contentLength,
-            },
             formData: formData,
             mediaType: 'multipart/form-data',
             errors: {

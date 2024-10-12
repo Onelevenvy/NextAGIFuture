@@ -8,9 +8,13 @@ import type { UploadStatus } from './UploadStatus';
 export type Upload = {
     name: string;
     description: string;
+    file_type: string;
+    web_url?: (string | null);
     id?: (number | null);
     owner_id?: (number | null);
     last_modified?: string;
     status: UploadStatus;
+    chunk_size: number;
+    chunk_overlap: number;
 };
 

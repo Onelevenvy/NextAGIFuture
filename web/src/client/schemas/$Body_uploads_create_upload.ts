@@ -12,10 +12,9 @@ export const $Body_uploads_create_upload = {
             type: 'string',
             isRequired: true,
         },
-        file: {
-            type: 'binary',
+        file_type: {
+            type: 'string',
             isRequired: true,
-            format: 'binary',
         },
         chunk_size: {
             type: 'number',
@@ -24,6 +23,23 @@ export const $Body_uploads_create_upload = {
         chunk_overlap: {
             type: 'number',
             isRequired: true,
+        },
+        web_url: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
+        },
+        file: {
+            type: 'any-of',
+            contains: [{
+                type: 'binary',
+                format: 'binary',
+            }, {
+                type: 'null',
+            }],
         },
     },
 } as const;

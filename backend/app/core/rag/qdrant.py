@@ -72,7 +72,7 @@ class QdrantStore:
 
     def add(
         self,
-        file_path: str,
+        file_path_or_url: str,
         upload_id: int,
         user_id: int,
         chunk_size: int = 500,
@@ -81,7 +81,7 @@ class QdrantStore:
     ) -> None:
         try:
             docs = load_and_split_document(
-                file_path, user_id, upload_id, chunk_size, chunk_overlap
+                file_path_or_url, user_id, upload_id, chunk_size, chunk_overlap
             )
             self.vector_store.add_documents(docs)
 
@@ -116,7 +116,7 @@ class QdrantStore:
 
     def update(
         self,
-        file_path: str,
+        file_path_or_url: str,
         upload_id: int,
         user_id: int,
         chunk_size: int = 500,
@@ -124,7 +124,7 @@ class QdrantStore:
         callback: Callable[[], None] | None = None,
     ) -> None:
         self.delete(upload_id, user_id)
-        self.add(file_path, upload_id, user_id, chunk_size, chunk_overlap)
+        self.add(file_path_or_url, upload_id, user_id, chunk_size, chunk_overlap)
         if callback:
             callback()
 

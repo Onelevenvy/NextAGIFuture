@@ -25,8 +25,10 @@ import {
   FaFilePdf,
   FaFilePowerpoint,
   FaFileWord,
+  FaFileCode,
 } from "react-icons/fa";
 import { PiFileHtmlFill } from "react-icons/pi";
+import { TbWorldWww } from "react-icons/tb";
 
 function Uploads() {
   const showToast = useCustomToast();
@@ -77,7 +79,12 @@ function Uploads() {
     {
       value: "web",
       text: "web",
-      icon: <PiFileHtmlFill className="w-[14px] h-[14px] mr-1" />,
+      icon: <TbWorldWww className="w-[14px] h-[14px] mr-1" />,
+    },
+    {
+      value: "txt",
+      text: "txt",
+      icon: <FaFileCode className="w-[14px] h-[14px] mr-1" />,
     },
   ];
   const [activeTab, setActiveTab] = useTabSearchParams({

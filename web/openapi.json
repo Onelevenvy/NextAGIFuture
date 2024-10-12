@@ -2078,18 +2078,6 @@
             "OAuth2PasswordBearer": []
           }
         ],
-        "parameters": [
-          {
-            "name": "content-length",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "maximum": 50000000,
-              "title": "Content-Length"
-            }
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -3033,27 +3021,47 @@
             "type": "string",
             "title": "Description"
           },
-          "file": {
+          "file_type": {
             "type": "string",
-            "format": "binary",
-            "title": "File"
+            "title": "File Type"
           },
           "chunk_size": {
             "type": "integer",
-            "minimum": 0,
             "title": "Chunk Size"
           },
           "chunk_overlap": {
             "type": "integer",
-            "minimum": 0,
             "title": "Chunk Overlap"
+          },
+          "web_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Web Url"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "binary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
           }
         },
         "type": "object",
         "required": [
           "name",
           "description",
-          "file",
+          "file_type",
           "chunk_size",
           "chunk_overlap"
         ],
@@ -3083,6 +3091,17 @@
             ],
             "title": "Description"
           },
+          "file_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Type"
+          },
           "chunk_size": {
             "anyOf": [
               {
@@ -3106,6 +3125,17 @@
               }
             ],
             "title": "Chunk Overlap"
+          },
+          "web_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Web Url"
           },
           "file": {
             "anyOf": [
@@ -5100,6 +5130,21 @@
             "type": "string",
             "title": "Description"
           },
+          "file_type": {
+            "type": "string",
+            "title": "File Type"
+          },
+          "web_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Web Url"
+          },
           "id": {
             "anyOf": [
               {
@@ -5129,13 +5174,24 @@
           },
           "status": {
             "$ref": "#/components/schemas/UploadStatus"
+          },
+          "chunk_size": {
+            "type": "integer",
+            "title": "Chunk Size"
+          },
+          "chunk_overlap": {
+            "type": "integer",
+            "title": "Chunk Overlap"
           }
         },
         "type": "object",
         "required": [
           "name",
           "description",
-          "status"
+          "file_type",
+          "status",
+          "chunk_size",
+          "chunk_overlap"
         ],
         "title": "Upload"
       },
@@ -5149,6 +5205,21 @@
             "type": "string",
             "title": "Description"
           },
+          "file_type": {
+            "type": "string",
+            "title": "File Type"
+          },
+          "web_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Web Url"
+          },
           "id": {
             "type": "integer",
             "title": "Id"
@@ -5160,15 +5231,38 @@
           },
           "status": {
             "$ref": "#/components/schemas/UploadStatus"
+          },
+          "owner_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Id"
+          },
+          "chunk_size": {
+            "type": "integer",
+            "title": "Chunk Size"
+          },
+          "chunk_overlap": {
+            "type": "integer",
+            "title": "Chunk Overlap"
           }
         },
         "type": "object",
         "required": [
           "name",
           "description",
+          "file_type",
+          "web_url",
           "id",
           "last_modified",
-          "status"
+          "status",
+          "chunk_size",
+          "chunk_overlap"
         ],
         "title": "UploadOut"
       },

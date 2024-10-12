@@ -461,16 +461,23 @@ class Write(SQLModel, table=True):
 class UploadBase(SQLModel):
     name: str
     description: str
+    file_type: str  # 新增字段，用于存储文件类型
+    web_url: str | None = None  # 新增字段，用于存储网页 URL
 
 
 class UploadCreate(UploadBase):
-    pass
+    chunk_size: int
+    chunk_overlap: int
 
 
 class UploadUpdate(UploadBase):
-    name: str | None = None  # type: ignore[assignment]
-    description: str | None = None  # type: ignore[assignment]
+    name: str | None = None
+    description: str | None = None
     last_modified: datetime
+    file_type: str | None = None
+    web_url: str | None = None
+    chunk_size: int | None = None
+    chunk_overlap: int | None = None
 
 
 class UploadStatus(str, Enum):
@@ -491,6 +498,8 @@ class Upload(UploadBase, table=True):
     status: UploadStatus = Field(
         sa_column=Column(SQLEnum(UploadStatus), nullable=False)
     )
+    chunk_size: int
+    chunk_overlap: int
 
 
 class UploadOut(UploadBase):
@@ -499,6 +508,10 @@ class UploadOut(UploadBase):
     last_modified: datetime
     status: UploadStatus
     owner_id: int | None = Field(default=None, foreign_key="user.id", nullable=False)
+    file_type: str
+    web_url: str | None
+    chunk_size: int
+    chunk_overlap: int
 
 
 class UploadsOut(SQLModel):
