@@ -7,14 +7,14 @@ import {
   InputGroup,
   InputLeftElement,
 } from "@chakra-ui/react";
-import { type ReactNode, useRef } from "react";
+import { useRef } from "react";
 import { type Control, useController } from "react-hook-form";
 import { FiFile } from "react-icons/fi";
 
 interface FileUploadProps {
   name: string;
-  placeholder: string;
-  acceptedFileTypes: string;
+  placeholder?: string;
+  acceptedFileTypes?: string;
   control: Control<any>;
   isRequired?: boolean;
   children: React.ReactNode;
@@ -23,8 +23,8 @@ interface FileUploadProps {
 
 export const FileUpload = ({
   name,
-  placeholder,
-  acceptedFileTypes,
+  placeholder = "Your file ...",
+  acceptedFileTypes = "",
   control,
   isRequired = false,
   children,
@@ -66,7 +66,7 @@ export const FileUpload = ({
           style={{ display: "none" }}
         />
         <Input
-          placeholder={placeholder || "Your file ..."}
+          placeholder={placeholder}
           onClick={() => inputRef?.current?.click()}
           readOnly={true}
           value={value?.name || ""}
@@ -75,11 +75,6 @@ export const FileUpload = ({
       <FormErrorMessage>{invalid}</FormErrorMessage>
     </FormControl>
   );
-};
-
-FileUpload.defaultProps = {
-  acceptedFileTypes: "",
-  allowMultipleFiles: false,
 };
 
 export default FileUpload;

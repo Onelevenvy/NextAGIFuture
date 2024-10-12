@@ -75,8 +75,10 @@ def remove_upload(upload_id: int, user_id: int) -> None:
 
         try:
             qdrant_store = QdrantStore()
-            deletion_successful = qdrant_store.delete(upload_id, user_id)
-
+            try:
+                deletion_successful = qdrant_store.delete(upload_id, user_id)
+            except Exception as e:
+                logger.error(f"Error in remove_upload task: {e}", exc_info=True)
             if deletion_successful or not deletion_successful:
                 # 无论删除是否成功，我们都从数据库中删除上传记录
                 session.delete(upload)
