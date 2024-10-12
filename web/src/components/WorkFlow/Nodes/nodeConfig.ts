@@ -144,7 +144,7 @@ export const nodeConfig: Record<string, NodeConfigItem> = {
   toolretrieval: {
     display: "Retrieval As Tools",
     icon: FaDatabase,
-    colorScheme: "cyan",
+    colorScheme: "red",
     properties: RetrievalToolNodeProperties,
     allowedConnections: {
       sources: ["left", "right"],

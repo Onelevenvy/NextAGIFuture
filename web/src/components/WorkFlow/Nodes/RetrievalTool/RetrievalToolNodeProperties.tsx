@@ -12,6 +12,7 @@ import type React from "react";
 import { useState } from "react";
 import KBListModal from "./KBListModal";
 import { FaDatabase } from "react-icons/fa";
+import { GiArchiveResearch } from "react-icons/gi";
 
 interface KBInfo {
   name: string;
@@ -66,7 +67,12 @@ const RetrievalToolNodeProperties: React.FC<
             <HStack key={kbName} justifyContent="space-between">
               <Box bg="#f2f4f7" borderRadius="md" w="full" p="1" m="0.5">
                 <HStack spacing={"2"}>
-                  <FaDatabase />
+                <IconButton
+                    aria-label="db"
+                    icon={<GiArchiveResearch size={"16px"} />}
+                    colorScheme={"pink"}
+                    size="xs"
+                  />
                   <Text fontWeight={"bold"}>{kbName}</Text>
                 </HStack>
               </Box>
@@ -80,7 +86,7 @@ const RetrievalToolNodeProperties: React.FC<
           );
         })}
         <Button onClick={() => setIsKBListOpen(true)} mt={2}>
-          Add Knowledge Base
+          Add 
         </Button>
       </Box>
       {isKBListOpen && (

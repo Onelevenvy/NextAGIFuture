@@ -1,9 +1,10 @@
-import { Box, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, HStack, IconButton, Text, VStack } from "@chakra-ui/react";
 import React from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
 import { BaseNode } from "../Base/BaseNode";
 import { nodeConfig } from "../nodeConfig";
 import { FaDatabase } from "react-icons/fa";
+import { GiArchiveResearch } from "react-icons/gi";
 
 interface KBInfo {
   name: string;
@@ -33,7 +34,12 @@ const RetrievalToolNode: React.FC<NodeProps> = (props) => {
               <HStack key={index} justifyContent="center" justifyItems={"center"}>
                 <Box bg="#f2f4f7" borderRadius="md" w="full" p="1">
                   <HStack spacing={"2"}>
-                    <FaDatabase />
+                  <IconButton
+                    aria-label="db"
+                    icon={<GiArchiveResearch size={"16px"} />}
+                    colorScheme={"pink"}
+                    size="xs"
+                  />
                     <Text fontWeight={"bold"}>{kbName}</Text>
                   </HStack>
                 </Box>

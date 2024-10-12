@@ -1,7 +1,9 @@
 import { SearchIcon } from "@chakra-ui/icons";
 import {
+  Box,
   Button,
   HStack,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
@@ -16,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import type React from "react";
 import { useMemo, useState } from "react";
-import { FaDatabase } from "react-icons/fa";
+import { GiArchiveResearch } from "react-icons/gi";
 
 interface KBInfo {
   name: string;
@@ -67,7 +69,13 @@ const KBListModal: React.FC<KBListProps> = ({
             {filteredUploads.map((upload) => (
               <HStack key={upload.id} justifyContent="space-between">
                 <HStack spacing={"2"}>
-                  <FaDatabase />
+                  <IconButton
+                    aria-label="db"
+                    icon={<GiArchiveResearch size={"16px"} />}
+                    colorScheme={"pink"}
+                    size="xs"
+                  />
+
                   <Text>{upload.name}</Text>
                 </HStack>
                 <Button

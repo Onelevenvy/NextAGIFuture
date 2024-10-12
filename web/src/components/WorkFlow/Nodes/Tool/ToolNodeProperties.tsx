@@ -65,7 +65,7 @@ const ToolNodeProperties: React.FC<ToolNodePropertiesProps> = ({
           </HStack>
         ))}
         <Button onClick={() => setIsToolsListOpen(true)} mt={2}>
-          Add Tool
+          Add 
         </Button>
       </Box>
       {isToolsListOpen && (
