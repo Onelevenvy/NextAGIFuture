@@ -39,6 +39,7 @@ def load_and_split_document(
         # 根据文件类型选择合适的加载器
         if file_path.endswith(".pdf"):
             loader = PyMuPDFLoader(file_path)
+
         elif file_path.endswith(".docx"):
             loader = UnstructuredWordDocumentLoader(file_path)
         elif file_path.endswith(".pptx"):

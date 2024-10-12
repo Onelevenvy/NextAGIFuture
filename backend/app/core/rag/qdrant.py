@@ -104,7 +104,6 @@ class QdrantStore:
             ).count
 
             self.vector_store.add_documents(docs)
-
             final_count = self.client.count(
                 collection_name=self.collection_name,
                 count_filter=rest.Filter(
@@ -203,7 +202,6 @@ class QdrantStore:
             logger.warning(
                 f"Failed to delete existing documents for upload_id: {upload_id}, user_id: {user_id}. Proceeding with add operation."
             )
-
         self.add(file_path_or_url, upload_id, user_id, chunk_size, chunk_overlap)
         if callback:
             callback()
