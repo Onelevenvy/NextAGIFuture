@@ -2,7 +2,7 @@ import json
 import logging
 
 from app.core.rag.qdrant import QdrantStore
-from app.core.tools.retriever_tool import create_retriever_tool
+from app.core.tools.retriever_tool import create_retriever_tool_custom_modified
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -43,7 +43,7 @@ for doc in search_results:
 # 创建和使用检索工具
 retriever = qdrant_store.retriever(user_id, upload_id)
 logger.info(f"Created retriever: {retriever}")
-retriever_tool = create_retriever_tool(retriever)
+retriever_tool = create_retriever_tool_custom_modified(retriever)
 logger.info(f"Created retriever tool: {retriever_tool}")
 
 # 使用检索工具
