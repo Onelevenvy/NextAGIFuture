@@ -11,6 +11,7 @@ from qdrant_client.models import Distance, VectorParams
 
 from app.core.config import settings
 from app.core.rag.embeddings import get_embedding_model
+from app.core.rag.document_processor import load_and_split_document
 
 logger = logging.getLogger(__name__)
 
@@ -78,26 +79,17 @@ class QdrantStore:
         chunk_overlap: int = 50,
         callback: Callable[[], None] | None = None,
     ) -> None:
-        if file_path.endswith(".pdf"):
-            loader = PyMuPDFLoader(file_path)
-        else:
-            raise ValueError("Unsupported file type")
+        try:
+            docs = load_and_split_document(
+                file_path, user_id, upload_id, chunk_size, chunk_overlap
+            )
+            self.vector_store.add_documents(docs)
 
-        documents = loader.load()
-        for doc in documents:
-            doc.metadata.update({"user_id": user_id, "upload_id": upload_id})
-            logger.debug(f"Document metadata: {doc.metadata}")
-
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size,
-            chunk_overlap=chunk_overlap,
-        )
-        docs = text_splitter.split_documents(documents)
-
-        self.vector_store.add_documents(docs)
-
-        if callback:
-            callback()
+            if callback:
+                callback()
+        except Exception as e:
+            logger.error(f"Error adding document: {str(e)}", exc_info=True)
+            raise
 
     def delete(self, upload_id: int, user_id: int) -> bool:
         try:
