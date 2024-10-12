@@ -15,6 +15,7 @@ import {
 import React from "react";
 import { RiListUnordered } from "react-icons/ri";
 import { useQuery } from "react-query";
+import { useRouter } from "next/navigation";
 
 import TabSlider from "@/components/Common/TabSlider";
 import { useTabSearchParams } from "@/hooks/useTabSearchparams";
@@ -91,6 +92,12 @@ function Uploads() {
     searchParamName: "tooltype",
     defaultTab: "all",
   });
+  const router = useRouter();
+
+  const handleUploadClick = (uploadId: number) => {
+    router.push(`/knowledge/${uploadId}`);
+  };
+
   return (
     <>
       {isLoading ? (
@@ -143,6 +150,7 @@ function Uploads() {
                       borderColor="gray.200"
                       boxShadow="lg"
                       bg="white"
+                      onClick={() => handleUploadClick(upload.id)}
                     >
                       <Heading size="md">{upload.name}</Heading>
                       <Box

@@ -96,3 +96,18 @@ def remove_upload(upload_id: int, user_id: int) -> None:
             upload.status = UploadStatus.FAILED
             session.add(upload)
             session.commit()
+
+
+@celery_app.task
+def perform_search(user_id: int, upload_id: int, query: str, search_type: str, top_k: int, score_threshold: float):
+    qdrant_store = QdrantStore()
+    if search_type == "vector":
+        results = qdrant_store.vector_search(user_id, [upload_id], query, top_k, score_threshold)
+    elif search_type == "fulltext":
+        results = qdrant_store.fulltext_search(user_id, [upload_id], query, top_k)
+    elif search_type == "hybrid":
+        results = qdrant_store.hybrid_search(user_id, [upload_id], query, top_k, score_threshold)
+    else:
+        raise ValueError(f"Invalid search type: {search_type}")
+    
+    return [{"content": doc.page_content, "score": doc.metadata["score"]} for doc in results]

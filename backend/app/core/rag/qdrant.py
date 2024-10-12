@@ -277,3 +277,51 @@ class QdrantStore:
         collection_info = self.client.get_collection(self.collection_name)
         logger.debug(f"Collection info: {collection_info}")
         return collection_info
+
+    def vector_search(self, user_id: int, upload_ids: List[int], query: str, top_k: int = 5, score_threshold: float = 0.5):
+        query_vector = self.embedding_model.embed_query(query)
+        filter_condition = {
+            "must": [
+                {"key": "metadata.user_id", "match": {"value": user_id}},
+                {"key": "metadata.upload_id", "match": {"any": upload_ids}},
+            ]
+        }
+        search_results = self.client.search(
+            collection_name=self.collection_name,
+            query_vector=query_vector,
+            query_filter=filter_condition,
+            limit=top_k,
+            score_threshold=score_threshold
+        )
+        return [self._convert_to_document(result) for result in search_results]
+
+    def fulltext_search(self, user_id: int, upload_ids: List[int], query: str, top_k: int = 5):
+        # 注意：这里假设您的 Qdrant 集合已经配置了全文搜索
+        filter_condition = {
+            "must": [
+                {"key": "metadata.user_id", "match": {"value": user_id}},
+                {"key": "metadata.upload_id", "match": {"any": upload_ids}},
+            ]
+        }
+        search_results = self.client.search(
+            collection_name=self.collection_name,
+            query=query,
+            query_filter=filter_condition,
+            limit=top_k
+        )
+        return [self._convert_to_document(result) for result in search_results]
+
+    def hybrid_search(self, user_id: int, upload_ids: List[int], query: str, top_k: int = 5, score_threshold: float = 0.5):
+        vector_results = self.vector_search(user_id, upload_ids, query, top_k, score_threshold)
+        fulltext_results = self.fulltext_search(user_id, upload_ids, query, top_k)
+        
+        # 简单的混合策略：合并结果并按分数排序
+        combined_results = vector_results + fulltext_results
+        combined_results.sort(key=lambda x: x.metadata["score"], reverse=True)
+        return combined_results[:top_k]
+
+    def _convert_to_document(self, result):
+        return Document(
+            page_content=result.payload.get("page_content", ""),
+            metadata={"score": result.score, **result.payload.get("metadata", {})}
+        )
