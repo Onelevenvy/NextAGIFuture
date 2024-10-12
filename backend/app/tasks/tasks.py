@@ -76,12 +76,11 @@ def remove_upload(upload_id: int, user_id: int) -> None:
         try:
             qdrant_store = QdrantStore()
             deletion_successful = qdrant_store.delete(upload_id, user_id)
-
-            if deletion_successful or not deletion_successful:
-                # 无论删除是否成功，我们都从数据库中删除上传记录
+            
+            if deletion_successful:
                 session.delete(upload)
                 session.commit()
-                logger.info(f"Upload {upload_id} removed from database successfully")
+                logger.info(f"Upload {upload_id} removed from database and Qdrant successfully")
             else:
                 logger.warning(
                     f"Failed to delete documents from Qdrant for upload_id: {upload_id}, user_id: {user_id}"

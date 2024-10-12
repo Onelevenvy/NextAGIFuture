@@ -27,18 +27,19 @@ def load_and_split_document(
     logger.debug(f"Loading document from: {file_path}")
 
     if file_path.startswith("http://") or file_path.startswith("https://"):
-        loader = WebBaseLoader(file_path)
+        loader = WebBaseLoader(
+            web_paths=(file_path,),
+            bs_kwargs=dict(
+                parse_only=bs4.SoupStrainer(
+                    class_=("post-content", "post-title", "post-header")
+                )
+            ),
+        )
     else:
         # 根据文件类型选择合适的加载器
         if file_path.endswith(".pdf"):
-            loader = PyMuPDFLoader(
-                web_paths=(file_path,),
-                bs_kwargs=dict(
-                    parse_only=bs4.SoupStrainer(
-                        class_=("post-content", "post-title", "post-header")
-                    )
-                ),
-            )
+            loader = PyMuPDFLoader(file_path)
+
         elif file_path.endswith(".docx"):
             loader = UnstructuredWordDocumentLoader(file_path)
         elif file_path.endswith(".pptx"):
