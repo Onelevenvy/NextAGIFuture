@@ -20,6 +20,14 @@ export const $Body_uploads_update_upload = {
                 type: 'null',
             }],
         },
+        file_type: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
+        },
         chunk_size: {
             type: 'any-of',
             contains: [{
@@ -32,6 +40,14 @@ export const $Body_uploads_update_upload = {
             type: 'any-of',
             contains: [{
                 type: 'number',
+            }, {
+                type: 'null',
+            }],
+        },
+        web_url: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
             }, {
                 type: 'null',
             }],

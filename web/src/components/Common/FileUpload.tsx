@@ -13,11 +13,12 @@ import { FiFile } from "react-icons/fi";
 
 interface FileUploadProps {
   name: string;
-  placeholder?: string;
+  placeholder: string;
   acceptedFileTypes: string;
-  control: Control<any, any>;
-  children?: ReactNode;
+  control: Control<any>;
   isRequired?: boolean;
+  children: React.ReactNode;
+  onFileSelect?: (file: File) => void;
 }
 
 export const FileUpload = ({
@@ -25,8 +26,9 @@ export const FileUpload = ({
   placeholder,
   acceptedFileTypes,
   control,
-  children,
   isRequired = false,
+  children,
+  onFileSelect,
 }: FileUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
@@ -38,6 +40,16 @@ export const FileUpload = ({
     rules: { required: isRequired },
   });
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onChange(file);
+      if (onFileSelect) {
+        onFileSelect(file);
+      }
+    }
+  };
+
   return (
     <FormControl isInvalid={invalid} isRequired={isRequired} mt={4}>
       <FormLabel htmlFor="writeUpFile">{children}</FormLabel>
@@ -47,7 +59,7 @@ export const FileUpload = ({
         </InputLeftElement>
         <input
           type="file"
-          onChange={(e) => e.target.files && onChange(e.target.files[0])}
+          onChange={handleFileChange}
           accept={acceptedFileTypes}
           ref={inputRef}
           {...inputProps}

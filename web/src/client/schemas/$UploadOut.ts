@@ -12,6 +12,19 @@ export const $UploadOut = {
             type: 'string',
             isRequired: true,
         },
+        file_type: {
+            type: 'string',
+            isRequired: true,
+        },
+        web_url: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
+            isRequired: true,
+        },
         id: {
             type: 'number',
             isRequired: true,
@@ -23,6 +36,22 @@ export const $UploadOut = {
         },
         status: {
             type: 'UploadStatus',
+            isRequired: true,
+        },
+        owner_id: {
+            type: 'any-of',
+            contains: [{
+                type: 'number',
+            }, {
+                type: 'null',
+            }],
+        },
+        chunk_size: {
+            type: 'number',
+            isRequired: true,
+        },
+        chunk_overlap: {
+            type: 'number',
             isRequired: true,
         },
     },

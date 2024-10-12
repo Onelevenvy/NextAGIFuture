@@ -12,6 +12,18 @@ export const $Upload = {
             type: 'string',
             isRequired: true,
         },
+        file_type: {
+            type: 'string',
+            isRequired: true,
+        },
+        web_url: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
+        },
         id: {
             type: 'any-of',
             contains: [{
@@ -34,6 +46,14 @@ export const $Upload = {
         },
         status: {
             type: 'UploadStatus',
+            isRequired: true,
+        },
+        chunk_size: {
+            type: 'number',
+            isRequired: true,
+        },
+        chunk_overlap: {
+            type: 'number',
             isRequired: true,
         },
     },
