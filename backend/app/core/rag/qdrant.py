@@ -1,7 +1,7 @@
 import logging
 from typing import Callable, List
 
-from langchain_community.document_loaders import PyMuPDFLoader, WebBaseLoader
+from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_core.documents import Document
 from langchain_qdrant import QdrantVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -22,12 +22,12 @@ class QdrantStore:
         self.url = settings.QDRANT_URL
         self.embedding_model = get_embedding_model(settings.EMBEDDING_MODEL)
 
-        logger.info(f"Initializing QdrantStore with URL: {self.url}")
+        logger.debug(f"Initializing QdrantStore with URL: {self.url}")
 
         self.client = QdrantClient(
             url=self.url, api_key=settings.QDRANT_SERVICE_API_KEY, prefer_grpc=False
         )
-        logger.info("QdrantClient initialized successfully")
+        logger.debug("QdrantClient initialized successfully")
 
         self._initialize_vector_store()
 
@@ -37,7 +37,7 @@ class QdrantStore:
             if self.collection_name not in [
                 collection.name for collection in collections
             ]:
-                logger.info(f"Creating new collection: {self.collection_name}")
+                logger.debug(f"Creating new collection: {self.collection_name}")
                 self.client.create_collection(
                     collection_name=self.collection_name,
                     vectors_config=VectorParams(
@@ -55,10 +55,10 @@ class QdrantStore:
                     field_schema="integer",
                 )
             else:
-                logger.info(f"Using existing collection: {self.collection_name}")
+                logger.debug(f"Using existing collection: {self.collection_name}")
 
             collection_info = self.client.get_collection(self.collection_name)
-            logger.info(f"Collection info: {collection_info}")
+            logger.debug(f"Collection info: {collection_info}")
 
             self.vector_store = QdrantVectorStore(
                 client=self.client,
@@ -80,15 +80,13 @@ class QdrantStore:
     ) -> None:
         if file_path.endswith(".pdf"):
             loader = PyMuPDFLoader(file_path)
-        elif file_path.endswith(".html"):
-            loader = WebBaseLoader(file_path)
         else:
             raise ValueError("Unsupported file type")
 
         documents = loader.load()
         for doc in documents:
             doc.metadata.update({"user_id": user_id, "upload_id": upload_id})
-            logger.info(f"Document metadata: {doc.metadata}")
+            logger.debug(f"Document metadata: {doc.metadata}")
 
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
@@ -118,7 +116,7 @@ class QdrantStore:
                     ],
                 ),
             )
-            logger.info(f"Delete operation result: {result}")
+            logger.debug(f"Delete operation result: {result}")
             return True
         except Exception as e:
             logger.error(f"Error deleting documents: {str(e)}", exc_info=True)
@@ -139,9 +137,6 @@ class QdrantStore:
             callback()
 
     def search(self, user_id: int, upload_ids: List[int], query: str) -> List[Document]:
-        logger.info(
-            f"Searching with query: '{query}' for user_id: {user_id}, upload_ids: {upload_ids}"
-        )
 
         query_vector = self.embedding_model.embed_query(query)
 
@@ -151,7 +146,7 @@ class QdrantStore:
                 {"key": "metadata.upload_id", "match": {"any": upload_ids}},
             ]
         }
-        logger.info(f"Search filter condition: {filter_condition}")
+        logger.debug(f"Search filter condition: {filter_condition}")
 
         search_results = self.client.search(
             collection_name=self.collection_name,
@@ -163,19 +158,15 @@ class QdrantStore:
         documents = [
             Document(
                 page_content=result.payload.get("page_content", ""),
-                metadata=result.payload.get("metadata", {}),
+                metadata={"score": result.score},
             )
             for result in search_results
         ]
 
-        logger.info(f"Search results: {len(documents)} documents found")
-        for doc in documents:
-            logger.info(f"Document metadata: {doc.metadata}")
-
         return documents
 
     def retriever(self, user_id: int, upload_id: int):
-        logger.info(
+        logger.debug(
             f"Creating retriever for user_id: {user_id}, upload_id: {upload_id}"
         )
         filter_condition = {
@@ -188,31 +179,31 @@ class QdrantStore:
             search_kwargs={"filter": filter_condition, "k": 5},
             search_type="similarity",
         )
-        logger.info(f"Retriever created: {retriever}")
+        logger.debug(f"Retriever created: {retriever}")
         return retriever
 
     def debug_retriever(self, user_id: int, upload_id: int, query: str):
-        logger.info(
+        logger.debug(
             f"Debug retriever for user_id: {user_id}, upload_id: {upload_id}, query: '{query}'"
         )
 
         # 使用过滤器的搜索
         filtered_docs = self.search(user_id, [upload_id], query)
-        logger.info(f"Filtered search found {len(filtered_docs)} documents")
+        logger.debug(f"Filtered search found {len(filtered_docs)} documents")
         for doc in filtered_docs:
-            logger.info(f"Filtered doc metadata: {doc.metadata}")
+            logger.debug(f"Filtered doc metadata: {doc.metadata}")
 
         # 不使用过滤器的搜索
         unfiltered_docs = self.vector_store.similarity_search(query, k=5)
-        logger.info(f"Unfiltered search found {len(unfiltered_docs)} documents")
+        logger.debug(f"Unfiltered search found {len(unfiltered_docs)} documents")
 
         # 打印所有文档的元数据
         for i, doc in enumerate(unfiltered_docs):
-            logger.info(f"Unfiltered doc {i} metadata: {doc.metadata}")
+            logger.debug(f"Unfiltered doc {i} metadata: {doc.metadata}")
 
         return filtered_docs
 
     def get_collection_info(self):
         collection_info = self.client.get_collection(self.collection_name)
-        logger.info(f"Collection info: {collection_info}")
+        logger.debug(f"Collection info: {collection_info}")
         return collection_info
