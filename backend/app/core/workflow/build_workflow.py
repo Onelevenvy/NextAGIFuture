@@ -20,35 +20,40 @@ from .node.subgraph_node import SubgraphNode
 from langchain.tools.retriever import create_retriever_tool
 
 
-
 def create_subgraph(subgraph_config: Dict[str, Any]) -> CompiledGraph:
     subgraph_builder = StateGraph(TeamState)
-    
+
     # 添加subgraph的节点
     for node in subgraph_config["nodes"]:
         node_id = node["id"]
         node_type = node["type"]
         node_data = node["data"]
-        
+
         if node_type == "answer":
             _add_answer_node(subgraph_builder, node_id, node_data)
         elif node_type == "retrieval":
             _add_retrieval_node(subgraph_builder, node_id, node_data)
         elif node_type == "llm":
-            _add_llm_node(subgraph_builder, node_id, node_data, subgraph_config["nodes"], subgraph_config["edges"], False, False, {})
+            _add_llm_node(
+                subgraph_builder,
+                node_id,
+                node_data,
+                subgraph_config["nodes"],
+                subgraph_config["edges"],
+                False,
+                False,
+                {},
+            )
         elif node_type in ["tool", "toolretrieval"]:
             _add_tool_node(subgraph_builder, node_id, node_type, node_data)
-    
+
     # 添加subgraph的边
     for edge in subgraph_config["edges"]:
         _add_edge(subgraph_builder, edge, subgraph_config["nodes"], {})
-    
+
     # 设置入口点并编译subgraph
     subgraph_builder.set_entry_point("InputNode")
     return subgraph_builder.compile()
-
-
-
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
@@ -301,8 +306,6 @@ def _add_llm_node(
                     provider=model_info["provider_name"],
                     model=model_info["ai_model_name"],
                     tools=tools_to_bind,
-                    openai_api_key=model_info["api_key"],
-                    openai_api_base=model_info["base_url"],
                     temperature=node_data["temperature"],
                     system_prompt=node_data.get("systemMessage", None),
                     agent_name=node_data.get("label", node_id),

@@ -1,12 +1,13 @@
 import os
-
-from sqlalchemy import text
+import importlib
+from sqlalchemy import text, func
 from sqlmodel import Session, create_engine, select
 
 from app.core.config import settings
 from app.core.tools import managed_tools
 from app.curd import users
-from app.models import Skill, User, UserCreate
+from app.models import Skill, User, UserCreate, ModelProvider, Models
+from app.core.model_providers.model_provider_manager import model_provider_manager
 
 
 def get_url():
@@ -25,7 +26,20 @@ engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 # make sure all SQLModel models are imported (app.models) before initializing DB
 # otherwise, SQLModel might fail to initialize relationships properly
 # for more details: https://github.com/tiangolo/full-stack-fastapi-template/issues/28
-
+def print_skills_info(session: Session) -> None:
+        print("\nSkills Information:")
+        skills = session.exec(select(Skill).order_by(Skill.id)).all()
+        for skill in skills:
+            print(f"Skill: {skill.name} (ID: {skill.id})")
+            print(f"  Display Name: {skill.display_name}")
+            print(f"  Description: {skill.description}")
+            print(f"  Managed: {'Yes' if skill.managed else 'No'}")
+            print(f"  Owner ID: {skill.owner_id}")
+            if skill.input_parameters:
+                print("  Input Parameters:")
+                for param, param_type in skill.input_parameters.items():
+                    print(f"    - {param}: {param_type}")
+            print()
 
 def init_db(session: Session) -> None:
     # Tables should be created with Alembic migrations
@@ -61,12 +75,15 @@ def init_db(session: Session) -> None:
             if (
                 existing_skill.description != skill_info.description
                 or existing_skill.display_name != skill_info.display_name
-                or existing_skill.input_parameters != skill_info.input_parameters  # 检查输入参数是否变化
+                or existing_skill.input_parameters
+                != skill_info.input_parameters  # 检查输入参数是否变化
             ):
                 # Update the existing skill's description and input parameters
                 existing_skill.description = skill_info.description
                 existing_skill.display_name = skill_info.display_name
-                existing_skill.input_parameters = skill_info.input_parameters  # 更新输入参数
+                existing_skill.input_parameters = (
+                    skill_info.input_parameters
+                )  # 更新输入参数
                 session.add(existing_skill)  # Mark the modified object for saving
         else:
             new_skill = Skill(
@@ -90,39 +107,64 @@ def init_db(session: Session) -> None:
 
     session.commit()
 
+        # 打印 skills 信息
+    print_skills_info(session)
+
+    
 
 def init_modelprovider_model_db(session: Session) -> None:
-    # Insert or update ModelProvider data
-    model_provider_sql = """
-    INSERT INTO ModelProvider (id, provider_name, base_url, api_key, icon, description)
-    VALUES
-        (4, 'openai', 'fakeurl', 'fakeapikey', 'string', 'open ai'),
-        (1, 'Ollama', 'fakeurl', 'fakeapikey', 'string', 'string fake'),
-        (2, 'Siliconflow', 'fakeurl', 'fakeapikey', 'string', 'siliconflow'),
-        (3, 'zhipuai', 'https://open.bigmodel.cn/api/paas/v4', 'fakeapikey', 'zhipuai', '智谱AI')
-    ON CONFLICT (id) DO NOTHING;
-    """
-
-    # Insert Models data
-    models_sql = """
-    INSERT INTO Models (id, ai_model_name, provider_id)
-    VALUES
-        (1, 'gpt4', 4),
-        (2, 'gpt4o', 4),
-        (3, 'gpt4o-mini', 4),
-        (4, 'llama3.1:8b', 1),
-        (5, 'Qwen/Qwen2-7B-Instruct', 2),
-        (6, 'glm-4-alltools', 3),
-        (7, 'glm-4-flash', 3),
-        (8, 'glm-4-0520', 3),
-        (9, 'glm-4-plus', 3),
-        (10, 'glm-4v-plus', 3),
-        (11, 'glm-4', 3),
-        (12, 'glm-4v', 3)
-    ON CONFLICT (id) DO NOTHING;
-    """
-
-    # Execute the SQL statements
-    session.exec(text(model_provider_sql))
-    session.exec(text(models_sql))
+    # 获取所有提供商配置
+    providers = model_provider_manager.get_all_providers()
+    
+    # 按照提供商名称排序，确保处理顺序一致
+    for provider_name in sorted(providers.keys()):
+        provider_data = providers[provider_name]
+        
+        # 查找现有的提供商记录
+        db_provider = session.exec(select(ModelProvider).where(ModelProvider.provider_name == provider_data['provider_name'])).first()
+        
+        if db_provider:
+            # 更新提供商信息，但保留现有的 API 密钥和基础 URL
+            db_provider.icon = provider_data['icon']
+            db_provider.description = provider_data['description']
+            # 注意：我们不更新 api_key 和 base_url，因为它们可能已被用户修改
+        else:
+            # 如果提供商不存在，创建新记录
+            db_provider = ModelProvider(
+                provider_name=provider_data['provider_name'],
+                base_url=provider_data['base_url'],
+                api_key=provider_data['api_key'],
+                icon=provider_data['icon'],
+                description=provider_data['description']
+            )
+            session.add(db_provider)
+        
+        session.flush()  # 确保 provider_id 已生成
+        
+        # 获取该提供商支持的模型
+        supported_models = set(model_provider_manager.get_supported_models(provider_name))
+        
+        # 获取数据库中该提供商现有的模型
+        existing_models = set(model.ai_model_name for model in session.exec(select(Models).where(Models.provider_id == db_provider.id)))
+        
+        # 添加新模型
+        for model_name in sorted(supported_models - existing_models):
+            new_model = Models(ai_model_name=model_name, provider_id=db_provider.id)
+            session.add(new_model)
+        
+        # 删除不再支持的模型
+        for model_name in sorted(existing_models - supported_models):
+            session.exec(select(Models).where(Models.ai_model_name == model_name, Models.provider_id == db_provider.id)).delete()
+    
     session.commit()
+
+    # 打印当前数据库状态，用于验证
+    providers = session.exec(select(ModelProvider).order_by(ModelProvider.id)).all()
+    for provider in providers:
+        print(f"Provider: {provider.provider_name} (ID: {provider.id})")
+        print(f"  Base URL: {provider.base_url}")
+        print(f"  API Key: {'*' * len(provider.api_key)}")  # 出于安全考虑，不打印实际的 API 密钥
+        models = session.exec(select(Models).where(Models.provider_id == provider.id).order_by(Models.id)).all()
+        for model in models:
+            print(f"  - Model: {model.ai_model_name} (ID: {model.id})")
+
