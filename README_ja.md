@@ -12,9 +12,7 @@ LangChain、LangGraph、およびその他のフレームワークに基づい�
 </video>
 
 ### 🤖️ 概要
-
 ![alt text](assets/image.png)
-
 #### ワークフロー
 
 ![image](https://github.com/user-attachments/assets/a4e33565-7acf-45d9-8e82-5a740cd88344)

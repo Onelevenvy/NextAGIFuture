@@ -12,9 +12,7 @@
 </video>
 
 ### 🤖️ 概览
-
 ![alt text](assets/image.png)
-
 ### 工作流
 
 ![image](https://github.com/user-attachments/assets/a4e33565-7acf-45d9-8e82-5a740cd88344)
