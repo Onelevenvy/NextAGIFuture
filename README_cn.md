@@ -15,22 +15,23 @@
 
 ![image](https://github.com/user-attachments/assets/22583a25-4cee-43af-9d8e-38a491377875)
 
-#### 工作流程
+### 工作流
 
 ![image](https://github.com/user-attachments/assets/a4e33565-7acf-45d9-8e82-5a740cd88344)
 ![image](https://github.com/user-attachments/assets/4d5874f1-aeb0-47c5-b907-21878a2fa4d9)
 
-#### 图像
+### Agent Chat
 
 ![image](https://github.com/user-attachments/assets/4097b087-0309-4aab-8be9-a06fdc9d4964)
-
-#### 人在回路中（人工审批或让 LLM 重新思考或寻求人工帮助）
-
+### 图像
+![a](https://github.com/user-attachments/assets/ff6d6c92-dca8-4811-83ef-786272c46dfb)
+### 知识检索
 <p>
   <img src="https://github.com/user-attachments/assets/ec53f7de-10cb-4001-897a-2695da9cf6bf" alt="image" style="width: 49%; display: inline-block;">
   <img src="https://github.com/user-attachments/assets/1c7d383d-e6bf-42b8-94ec-9f0c37be19b8" alt="image" style="width: 49%; display: inline-block;">
 </p>
 
+### Human-in-the-Loop（人工审批或让 LLM 重新思考或寻求人工帮助）
 NextAGIFuture 旨在成为一个开源的大语言模型（LLM）应用开发平台。它是一个基于 LangChain 和 LangGraph 概念的 LLM 应用。目标是创建一套支持聊天机器人、RAG 应用、代理和多代理系统的 LLMOps 解决方案，并具备离线运行能力。
 
 受 [StreetLamb](https://github.com/StreetLamb) 项目及其 [tribe](https://github.com/StreetLamb/tribe) 项目的启发，NextAGIFuture 采用了许多相同的方法和代码。在此基础上，它引入了一些新的功能和方向。
