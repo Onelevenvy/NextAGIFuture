@@ -104,7 +104,7 @@ def perform_search(user_id: int, upload_id: int, query: str, search_type: str, t
     if search_type == "vector":
         results = qdrant_store.vector_search(user_id, [upload_id], query, top_k, score_threshold)
     elif search_type == "fulltext":
-        results = qdrant_store.fulltext_search(user_id, [upload_id], query, top_k)
+        results = qdrant_store.fulltext_search(user_id, [upload_id], query, top_k, score_threshold)
     elif search_type == "hybrid":
         results = qdrant_store.hybrid_search(user_id, [upload_id], query, top_k, score_threshold)
     else:
