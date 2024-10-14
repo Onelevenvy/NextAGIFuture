@@ -1,21 +1,16 @@
 from langchain_openai import ChatOpenAI
 
 PROVIDER_CONFIG = {
-    "provider_name": "openai",
-    "base_url": "https://api.openai.com/v1",
-    "api_key": "your_api_key_here",
-    "icon": "openai_icon",
-    "description": "OpenAI API provider",
+    "provider_name": "Qwen",
+    "base_url": "fakeurl",
+    "api_key": "fakeapikey",
+    "icon": "qwen_icon",
+    "description": "qwen  API provider",
 }
 
 SUPPORTED_MODELS = [
-    "gpt-4",
-    "gpt-4-0314",
-    "gpt-4-32k",
-    "gpt-4-32k-0314",
-    "gpt-3.5-turbo",
-    "gpt-3.5-turbo-16k",
-    "gpt-4o-mini",
+    "Qwen2-7B-Instruct",
+    "Qwen2.5-70B",
 ]
 
 

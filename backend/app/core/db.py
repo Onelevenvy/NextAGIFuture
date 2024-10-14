@@ -26,7 +26,20 @@ engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 # make sure all SQLModel models are imported (app.models) before initializing DB
 # otherwise, SQLModel might fail to initialize relationships properly
 # for more details: https://github.com/tiangolo/full-stack-fastapi-template/issues/28
-
+def print_skills_info(session: Session) -> None:
+        print("\nSkills Information:")
+        skills = session.exec(select(Skill).order_by(Skill.id)).all()
+        for skill in skills:
+            print(f"Skill: {skill.name} (ID: {skill.id})")
+            print(f"  Display Name: {skill.display_name}")
+            print(f"  Description: {skill.description}")
+            print(f"  Managed: {'Yes' if skill.managed else 'No'}")
+            print(f"  Owner ID: {skill.owner_id}")
+            if skill.input_parameters:
+                print("  Input Parameters:")
+                for param, param_type in skill.input_parameters.items():
+                    print(f"    - {param}: {param_type}")
+            print()
 
 def init_db(session: Session) -> None:
     # Tables should be created with Alembic migrations
@@ -94,6 +107,10 @@ def init_db(session: Session) -> None:
 
     session.commit()
 
+        # 打印 skills 信息
+    print_skills_info(session)
+
+    
 
 def init_modelprovider_model_db(session: Session) -> None:
     # 获取所有提供商配置
@@ -104,7 +121,7 @@ def init_modelprovider_model_db(session: Session) -> None:
         provider_data = providers[provider_name]
         
         # 查找现有的提供商记录
-        db_provider = session.query(ModelProvider).filter(ModelProvider.provider_name == provider_data['provider_name']).first()
+        db_provider = session.exec(select(ModelProvider).where(ModelProvider.provider_name == provider_data['provider_name'])).first()
         
         if db_provider:
             # 更新提供商信息，但保留现有的 API 密钥和基础 URL
@@ -128,7 +145,7 @@ def init_modelprovider_model_db(session: Session) -> None:
         supported_models = set(model_provider_manager.get_supported_models(provider_name))
         
         # 获取数据库中该提供商现有的模型
-        existing_models = set(model.ai_model_name for model in session.query(Models).filter(Models.provider_id == db_provider.id).all())
+        existing_models = set(model.ai_model_name for model in session.exec(select(Models).where(Models.provider_id == db_provider.id)))
         
         # 添加新模型
         for model_name in sorted(supported_models - existing_models):
@@ -137,16 +154,17 @@ def init_modelprovider_model_db(session: Session) -> None:
         
         # 删除不再支持的模型
         for model_name in sorted(existing_models - supported_models):
-            session.query(Models).filter(Models.ai_model_name == model_name, Models.provider_id == db_provider.id).delete()
+            session.exec(select(Models).where(Models.ai_model_name == model_name, Models.provider_id == db_provider.id)).delete()
     
     session.commit()
 
     # 打印当前数据库状态，用于验证
-    providers = session.query(ModelProvider).order_by(ModelProvider.id).all()
+    providers = session.exec(select(ModelProvider).order_by(ModelProvider.id)).all()
     for provider in providers:
         print(f"Provider: {provider.provider_name} (ID: {provider.id})")
         print(f"  Base URL: {provider.base_url}")
         print(f"  API Key: {'*' * len(provider.api_key)}")  # 出于安全考虑，不打印实际的 API 密钥
-        models = session.query(Models).filter(Models.provider_id == provider.id).order_by(Models.id).all()
+        models = session.exec(select(Models).where(Models.provider_id == provider.id).order_by(Models.id)).all()
         for model in models:
             print(f"  - Model: {model.ai_model_name} (ID: {model.id})")
+
