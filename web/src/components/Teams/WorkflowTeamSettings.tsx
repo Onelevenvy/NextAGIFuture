@@ -4,7 +4,7 @@ import { Box, Flex, Spinner, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import TqxWorkflow from "../WorkFlow";
-
+import { v4 } from "uuid";
 interface WorkflowSettingProps {
   teamId: number;
 }
@@ -30,7 +30,7 @@ function WorkflowTeamSettings({ teamId }: WorkflowSettingProps) {
   const createDefaultGraph = async (teamId: number) => {
     try {
       const defaultConfig = {
-        id: "b48a5f20-5d99-4b2e-972d-cb811a208e2a",
+        id: v4(),
         name: "Flow Visualization",
         nodes: [
           {

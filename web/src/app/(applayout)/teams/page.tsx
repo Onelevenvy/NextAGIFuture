@@ -46,8 +46,8 @@ function Teams() {
   }
 
   const handleRowClick = (teamId: number) => {
+    setTeamId(teamId); // 确保在导航之前更新 teamId
     navigate.push(`/teams/${teamId}`);
-    setTeamId(teamId);
   };
   const options = [
     {
