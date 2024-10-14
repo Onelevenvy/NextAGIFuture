@@ -120,4 +120,54 @@ export class UploadsService {
         });
     }
 
+    /**
+     * Search Upload
+     * Initiate an asynchronous search within a specific upload.
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static searchUpload({
+        uploadId,
+        requestBody,
+    }: {
+        uploadId: number,
+        requestBody: Record<string, any>,
+    }): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/uploads/{upload_id}/search',
+            path: {
+                'upload_id': uploadId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+
+    /**
+     * Get Search Results
+     * Retrieve the results of an asynchronous search task.
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static getSearchResults({
+        taskId,
+    }: {
+        taskId: string,
+    }): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/uploads/{upload_id}/search/{task_id}',
+            path: {
+                'task_id': taskId,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+
 }

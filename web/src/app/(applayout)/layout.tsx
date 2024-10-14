@@ -15,7 +15,10 @@ function Layout({ children }: { children: React.ReactNode }) {
   const currentPath = usePathname(); // 获取当前路径
 
   // 使用正则表达式检查路径
-  const shouldRenderTopBar = !/\/teams\/\d+/.test(currentPath);
+  const shouldRenderTopBar = !/(\/teams\/\d+|\/knowledge\/\d+)/.test(
+    currentPath
+  );
+
   useEffect(() => {
     if (!isLoggedIn()) {
       // 如果用户未登录，重定向到登录页面

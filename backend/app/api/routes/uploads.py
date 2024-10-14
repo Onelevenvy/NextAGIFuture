@@ -3,7 +3,7 @@ import shutil
 import uuid
 from datetime import datetime
 from tempfile import NamedTemporaryFile
-from typing import IO, Annotated, Any
+from typing import IO, Annotated, Any, List, Dict
 
 from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, UploadFile
 from sqlalchemy import ColumnElement
@@ -21,8 +21,10 @@ from app.models import (
     UploadStatus,
     UploadUpdate,
 )
-from app.tasks.tasks import add_upload, edit_upload, remove_upload
+from app.tasks.tasks import add_upload, edit_upload, remove_upload, perform_search
 import aiofiles
+from app.core.rag.qdrant import QdrantStore
+from celery.result import AsyncResult
 
 router = APIRouter()
 
@@ -330,3 +332,47 @@ def delete_upload(session: SessionDep, current_user: CurrentUser, id: int) -> Me
         raise HTTPException(status_code=500, detail="Failed to delete upload") from e
 
     return Message(message="Upload deleted successfully")
+
+
+@router.post("/{upload_id}/search")
+async def search_upload(
+    upload_id: int,
+    current_user: CurrentUser,
+    search_params: Dict[str, Any],
+    session: SessionDep,
+):
+    """
+    Initiate an asynchronous search within a specific upload.
+    """
+    upload = session.get(Upload, upload_id)
+    if not upload:
+        raise HTTPException(status_code=404, detail="Upload not found")
+    if not current_user.is_superuser and upload.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+
+    search_type = search_params.get("search_type", "vector")
+    if search_type not in ["vector", "fulltext", "hybrid"]:
+        raise HTTPException(status_code=400, detail="Invalid search type")
+
+    task = perform_search.delay(
+        current_user.id,
+        upload_id,
+        search_params["query"],
+        search_type,
+        search_params.get("top_k", 5),
+        search_params.get("score_threshold", 0.5)
+    )
+
+    return {"task_id": task.id}
+
+
+@router.get("/{upload_id}/search/{task_id}")
+async def get_search_results(task_id: str):
+    """
+    Retrieve the results of an asynchronous search task.
+    """
+    task_result = AsyncResult(task_id)
+    if task_result.ready():
+        return {"status": "completed", "results": task_result.result}
+    else:
+        return {"status": "pending"}
