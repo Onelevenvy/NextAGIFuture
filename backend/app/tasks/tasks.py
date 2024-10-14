@@ -110,4 +110,4 @@ def perform_search(user_id: int, upload_id: int, query: str, search_type: str, t
     else:
         raise ValueError(f"Invalid search type: {search_type}")
     
-    return [{"content": doc.page_content, "score": doc.metadata["score"]} for doc in results]
+    return [{"content": doc.page_content, "score": doc.metadata.get("score", 0)} for doc in results]

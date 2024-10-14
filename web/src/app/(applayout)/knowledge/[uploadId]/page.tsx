@@ -210,9 +210,8 @@ function KnowledgeTest() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Enter your query here"
               size="lg"
-              pr={24}
-              pt={12}
-              pb={16}
+              px={"6"}
+              pt={"6"}
               h="500px"
               bg="white"
             />

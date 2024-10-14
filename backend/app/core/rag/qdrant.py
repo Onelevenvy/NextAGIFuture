@@ -296,20 +296,30 @@ class QdrantStore:
         return [self._convert_to_document(result) for result in search_results]
 
     def fulltext_search(self, user_id: int, upload_ids: List[int], query: str, top_k: int = 5):
-        # 注意：这里假设您的 Qdrant 集合已经配置了全文搜索
         filter_condition = {
             "must": [
                 {"key": "metadata.user_id", "match": {"value": user_id}},
                 {"key": "metadata.upload_id", "match": {"any": upload_ids}},
             ]
         }
+        # 为全文搜索生成一个空的查询向量
+        empty_vector = [0.0] * self.embedding_model.dimension
         search_results = self.client.search(
             collection_name=self.collection_name,
-            query=query,
-            query_filter=filter_condition,
-            limit=top_k
+            query_vector=empty_vector,  # 添加空的查询向量
+            query_filter=rest.Filter(**filter_condition),
+            limit=top_k,
+            with_payload=True,
+            with_vectors=False
         )
-        return [self._convert_to_document(result) for result in search_results]
+        
+        # 手动过滤结果，模拟全文搜索
+        filtered_results = [
+            result for result in search_results
+            if query.lower() in result.payload.get("page_content", "").lower()
+        ]
+        
+        return [self._convert_to_document(result) for result in filtered_results[:top_k]]
 
     def hybrid_search(self, user_id: int, upload_ids: List[int], query: str, top_k: int = 5, score_threshold: float = 0.5):
         vector_results = self.vector_search(user_id, upload_ids, query, top_k, score_threshold)
