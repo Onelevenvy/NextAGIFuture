@@ -13,7 +13,7 @@ LangChain、LangGraph、およびその他のフレームワークに基づい�
 
 ### 🤖️ 概要
 
-![image](![alt text](assets/image.png))
+![alt text](assets/image.png)
 
 #### ワークフロー
 
@@ -24,29 +24,29 @@ LangChain、LangGraph、およびその他のフレームワークに基づい�
 
 ![image](https://github.com/user-attachments/assets/4097b087-0309-4aab-8be9-a06fdc9d4964)
 
-#### ヒューマン・イン・ザ・ループ（人間の承認またはLLMの再考または人間への助けを求める）
+#### ヒューマン・イン・ザ・ループ（人間の承認または LLM の再考または人間への助けを求める）
 
 <p>
   <img src="https://github.com/user-attachments/assets/ec53f7de-10cb-4001-897a-2695da9cf6bf" alt="image" style="width: 49%; display: inline-block;">
   <img src="https://github.com/user-attachments/assets/1c7d383d-e6bf-42b8-94ec-9f0c37be19b8" alt="image" style="width: 49%; display: inline-block;">
 </p>
 
-NextAGIFutureは、大規模言語モデル（LLM）アプリケーションを開発するためのオープンソースプラットフォームを目指しています。これは、LangChainとLangGraphの概念を利用したLLMベースのアプリケーションです。チャットボット、RAGアプリケーション、エージェント、およびマルチエージェントシステムをサポートするLLMOpsソリューションのスイートを作成し、オフライン操作の機能を備えることを目指しています。
+NextAGIFuture は、大規模言語モデル（LLM）アプリケーションを開発するためのオープンソースプラットフォームを目指しています。これは、LangChain と LangGraph の概念を利用した LLM ベースのアプリケーションです。チャットボット、RAG アプリケーション、エージェント、およびマルチエージェントシステムをサポートする LLMOps ソリューションのスイートを作成し、オフライン操作の機能を備えることを目指しています。
 
-[StreetLamb](https://github.com/StreetLamb)プロジェクトおよびその[tribe](https://github.com/StreetLamb/tribe)プロジェクトに触発され、NextAGIFutureは多くのアプローチとコードを採用しています。この基盤の上に、新しい機能と方向性を導入しています。
+[StreetLamb](https://github.com/StreetLamb)プロジェクトおよびその[tribe](https://github.com/StreetLamb/tribe)プロジェクトに触発され、NextAGIFuture は多くのアプローチとコードを採用しています。この基盤の上に、新しい機能と方向性を導入しています。
 
-このプロジェクトのレイアウトの一部は、[Lobe-chat](https://github.com/lobehub/lobe-chat)、[Dify](https://github.com/langgenius/dify)、および[fastgpt](https://github.com/labring/FastGPT)を参考にしています。これらはすべて優れたオープンソースプロジェクトであり、感謝しています🙇‍。
+このプロジェクトのレイアウトの一部は、[Lobe-chat](https://github.com/lobehub/lobe-chat)、[Dify](https://github.com/langgenius/dify)、および[fastgpt](https://github.com/labring/FastGPT)を参考にしています。これらはすべて優れたオープンソースプロジェクトであり、感謝しています 🙇‍。
 
 ### 👨‍💻 開発
 
 プロジェクトの技術スタック：LangChain + LangGraph + React + Next.js + Chakra UI + PostgreSQL
 
-### 💡ロードマップ
+### 💡 ロードマップ
 
 1 アプリ
 
 - [x] チャットボット
-- [x] シンプルRAG
+- [x] シンプル RAG
 - [x] 階層エージェント
 - [x] シーケンシャルエージェント
 - [ ] ワークフロー ---進行中
@@ -65,16 +65,16 @@ NextAGIFutureは、大規模言語モデル（LLM）アプリケーションを�
 
 - [x] ツール呼び出し
 - [x] I18n
-- [ ] Langchainテンプレート
+- [ ] Langchain テンプレート
 
-### 🏘️ハイライト
+### 🏘️ ハイライト
 
 - 永続的な会話：チャット履歴を保存および維持し、会話を続けることができます。
-- 可観測性：LangSmithを使用してエージェントのパフォーマンスと出力をリアルタイムで監視および追跡し、効率的に動作するようにします。
-- ツール呼び出し：エージェントが外部ツールやAPIを利用できるようにします。
+- 可観測性：LangSmith を使用してエージェントのパフォーマンスと出力をリアルタイムで監視および追跡し、効率的に動作するようにします。
+- ツール呼び出し：エージェントが外部ツールや API を利用できるようにします。
 - 検索強化生成：エージェントが内部知識ベースを利用して推論できるようにします。
 - ヒューマン・イン・ザ・ループ：ツール呼び出し前に人間の承認を有効にします。
-- オープンソースモデル：llama、Qwen、GlmなどのオープンソースLLMモデルを使用します。
+- オープンソースモデル：llama、Qwen、Glm などのオープンソース LLM モデルを使用します。
 - マルチテナンシー：複数のユーザーとチームを管理およびサポートします。
 
 ### 始め方
@@ -93,7 +93,7 @@ cp .env.example .env
 
 ##### 1.3 秘密鍵を生成
 
-.envファイルのいくつかの環境変数には、デフォルト値としてchangethisが設定されています。
+.env ファイルのいくつかの環境変数には、デフォルト値として changethis が設定されています。
 これらを秘密鍵に変更する必要があります。秘密鍵を生成するには、次のコマンドを実行します：
 
 ```bash
@@ -102,7 +102,7 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 
 内容をコピーしてパスワード/秘密鍵として使用します。もう一度実行して別の安全な鍵を生成します。
 
-##### 1.3 postgres、qdrant、redisをインストール
+##### 1.3 postgres、qdrant、redis をインストール
 
 ```bash
 cd nextagi
@@ -113,15 +113,15 @@ docker compose up -d
 
 ##### 2.1 基本環境のインストール
 
-サーバーの起動にはPython 3.10.xが必要です。Python環境を迅速にインストールするには、pyenvを使用することをお勧めします。
+サーバーの起動には Python 3.10.x が必要です。Python 環境を迅速にインストールするには、pyenv を使用することをお勧めします。
 
-追加のPythonバージョンをインストールするには、pyenv installを使用します。
+追加の Python バージョンをインストールするには、pyenv install を使用します。
 
 ```bash
 pyenv install 3.10
 ```
 
-"3.10" Python環境に切り替えるには、次のコマンドを使用します：
+"3.10" Python 環境に切り替えるには、次のコマンドを使用します：
 
 ```bash
 pyenv global 3.10
@@ -154,13 +154,13 @@ alembic upgrade head
 python /app/app/initial_data.py
 ```
 
-##### 2.3 unicornを実行
+##### 2.3 unicorn を実行
 
 ```bash
  uvicorn app.main:app --reload --log-level debug
 ```
 
-##### 2.4 celeryを実行（rag機能を使用する場合のみ）
+##### 2.4 celery を実行（rag 機能を使用する場合のみ）
 
 ```bash
 poetry run celery -A app.core.celery_app.celery_app worker --loglevel=debug
@@ -168,14 +168,14 @@ poetry run celery -A app.core.celery_app.celery_app worker --loglevel=debug
 
 #### 3. フロントエンドを実行
 
-##### 3.1 webディレクトリに移動して依存関係をインストール
+##### 3.1 web ディレクトリに移動して依存関係をインストール
 
 ```bash
 cd web
 pnpm install
 ```
 
-##### 3.2 webサービスを起動
+##### 3.2 web サービスを起動
 
 ```bash
 cd web

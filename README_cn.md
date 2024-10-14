@@ -13,7 +13,7 @@
 
 ### 🤖️ 概览
 
-![image](![alt text](assets/image.png))
+![alt text](assets/image.png)
 
 ### 工作流
 

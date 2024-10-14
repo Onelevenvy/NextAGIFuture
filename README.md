@@ -13,7 +13,7 @@ A chatbot, RAG, agent, and multi-agent application project based on LangChain, L
 
 ### 🤖️ Overview
 
-![image](![alt text](assets/image.png))
+![alt text](assets/image.png)
 
 ### work flow
 
