@@ -42,6 +42,7 @@ def print_skills_info(session: Session) -> None:
             print()
 
 def init_db(session: Session) -> None:
+    # 保留原有的初始化逻辑
     # Tables should be created with Alembic migrations
     # But if you don't want to use migrations, create
     # the tables un-commenting the next lines

@@ -2,26 +2,18 @@ import base64
 import hashlib
 import hmac
 import json
-import os
 from datetime import datetime
 from time import mktime
 from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
-from typing import TYPE_CHECKING
-
 import requests
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import StructuredTool
-
-if TYPE_CHECKING:
-    from sqlmodel import Session
-
-from app.core.tools.utils import get_tool_credentials
-
+from app.core.tools.utils import get_tool_credentials, get_credential_value
+from app.core.workflow.utils.db_utils import db_operation
 
 class Text2ImageInput(BaseModel):
     """Input for the text2img tool."""
-
     prompt: str = Field(description="the prompt for generating image ")
 
 
@@ -109,20 +101,21 @@ def spark_response(text, appid, apisecret, apikey):
         return json.dumps(f"There is a error occured . {e}")
 
 
-def img_generation(prompt: str, db: "Session"):
-    credentials = get_tool_credentials(db, "spark-img-gen")
-    appid = credentials.get("SPARK_APPID", "")
-    apisecret = credentials.get("SPARK_APISECRET", "")
-    apikey = credentials.get("SPARK_APIKEY", "")
+def img_generation(prompt: str):
+    creds = {
+        "appid": db_operation(get_credential_value("spark-img-gen", "SPARK_APPID")),
+        "apisecret": db_operation(get_credential_value("spark-img-gen", "SPARK_APISECRET")),
+        "apikey": db_operation(get_credential_value("spark-img-gen", "SPARK_APIKEY")),
+    }
 
-    if not appid or not apisecret or not apikey:
+    if not all(creds.values()):
         return "Error: Spark credentials are not set correctly."
 
     response = spark_response(
         text=prompt,
-        appid=appid,
-        apisecret=apisecret,
-        apikey=apikey,
+        appid=creds["appid"],
+        apisecret=creds["apisecret"],
+        apikey=creds["apikey"],
     )
     try:
         data = json.loads(response)
@@ -134,11 +127,9 @@ def img_generation(prompt: str, db: "Session"):
             image_content = text[0]
             image_base = image_content["content"]
             bs64data = "data:image/jpeg;base64," + image_base
-
             return bs64data
-
     except Exception as e:
-        return json.dumps(f"There is a error occured . {e}")
+        return json.dumps(f"There is an error occurred: {e}")
 
 
 spark_img_generation = StructuredTool.from_function(

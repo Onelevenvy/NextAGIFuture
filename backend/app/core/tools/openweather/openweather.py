@@ -1,15 +1,9 @@
 import json
-import os
-from typing import TYPE_CHECKING
-
 import requests
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import StructuredTool
-
-if TYPE_CHECKING:
-    from sqlmodel import Session
-
-from app.core.tools.utils import get_tool_credentials
+from app.core.tools.utils import get_credential_value
+from app.core.workflow.utils.db_utils import db_operation
 
 
 class WeatherSearchInput(BaseModel):
@@ -18,24 +12,17 @@ class WeatherSearchInput(BaseModel):
     city: str = Field(description="city name")
 
 
-def open_weather_qry(
-    city: str,
-    db: "Session",
-) -> str:
+def open_weather_qry(city: str) -> str:
     """
     invoke tools
     """
-    credentials = get_tool_credentials(db, "openweather")
-    appid = credentials.get("OPEN_WEATHER_API_KEY", "")
+    appid = get_credential_value("Open Weather", "OPEN_WEATHER_API_KEY")
 
     if not appid:
         return "Error: OpenWeather API Key is not set."
 
     try:
-        # request URL
         url = "https://api.openweathermap.org/data/2.5/weather"
-
-        # request parmas
         params = {
             "q": city,
             "appid": appid,
@@ -52,7 +39,6 @@ def open_weather_qry(
                 "error": f"failed:{response.status_code}",
                 "data": response.text,
             }
-            # return error
             return json.dumps(error_message)
 
     except Exception as e:

@@ -1,16 +1,15 @@
 from contextlib import contextmanager
 from typing import Callable, TypeVar
+from app.core.database import get_session
 
 from sqlmodel import Session
-
-from app.core.db import engine
 
 T = TypeVar("T")
 
 
 @contextmanager
 def get_db_session():
-    session = Session(engine)
+    session = next(get_session())
     try:
         yield session
         session.commit()
