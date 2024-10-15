@@ -215,9 +215,10 @@ const EditNormalMember = forwardRef<HTMLFormElement, EditAgentProps>(
               />
             </FormControl>
             <Box px={6} mt={4}>
-              <ModelSelect
+              <ModelSelect<MemberUpdate>
                 models={models}
                 control={control}
+                name="model"
                 onModelSelect={onModelSelect}
                 isLoading={isLoadingModel}
               />
@@ -330,5 +331,6 @@ const EditNormalMember = forwardRef<HTMLFormElement, EditAgentProps>(
     );
   }
 );
+
 EditNormalMember.displayName = "EditAgent";
 export default EditNormalMember;

@@ -326,9 +326,10 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
                 <FormLabel htmlFor="model">
                   {t("team.teamsetting.model")}
                 </FormLabel>
-                <ModelSelect
+                <ModelSelect<MemberUpdate>
                   models={models}
                   control={control}
+                  name="model"
                   onModelSelect={onModelSelect}
                   isLoading={isLoadingModel}
                 />
@@ -510,9 +511,10 @@ const EditTeamMember = forwardRef<HTMLFormElement, EditTeamMemberProps>(
                 <FormLabel htmlFor="model">
                   {t("team.teamsetting.model")}
                 </FormLabel>
-                <ModelSelect
+                <ModelSelect<MemberUpdate>
                   models={models}
                   control={control}
+                  name="model"
                   onModelSelect={onModelSelect}
                   isLoading={isLoadingModel}
                 />
