@@ -1,9 +1,9 @@
 import json
-import os
-
 import requests
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import StructuredTool
+from app.core.tools.utils import get_credential_value
+from app.core.workflow.utils.db_utils import db_operation
 
 
 class WeatherSearchInput(BaseModel):
@@ -12,31 +12,26 @@ class WeatherSearchInput(BaseModel):
     city: str = Field(description="city name")
 
 
-def open_weather_qry(
-    city: str,
-    appid: str = os.environ.get("OPEN_WEATHER_API_KEY", ""),
-    units: str = "metric",
-    lang: str = "zh_cn",
-):
+def open_weather_qry(city: str) -> str:
     """
     invoke tools
     """
+    appid = get_credential_value("Open Weather", "OPEN_WEATHER_API_KEY")
+
+    if not appid:
+        return "Error: OpenWeather API Key is not set."
 
     try:
-        # request URL
         url = "https://api.openweathermap.org/data/2.5/weather"
-
-        # request parmas
         params = {
             "q": city,
             "appid": appid,
-            "units": units,
-            "lang": lang,
+            "units": "metric",
+            "lang": "zh_cn",
         }
         response = requests.get(url, params=params)
 
         if response.status_code == 200:
-
             data = response.json()
             return data
         else:
@@ -44,17 +39,16 @@ def open_weather_qry(
                 "error": f"failed:{response.status_code}",
                 "data": response.text,
             }
-            # return error
             return json.dumps(error_message)
 
     except Exception as e:
-        return json.dumps(f"Openweather API Key is invalid. {e}")
+        return json.dumps(f"OpenWeather API request failed. {e}")
 
 
 openweather = StructuredTool.from_function(
     func=open_weather_qry,
     name="Open Weather",
-    description="Useful for when you neet to get weather information. Please provide city name in English.",
+    description="Useful for when you need to get weather information. Please provide city name in English.",
     args_schema=WeatherSearchInput,
     return_direct=True,
 )

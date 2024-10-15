@@ -1,9 +1,8 @@
 import base64
-import os
-
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import StructuredTool
 from zhipuai import ZhipuAI
+from app.core.tools.utils import get_credential_value
 
 
 class ImageUnderstandingInput(BaseModel):
@@ -17,7 +16,7 @@ def img_4v(image_url: str, qry: str):
     if image_url is None:
         return "Please provide an image path or url"
 
-    elif (
+    if (
         image_url.startswith("http")
         or image_url.startswith("https")
         or image_url.startswith("data:image/")
@@ -28,12 +27,16 @@ def img_4v(image_url: str, qry: str):
             with open(image_url, "rb") as img_file:
                 img_base = base64.b64encode(img_file.read()).decode("utf-8")
         except Exception as e:
-            return "Error: " + str(e)
-    client = ZhipuAI(
-        api_key=os.environ.get("ZHIPUAI_API_KEY"),
-    )  # 填写您自己的APIKey
+            return f"Error: {str(e)}"
+
+    api_key = get_credential_value("Image Understanding", "ZHIPUAI_API_KEY")
+
+    if not api_key:
+        return "Error: ZhipuAI API Key is not set."
+
+    client = ZhipuAI(api_key=api_key)
     response = client.chat.completions.create(
-        model="glm-4v",  # 填写需要调用的模型名称
+        model="glm-4v",
         messages=[
             {
                 "role": "user",

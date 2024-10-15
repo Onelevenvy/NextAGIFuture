@@ -10,5 +10,6 @@ export type SkillCreate = {
     managed?: boolean;
     tool_definition: Record<string, any>;
     input_parameters?: (Record<string, any> | null);
+    credentials?: (Record<string, any> | null);
 };
 

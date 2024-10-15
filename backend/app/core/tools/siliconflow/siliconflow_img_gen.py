@@ -1,8 +1,8 @@
 import json
-
 import requests
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import StructuredTool
+from app.core.tools.utils import get_credential_value
 
 
 class Text2ImageInput(BaseModel):
@@ -17,6 +17,10 @@ def text2img(
     """
     invoke tools
     """
+    api_key = get_credential_value("Image Generation", "SILICONFLOW_API_KEY")
+
+    if not api_key:
+        return "Error: Siliconflow API Key is not set."
 
     try:
         # request URL
@@ -31,15 +35,18 @@ def text2img(
         headers = {
             "accept": "application/json",
             "content-type": "application/json",
-            "authorization": "Bearer sk-uaxgsvfwwwpeuguzhsjpqigwopyhblsiesbptxnuxaoefqrb",
+            "authorization": f"Bearer {api_key}",
         }
 
         response = requests.post(url, json=payload, headers=headers)
 
-        return response.json()["images"][0]["url"]
+        if response.status_code == 200:
+            return response.json()["images"][0]["url"]
+        else:
+            return f"Error: API request failed with status code {response.status_code}"
 
     except Exception as e:
-        return json.dumps(f"There is a error occured . {e}")
+        return json.dumps(f"There is an error occurred: {e}")
 
 
 siliconflow_img_generation = StructuredTool.from_function(

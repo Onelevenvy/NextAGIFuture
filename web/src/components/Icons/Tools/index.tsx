@@ -75,8 +75,8 @@ const DuckduckgoSearch = createIcon({
             x2="113.887"
             y2="60.979"
           >
-            <stop offset=".006" stop-color="#6176b9" />
-            <stop offset=".691" stop-color="#394a9f" />
+            <stop offset=".006" stopColor="#6176b9" />
+            <stop offset=".691" stopColor="#394a9f" />
           </linearGradient>
           <path
             d="M113.886 59.718s-2.854-1.3-5.63.453-2.668 3.523-2.668 3.523-1.473-3.283 2.453-4.892 5.844.916 5.844.916z"
@@ -90,8 +90,8 @@ const DuckduckgoSearch = createIcon({
             x2="140.078"
             y2="58.371"
           >
-            <stop offset=".006" stop-color="#6176b9" />
-            <stop offset=".691" stop-color="#394a9f" />
+            <stop offset=".006" stopColor="#6176b9" />
+            <stop offset=".691" stopColor="#394a9f" />
           </linearGradient>
           <path
             d="M140.078 59.458s-2.05-1.172-3.643-1.152c-3.27.043-4.162 1.488-4.162 1.488s.55-3.445 4.732-2.754c2.268.377 3.073 2.418 3.073 2.418z"
@@ -120,7 +120,7 @@ const DuckduckgoSearch = createIcon({
           r="57.5"
           fill="none"
           stroke="#de5833"
-          stroke-width="5"
+          strokeWidth="5"
         />
       </g>
     </svg>
@@ -193,13 +193,13 @@ const tavilysearch = createIcon({
         <clipPath id="d0348dc115">
           <path
             d="M 109.378906 231.132812 L 146.484375 231.132812 L 146.484375 268.238281 L 109.378906 268.238281 Z M 109.378906 231.132812 "
-            clip-rule="nonzero"
+            clipRule="nonzero"
           />
         </clipPath>
         <clipPath id="a28b194a7a">
           <path
             d="M 127.933594 231.132812 C 117.6875 231.132812 109.378906 239.4375 109.378906 249.6875 C 109.378906 259.933594 117.6875 268.238281 127.933594 268.238281 C 138.179688 268.238281 146.484375 259.933594 146.484375 249.6875 C 146.484375 239.4375 138.179688 231.132812 127.933594 231.132812 Z M 127.933594 231.132812 "
-            clip-rule="nonzero"
+            clipRule="nonzero"
           />
         </clipPath>
       </defs>
@@ -210,7 +210,7 @@ const tavilysearch = createIcon({
         stroke-linejoin="miter"
         d="M 5.499573 5.500038 L 79.114962 5.500038 "
         stroke="#f25022"
-        stroke-width="11"
+        strokeWidth="11"
         stroke-opacity="1"
         stroke-miterlimit="4"
       />
@@ -221,7 +221,7 @@ const tavilysearch = createIcon({
         stroke-linejoin="round"
         d="M 59.865692 -10.999336 L 81.864858 5.500038 L 59.865692 21.999412 "
         stroke="#f25022"
-        stroke-width="11"
+        strokeWidth="11"
         stroke-opacity="1"
         stroke-miterlimit="4"
       />
@@ -232,7 +232,7 @@ const tavilysearch = createIcon({
         stroke-linejoin="miter"
         d="M 5.500751 5.50068 L 72.398214 5.499627 "
         stroke="#ffb901"
-        stroke-width="11"
+        strokeWidth="11"
         stroke-opacity="1"
         stroke-miterlimit="4"
       />
@@ -243,7 +243,7 @@ const tavilysearch = createIcon({
         stroke-linejoin="round"
         d="M 53.149037 -11.000109 L 75.148109 5.499895 L 53.14885 22.000154 "
         stroke="#ffb901"
-        stroke-width="11"
+        strokeWidth="11"
         stroke-opacity="1"
         stroke-miterlimit="4"
       />
@@ -254,7 +254,7 @@ const tavilysearch = createIcon({
         stroke-linejoin="miter"
         d="M 4.499518 4.49999 L 38.441562 4.500107 "
         stroke="#04a3ec"
-        stroke-width="9"
+        strokeWidth="9"
         stroke-opacity="1"
         stroke-miterlimit="4"
       />
@@ -265,7 +265,7 @@ const tavilysearch = createIcon({
         stroke-linejoin="round"
         d="M 22.691248 -9.000192 L 40.69038 4.49943 L 22.68978 17.999994 "
         stroke="#04a3ec"
-        stroke-width="9"
+        strokeWidth="9"
         stroke-opacity="1"
         stroke-miterlimit="4"
       />
@@ -274,7 +274,7 @@ const tavilysearch = createIcon({
           <path
             fill="#32b37f"
             d="M 109.378906 231.132812 L 146.484375 231.132812 L 146.484375 268.238281 L 109.378906 268.238281 Z M 109.378906 231.132812 "
-            fill-opacity="1"
+            fillOpacity="1"
             fill-rule="nonzero"
           />
         </g>

@@ -19,6 +19,7 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Progress,
+  Icon,
 } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "react-query";
@@ -256,7 +257,7 @@ function KnowledgeTest() {
                           width="70%"
                           alignItems={"center"}
                         >
-                          <GiArrowScope color="#3182ce" />
+                          <Icon as={GiArrowScope} w={5} h={5} color="#3182ce" />
                           <Progress
                             value={result.score * 100}
                             width={"80%"}

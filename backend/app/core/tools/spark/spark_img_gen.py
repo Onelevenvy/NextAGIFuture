@@ -2,15 +2,15 @@ import base64
 import hashlib
 import hmac
 import json
-import os
 from datetime import datetime
 from time import mktime
 from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
-
 import requests
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import StructuredTool
+from app.core.tools.utils import get_credential_value
+from app.core.workflow.utils.db_utils import db_operation
 
 
 class Text2ImageInput(BaseModel):
@@ -103,35 +103,41 @@ def spark_response(text, appid, apisecret, apikey):
         return json.dumps(f"There is a error occured . {e}")
 
 
-def img_generation(prompt):
-    appid = os.environ.get("SPARK_APPID", "")
-    apisecret = os.environ.get("SPARK_APISECRET", "")
-    apikey = os.environ.get("SPARK_APIKEY", "")
-    if not appid or not apisecret or not apikey:
-        return "api key is not set or not correct"
-    else:
-        response = spark_response(
-            text=prompt,
-            appid=appid,
-            apisecret=apisecret,
-            apikey=apikey,
-        )
-        try:
-            data = json.loads(response)
-            code = data["header"]["code"]
-            if code != 0:
-                return f"error: {code}, {data}"
-            else:
-                text = data["payload"]["choices"]["text"]
-                image_content = text[0]
-                image_base = image_content["content"]
-                bs64data = "data:image/jpeg;base64," + image_base
+def img_generation(prompt: str):
+    creds = {
+        "appid": db_operation(
+            get_credential_value("Spark Image Generation", "SPARK_APPID")
+        ),
+        "apisecret": db_operation(
+            get_credential_value("Spark Image Generation", "SPARK_APISECRET")
+        ),
+        "apikey": db_operation(
+            get_credential_value("Spark Image Generation", "SPARK_APIKEY")
+        ),
+    }
 
-                return bs64data
-            # return aaa
+    if not all(creds.values()):
+        return "Error: Spark credentials are not set correctly."
 
-        except Exception as e:
-            return json.dumps(f"There is a error occured . {e}")
+    response = spark_response(
+        text=prompt,
+        appid=creds["appid"],
+        apisecret=creds["apisecret"],
+        apikey=creds["apikey"],
+    )
+    try:
+        data = json.loads(response)
+        code = data["header"]["code"]
+        if code != 0:
+            return f"error: {code}, {data}"
+        else:
+            text = data["payload"]["choices"]["text"]
+            image_content = text[0]
+            image_base = image_content["content"]
+            bs64data = "data:image/jpeg;base64," + image_base
+            return bs64data
+    except Exception as e:
+        return json.dumps(f"There is an error occurred: {e}")
 
 
 spark_img_generation = StructuredTool.from_function(
