@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   VStack,
@@ -6,15 +6,18 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Button,
-  CloseButton,
   InputGroup,
   InputRightElement,
   Text,
   useToast,
-} from '@chakra-ui/react';
-import { SkillOut } from '@/client';
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+  Tooltip,
+  IconButton,
+  CloseButton,
+  HStack,
+} from "@chakra-ui/react";
+import { SkillOut } from "@/client";
+import { ViewIcon, ViewOffIcon, QuestionIcon } from "@chakra-ui/icons";
+import CustomButton from "@/components/Common/CustomButton";
 
 interface CredentialsPanelProps {
   skill: SkillOut;
@@ -22,9 +25,15 @@ interface CredentialsPanelProps {
   onSave: (credentials: Record<string, any>) => void;
 }
 
-const CredentialsPanel: React.FC<CredentialsPanelProps> = ({ skill, onClose, onSave }) => {
+const CredentialsPanel: React.FC<CredentialsPanelProps> = ({
+  skill,
+  onClose,
+  onSave,
+}) => {
   const [credentials, setCredentials] = useState<Record<string, any>>({});
-  const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({});
+  const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>(
+    {}
+  );
   const toast = useToast();
 
   useEffect(() => {
@@ -36,12 +45,12 @@ const CredentialsPanel: React.FC<CredentialsPanelProps> = ({ skill, onClose, onS
   }, [skill]);
 
   const handleInputChange = (key: string, value: string) => {
-    setCredentials(prev => ({
+    setCredentials((prev) => ({
       ...prev,
       [key]: {
         ...prev[key],
-        value: value
-      }
+        value: value,
+      },
     }));
   };
 
@@ -57,35 +66,74 @@ const CredentialsPanel: React.FC<CredentialsPanelProps> = ({ skill, onClose, onS
   };
 
   const togglePasswordVisibility = (key: string) => {
-    setShowPasswords(prev => ({ ...prev, [key]: !prev[key] }));
+    setShowPasswords((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const formatLabel = (key: string) => {
+    return key.replace(/_/g, " ");
   };
 
   return (
-    <Box width="300px" p={4} borderLeft="1px" borderColor="gray.200">
-      <CloseButton onClick={onClose} position="absolute" right="8px" top="8px" />
-      <Heading size="md" mb={4}>Set Credentials for {skill.display_name}</Heading>
+    <Box
+      width="300px"
+      p={4}
+      borderLeft="1px"
+      borderColor="gray.200"
+      position="relative"
+      maxH={"full"}
+    >
+      <CloseButton
+        aria-label="Close panel"
+        onClick={onClose}
+        position="absolute"
+        right="8px"
+        top="8px"
+        size="sm"
+      />
+      <Heading size="md" mb={4}>
+        {skill.display_name}
+      </Heading>
+      <Text mb={4} color={"gray.500"}>
+        {skill.description}
+      </Text>
       {credentials && Object.keys(credentials).length > 0 ? (
         <VStack spacing={4}>
           {Object.entries(credentials).map(([key, credInfo]) => (
             <FormControl key={key}>
-              <FormLabel>{credInfo.description || key}</FormLabel>
+              <HStack spacing={2} mb={1}>
+                <FormLabel mb={0}>{formatLabel(key)}</FormLabel>
+                <Tooltip label={credInfo.description} placement="top">
+                  <QuestionIcon boxSize={3} color="gray.500" />
+                </Tooltip>
+              </HStack>
               <InputGroup>
                 <Input
-                  type={showPasswords[key] ? 'text' : 'password'}
-                  value={credInfo.value || ''}
+                  type={showPasswords[key] ? "text" : "password"}
+                  value={credInfo.value || ""}
                   onChange={(e) => handleInputChange(key, e.target.value)}
+                  placeholder={formatLabel(key)}
                 />
                 <InputRightElement width="4.5rem">
-                  <Button h="1.75rem" size="sm" onClick={() => togglePasswordVisibility(key)}>
-                    {showPasswords[key] ? <ViewOffIcon /> : <ViewIcon />}
-                  </Button>
+                  <IconButton
+                    h="1.75rem"
+                    size="sm"
+                    onClick={() => togglePasswordVisibility(key)}
+                    aria-label={
+                      showPasswords[key] ? "Hide password" : "Show password"
+                    }
+                    icon={showPasswords[key] ? <ViewOffIcon /> : <ViewIcon />}
+                  />
                 </InputRightElement>
               </InputGroup>
             </FormControl>
           ))}
-          <Button mt={4} colorScheme="blue" onClick={handleSave}>
-            Save
-          </Button>
+          <CustomButton
+            text="Save"
+            variant="blue"
+            onClick={handleSave}
+            mt={4}
+            width="100%"
+          />
         </VStack>
       ) : (
         <Text>No credentials required for this tool.</Text>

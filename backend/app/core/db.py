@@ -68,7 +68,7 @@ def init_db(session: Session) -> None:
         user = users.create_user(session=session, user_create=user_in)
 
     existing_skills = session.exec(select(Skill)).all()
-    existing_skills_dict = {skill.display_name: skill for skill in existing_skills}
+    existing_skills_dict = {skill.name: skill for skill in existing_skills}
 
     for skill_name, skill_info in managed_tools.items():
         if skill_name in existing_skills_dict:
@@ -83,13 +83,18 @@ def init_db(session: Session) -> None:
             if existing_skill.credentials is None:
                 existing_skill.credentials = {}
             
-            for key, value in skill_info.credentials.items():
-                if key not in existing_skill.credentials:
-                    existing_skill.credentials[key] = value
-                else:
-                    # 保留现有的值，只更新类型和描述
-                    existing_skill.credentials[key]['type'] = value['type']
-                    existing_skill.credentials[key]['description'] = value['description']
+            # 添加对 skill_info.credentials 的检查
+            if skill_info.credentials:
+                for key, value in skill_info.credentials.items():
+                    if key not in existing_skill.credentials:
+                        # 如果是新的凭证字段，添加它
+                        existing_skill.credentials[key] = value
+                    else:
+                        # 如果凭证字段已存在，只更新类型和描述，保留现有的值
+                        existing_value = existing_skill.credentials[key].get('value')
+                        existing_skill.credentials[key] = value
+                        if existing_value:
+                            existing_skill.credentials[key]['value'] = existing_value
             
             session.add(existing_skill)
         else:
@@ -100,7 +105,7 @@ def init_db(session: Session) -> None:
                 owner_id=user.id,
                 display_name=skill_info.display_name,
                 input_parameters=skill_info.input_parameters,
-                credentials=skill_info.credentials,
+                credentials=skill_info.credentials if skill_info.credentials else {},
             )
             session.add(new_skill)
 
@@ -192,10 +197,7 @@ def init_modelprovider_model_db(session: Session) -> None:
             print(f"  - Model: {model.ai_model_name} (ID: {model.id})")
 
 
-def update_skill_credentials(session: Session) -> None:
-    for skill_name, skill_info in managed_tools.items():
-        skill = session.exec(select(Skill).where(Skill.name == skill_name)).first()
-        if skill and skill.credentials != skill_info.credentials:
-            skill.credentials = skill_info.credentials
-            session.add(skill)
-    session.commit()
+
+
+
+
