@@ -1,5 +1,5 @@
 "use client";
-import { type ApiError, ToolsService } from "@/client";
+import { type ApiError, SkillOut, ToolsService } from "@/client";
 import ActionsMenu from "@/components/Common/ActionsMenu";
 import {
   Text,
@@ -15,9 +15,8 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 
-
 import useCustomToast from "@/hooks/useCustomToast";
-import React from "react";
+import React, { useState } from "react";
 import {
   RiApps2Fill,
   RiArchiveDrawerFill,
@@ -30,12 +29,13 @@ import { useTabSearchParams } from "@/hooks/useTabSearchparams";
 import { useTranslation } from "react-i18next";
 import ToolsIcon from "@/components/Icons/Tools";
 import { MdSettings } from "react-icons/md";
+import CredentialsModal from "@/components/Skills/CredentialsModal";
 
 function Skills() {
   const showToast = useCustomToast();
   const { t } = useTranslation();
 
-  const { data: skills, isLoading, isError, error } = useSkillsQuery();
+  const { data: skills, isLoading, isError, error, refetch } = useSkillsQuery();
   if (isError) {
     const errDetail = (error as ApiError).body?.detail;
     showToast("Something went wrong.", `${errDetail}`, "error");
@@ -66,6 +66,30 @@ function Skills() {
   const filteredSkills = skills?.data.filter(
     (skill) => skill.name !== "ask-human"
   );
+  const [selectedSkill, setSelectedSkill] = useState<SkillOut | null>(null);
+  const [isCredentialsModalOpen, setIsCredentialsModalOpen] = useState(false);
+
+  const handleOpenCredentialsModal = (skill: SkillOut) => {
+    setSelectedSkill(skill);
+    setIsCredentialsModalOpen(true);
+  };
+
+  const handleSaveCredentials = async (credentials: Record<string, string>) => {
+    if (selectedSkill) {
+      try {
+        await ToolsService.updateSkillCredentials({
+          id: selectedSkill.id,
+          requestBody: credentials
+        });
+        showToast("Success", "Credentials updated successfully", "success");
+        // 重新获取技能列表以更新UI
+        refetch();
+      } catch (error) {
+        showToast("Error", "Failed to update credentials", "error");
+      }
+    }
+  };
+
   return (
     <>
       {isLoading ? (
@@ -143,7 +167,11 @@ function Skills() {
                         {!skill.managed ? (
                           <ActionsMenu type={"Skill"} value={skill} />
                         ) : (
-                          <Tag variant="outline" colorScheme="green">
+                          <Tag
+                            variant="outline"
+                            colorScheme="green"
+                            onClick={() => handleOpenCredentialsModal(skill)}
+                          >
                             <TagLabel>Built-in</TagLabel>
                             <TagRightIcon as={MdSettings} />
                           </Tag>
@@ -156,6 +184,14 @@ function Skills() {
             </Box>
           </Box>
         )
+      )}
+      {selectedSkill && (
+        <CredentialsModal
+          isOpen={isCredentialsModalOpen}
+          onClose={() => setIsCredentialsModalOpen(false)}
+          skill={selectedSkill}
+          onSave={handleSaveCredentials}
+        />
       )}
     </>
   );

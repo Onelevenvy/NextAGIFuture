@@ -1688,6 +1688,68 @@
         }
       }
     },
+    "/api/v1/tools/update-credentials/{id}": {
+      "post": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Update Skill Credentials",
+        "description": "Update a skill's credentials.",
+        "operationId": "update_skill_credentials",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "title": "Credentials"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/teams/{team_id}/threads/": {
       "get": {
         "tags": [
@@ -4535,6 +4597,17 @@
             ],
             "title": "Input Parameters"
           },
+          "credentials": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credentials"
+          },
           "id": {
             "anyOf": [
               {
@@ -4605,6 +4678,17 @@
               }
             ],
             "title": "Input Parameters"
+          },
+          "credentials": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credentials"
           }
         },
         "type": "object",
@@ -4662,6 +4746,17 @@
               }
             ],
             "title": "Input Parameters"
+          },
+          "credentials": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credentials"
           },
           "id": {
             "type": "integer",
@@ -4743,6 +4838,17 @@
               }
             ],
             "title": "Input Parameters"
+          },
+          "credentials": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credentials"
           }
         },
         "type": "object",

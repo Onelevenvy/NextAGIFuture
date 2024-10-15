@@ -274,7 +274,7 @@ const tavilysearch = createIcon({
           <path
             fill="#32b37f"
             d="M 109.378906 231.132812 L 146.484375 231.132812 L 146.484375 268.238281 L 109.378906 268.238281 Z M 109.378906 231.132812 "
-            fill-opacity="1"
+            fillOpacity="1"
             fill-rule="nonzero"
           />
         </g>

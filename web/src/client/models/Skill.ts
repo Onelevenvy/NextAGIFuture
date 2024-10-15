@@ -10,6 +10,7 @@ export type Skill = {
     managed?: boolean;
     tool_definition?: (Record<string, any> | null);
     input_parameters?: (Record<string, any> | null);
+    credentials?: (Record<string, any> | null);
     id?: (number | null);
     owner_id?: (number | null);
 };

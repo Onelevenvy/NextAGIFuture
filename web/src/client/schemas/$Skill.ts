@@ -47,6 +47,18 @@ export const $Skill = {
                 type: 'null',
             }],
         },
+        credentials: {
+            type: 'any-of',
+            contains: [{
+                type: 'dictionary',
+                contains: {
+                    properties: {
+                    },
+                },
+            }, {
+                type: 'null',
+            }],
+        },
         id: {
             type: 'any-of',
             contains: [{

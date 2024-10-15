@@ -2078,18 +2078,6 @@
             "OAuth2PasswordBearer": []
           }
         ],
-        "parameters": [
-          {
-            "name": "content-length",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "maximum": 50000000,
-              "title": "Content-Length"
-            }
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -2220,6 +2208,104 @@
                 "schema": {
                   "$ref": "#/components/schemas/Message"
                 }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/uploads/{upload_id}/search": {
+      "post": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "Search Upload",
+        "description": "Initiate an asynchronous search within a specific upload.",
+        "operationId": "search_upload",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "upload_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Upload Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "Search Params"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/uploads/{upload_id}/search/{task_id}": {
+      "get": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "Get Search Results",
+        "description": "Retrieve the results of an asynchronous search task.",
+        "operationId": "get_search_results",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           },
@@ -3033,27 +3119,47 @@
             "type": "string",
             "title": "Description"
           },
-          "file": {
+          "file_type": {
             "type": "string",
-            "format": "binary",
-            "title": "File"
+            "title": "File Type"
           },
           "chunk_size": {
             "type": "integer",
-            "minimum": 0,
             "title": "Chunk Size"
           },
           "chunk_overlap": {
             "type": "integer",
-            "minimum": 0,
             "title": "Chunk Overlap"
+          },
+          "web_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Web Url"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "binary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
           }
         },
         "type": "object",
         "required": [
           "name",
           "description",
-          "file",
+          "file_type",
           "chunk_size",
           "chunk_overlap"
         ],
@@ -3083,6 +3189,17 @@
             ],
             "title": "Description"
           },
+          "file_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Type"
+          },
           "chunk_size": {
             "anyOf": [
               {
@@ -3106,6 +3223,17 @@
               }
             ],
             "title": "Chunk Overlap"
+          },
+          "web_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Web Url"
           },
           "file": {
             "anyOf": [
@@ -5100,6 +5228,21 @@
             "type": "string",
             "title": "Description"
           },
+          "file_type": {
+            "type": "string",
+            "title": "File Type"
+          },
+          "web_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Web Url"
+          },
           "id": {
             "anyOf": [
               {
@@ -5129,13 +5272,24 @@
           },
           "status": {
             "$ref": "#/components/schemas/UploadStatus"
+          },
+          "chunk_size": {
+            "type": "integer",
+            "title": "Chunk Size"
+          },
+          "chunk_overlap": {
+            "type": "integer",
+            "title": "Chunk Overlap"
           }
         },
         "type": "object",
         "required": [
           "name",
           "description",
-          "status"
+          "file_type",
+          "status",
+          "chunk_size",
+          "chunk_overlap"
         ],
         "title": "Upload"
       },
@@ -5149,6 +5303,21 @@
             "type": "string",
             "title": "Description"
           },
+          "file_type": {
+            "type": "string",
+            "title": "File Type"
+          },
+          "web_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Web Url"
+          },
           "id": {
             "type": "integer",
             "title": "Id"
@@ -5160,15 +5329,38 @@
           },
           "status": {
             "$ref": "#/components/schemas/UploadStatus"
+          },
+          "owner_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Id"
+          },
+          "chunk_size": {
+            "type": "integer",
+            "title": "Chunk Size"
+          },
+          "chunk_overlap": {
+            "type": "integer",
+            "title": "Chunk Overlap"
           }
         },
         "type": "object",
         "required": [
           "name",
           "description",
+          "file_type",
+          "web_url",
           "id",
           "last_modified",
-          "status"
+          "status",
+          "chunk_size",
+          "chunk_overlap"
         ],
         "title": "UploadOut"
       },

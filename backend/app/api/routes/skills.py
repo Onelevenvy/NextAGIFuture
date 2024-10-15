@@ -127,6 +127,14 @@ def update_skill(
         validate_tool_definition(skill_in.tool_definition)
 
     update_dict = skill_in.model_dump(exclude_unset=True)
+    
+    # 处理 credentials 字段
+    if 'credentials' in update_dict:
+        if skill.credentials is None:
+            skill.credentials = {}
+        skill.credentials.update(update_dict['credentials'])
+        del update_dict['credentials']  # 从 update_dict 中移除,因为我们已经单独处理了
+
     skill.sqlmodel_update(update_dict)
     session.add(skill)
     session.commit()
@@ -174,3 +182,30 @@ def invoke_tools(tool_name: str, args: dict) -> ToolInvokeResponse:
     """
     result = invoke_tool(tool_name, args)  # 调用工具函数
     return result  # 直接返回自定义响应模型
+
+
+@router.post("/update-credentials/{id}", response_model=SkillOut)
+def update_skill_credentials(
+    *,
+    session: SessionDep,
+    current_user: CurrentUser,
+    id: int,
+    credentials: dict[str, str],
+) -> Any:
+    """
+    Update a skill's credentials.
+    """
+    skill = session.get(Skill, id)
+    if not skill:
+        raise HTTPException(status_code=404, detail="Skill not found")
+    if not current_user.is_superuser and (skill.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+
+    if skill.credentials is None:
+        skill.credentials = {}
+    skill.credentials.update(credentials)
+
+    session.add(skill)
+    session.commit()
+    session.refresh(skill)
+    return skill

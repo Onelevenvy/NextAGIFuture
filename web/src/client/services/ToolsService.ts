@@ -185,4 +185,31 @@ export class ToolsService {
         });
     }
 
+    /**
+     * Update Skill Credentials
+     * Update a skill's credentials.
+     * @returns SkillOut Successful Response
+     * @throws ApiError
+     */
+    public static updateSkillCredentials({
+        id,
+        requestBody,
+    }: {
+        id: number,
+        requestBody: Record<string, string>,
+    }): CancelablePromise<SkillOut> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/tools/update-credentials/{id}',
+            path: {
+                'id': id,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+
 }

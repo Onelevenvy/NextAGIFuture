@@ -47,6 +47,18 @@ export const $SkillOut = {
                 type: 'null',
             }],
         },
+        credentials: {
+            type: 'any-of',
+            contains: [{
+                type: 'dictionary',
+                contains: {
+                    properties: {
+                    },
+                },
+            }, {
+                type: 'null',
+            }],
+        },
         id: {
             type: 'number',
             isRequired: true,
