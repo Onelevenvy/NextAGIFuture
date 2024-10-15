@@ -1,15 +1,14 @@
 import {
   Box,
   IconButton,
-  Input,
+  Textarea,
   InputGroup,
-  InputLeftElement,
-  InputRightElement,
   Tooltip,
   Image,
   Flex,
   CloseButton,
   HStack,
+  Text,
 } from "@chakra-ui/react";
 import type React from "react";
 import { useState } from "react";
@@ -35,7 +34,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
   imageData,
   setImageData,
 }) => {
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -56,14 +54,24 @@ const MessageInput: React.FC<MessageInputProps> = ({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && (e.shiftKey || e.metaKey)) {
+      e.preventDefault();
+      setInput(input + "\n");
+    } else if (e.key === "Enter" && !e.shiftKey && !e.metaKey) {
+      e.preventDefault();
+      onSubmit(e as any);
+    }
+  };
+
   return (
     <Box
       display="flex"
-      flexDirection="column" // 垂直排列
-      pl="10"
-      pr="20"
+      flexDirection="column"
+      pl="6"
+      pr="6"
       pt="2"
-      pb="10"
+      pb="6"
       position="relative"
     >
       {/* 图片预览区域 */}
@@ -80,60 +88,79 @@ const MessageInput: React.FC<MessageInputProps> = ({
           <CloseButton onClick={removeImage} variant="outline" size="sm" />
         </Flex>
       )}
-      <HStack>
-        <InputGroup as="form" onSubmit={onSubmit}>
-          <Input
-            type="text"
-            placeholder="Ask your team a question"
+      <InputGroup as="form" onSubmit={onSubmit} flexDirection="column">
+        <Box
+          position="relative"
+          boxShadow="0 0 10px rgba(0,0,0,0.2)"
+          borderRadius="md"
+        >
+          <Textarea
+            placeholder="Input your message ..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            boxShadow="0 0 10px rgba(0,0,0,0.2)"
-            pr={imageData ? "40px" : "0"} // 调整右侧内边距
+            onKeyDown={handleKeyDown}
+            minHeight="100px"
+            maxHeight="200px"
+            resize="none"
+            overflow="auto"
+            transition="height 0.2s"
+            border="none"
+            _focus={{
+              boxShadow: "none",
+              border: "none",
+            }}
+            pb="40px" // 为底部按钮留出空间
           />
-          <InputRightElement>
+          <HStack
+            position="absolute"
+            bottom="0"
+            right="0"
+            left="0"
+            p="2"
+            bg="white"
+            borderBottomRadius="md"
+            justifyContent="flex-end" // 将内容靠右对齐
+            spacing={2} // 增加按钮之间的间距
+          >
+            <Text fontSize="xs" color="gray.500">
+              ↵ 发送 / ^ ↵ 换行
+            </Text>
+            {newChatHandler && (
+              <Tooltip label="New Chat" fontSize="md" bg="green">
+                <IconButton
+                  aria-label="new chat"
+                  icon={<GrNewWindow />}
+                  onClick={newChatHandler}
+                  size="sm"
+                />
+              </Tooltip>
+            )}
+            <Tooltip label="Upload Image" fontSize="md">
+              <IconButton
+                aria-label="upload-image"
+                icon={<RiImageAddLine />}
+                onClick={() => document.getElementById("file-input")?.click()}
+                size="sm"
+              />
+            </Tooltip>
             <IconButton
               type="submit"
               icon={<VscSend />}
               aria-label="send-question"
               isLoading={isStreaming}
               isDisabled={!input.trim().length && !imageData}
+              size="sm"
             />
-          </InputRightElement>
-          <InputLeftElement>
-            <IconButton
-              type="button"
-              id="image-upload"
-              icon={<RiImageAddLine />}
-              aria-label="upload-image"
-              onClick={() => document.getElementById("file-input")?.click()}
-            />
-            <input
-              type="file"
-              id="file-input"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-            />
-          </InputLeftElement>
-        </InputGroup>
-        {newChatHandler && (
-          <Tooltip
-            label="New Chat"
-            fontSize="md"
-            bg="green"
-            placement="top-end"
-          >
-            <IconButton
-              aria-label="new chat"
-              icon={<GrNewWindow />}
-              position="absolute"
-              right={10}
-              onClick={newChatHandler}
-              boxShadow="0 0 10px rgba(0,0,0,0.2)"
-            />
-          </Tooltip>
-        )}
-      </HStack>
+          </HStack>
+        </Box>
+        <input
+          type="file"
+          id="file-input"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
+      </InputGroup>
     </Box>
   );
 };
