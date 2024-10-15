@@ -21,12 +21,6 @@ def get_db_session():
 
 
 def db_operation(operation: Callable[[Session], T]) -> T:
-    """
-    执行数据库操作的辅助函数。
-
-    :param operation: 一个接受 Session 作为参数并返回结果的函数。
-    :return: 操作的结果。
-    """
     with get_db_session() as session:
         return operation(session)
 

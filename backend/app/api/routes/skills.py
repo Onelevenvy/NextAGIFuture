@@ -15,9 +15,11 @@ from app.models import (
     SkillUpdate,
     ToolDefinitionValidate,
 )
+import logging
 
 router = APIRouter()
 
+logger = logging.getLogger(__name__)
 
 def validate_tool_definition(tool_definition: dict[str, Any]) -> ToolDefinition | None:
     """
@@ -195,7 +197,7 @@ def update_skill_credentials(
     """
     Update a skill's credentials.
     """
-
+    logger.info(f"Received credentials update for skill {id}: {credentials}")
     skill = session.get(Skill, id)
     if not skill:
         raise HTTPException(status_code=404, detail="Skill not found")
@@ -211,5 +213,5 @@ def update_skill_credentials(
     session.add(skill)
     session.commit()
     session.refresh(skill)
-
+    logger.info(f"Updated skill credentials: {skill.credentials}")
     return skill

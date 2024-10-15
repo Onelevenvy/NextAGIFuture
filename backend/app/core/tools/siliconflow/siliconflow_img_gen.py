@@ -2,8 +2,8 @@ import json
 import requests
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import StructuredTool
-from app.core.tools.utils import get_tool_credentials, get_credential_value
-from app.core.workflow.utils.db_utils import db_operation
+from app.core.tools.utils import get_credential_value
+
 
 
 class Text2ImageInput(BaseModel):
@@ -18,7 +18,7 @@ def text2img(
     """
     invoke tools
     """
-    api_key = db_operation(get_credential_value("siliconflow-img-gen", "SILICONFLOW_API_KEY"))
+    api_key = get_credential_value("siliconflow-img-gen", "SILICONFLOW_API_KEY")()
 
     if not api_key:
         return "Error: Siliconflow API Key is not set."
