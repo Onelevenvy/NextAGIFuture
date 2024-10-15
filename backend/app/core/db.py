@@ -75,16 +75,15 @@ def init_db(session: Session) -> None:
             if (
                 existing_skill.description != skill_info.description
                 or existing_skill.display_name != skill_info.display_name
-                or existing_skill.input_parameters
-                != skill_info.input_parameters  # 检查输入参数是否变化
+                or existing_skill.input_parameters != skill_info.input_parameters
+                or existing_skill.credentials != skill_info.credentials
             ):
-                # Update the existing skill's description and input parameters
+                # Update the existing skill
                 existing_skill.description = skill_info.description
                 existing_skill.display_name = skill_info.display_name
-                existing_skill.input_parameters = (
-                    skill_info.input_parameters
-                )  # 更新输入参数
-                session.add(existing_skill)  # Mark the modified object for saving
+                existing_skill.input_parameters = skill_info.input_parameters
+                existing_skill.credentials = skill_info.credentials
+                session.add(existing_skill)
         else:
             new_skill = Skill(
                 name=skill_name,
@@ -92,9 +91,10 @@ def init_db(session: Session) -> None:
                 managed=True,
                 owner_id=user.id,
                 display_name=skill_info.display_name,
-                input_parameters=skill_info.input_parameters,  # 保存输入参数
+                input_parameters=skill_info.input_parameters,
+                credentials=skill_info.credentials,
             )
-            session.add(new_skill)  # Prepare new skill for addition to the database
+            session.add(new_skill)
 
     # Delete skills that are no longer in the current code and are managed
     for skill_name in existing_skills_dict:
@@ -167,4 +167,3 @@ def init_modelprovider_model_db(session: Session) -> None:
         models = session.exec(select(Models).where(Models.provider_id == provider.id).order_by(Models.id)).all()
         for model in models:
             print(f"  - Model: {model.ai_model_name} (ID: {model.id})")
-
