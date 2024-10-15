@@ -21,7 +21,6 @@ from langchain_openai import ChatOpenAI
 from app.core.model_providers.model_provider_manager import model_provider_manager
 
 
-
 class LLMBaseNode:
     def __init__(
         self,
@@ -29,6 +28,8 @@ class LLMBaseNode:
         provider: str,
         model: str,
         tools: Sequence[BaseTool],
+        openai_api_key: str,
+        openai_api_base: str,
         temperature: float,
         system_prompt: str,
         agent_name: str,
@@ -36,41 +37,70 @@ class LLMBaseNode:
         self.node_id = node_id
         self.system_prompt = system_prompt
         self.agent_name = agent_name
-        
+
         try:
-            self.model = model_provider_manager.init_model(provider, model, temperature)
-            
-            if len(tools) >= 1 and hasattr(self.model, 'bind_tools'):
+            self.model = model_provider_manager.init_model(provider, model, temperature,openai_api_key, openai_api_base)
+
+            if len(tools) >= 1 and hasattr(self.model, "bind_tools"):
                 self.model = self.model.bind_tools(tools)
-            
+
             # 为最终答案设置一个单独的模型实例
-            self.final_answer_model = model_provider_manager.init_model(provider, model, 0)
-            
+            self.final_answer_model = model_provider_manager.init_model(
+                provider, model, 0
+            )
+
         except ValueError:
             # 如果 model_provider_manager 无法初始化模型，回退到原来的初始化方法
-            if provider in ["zhipuai", "Siliconflow", "openai"]:
+            if provider in ["zhipuai", "Siliconflow"]:
+                self.model = ChatOpenAI(
+                    model=model,
+                    temperature=temperature,
+                    openai_api_key=openai_api_key,
+                    openai_api_base=openai_api_base,
+                )
+                if len(tools) >= 1:
+                    self.model = self.model.bind_tools(tools)
+                self.final_answer_model = self.model
+
+            elif provider in ["openai"]:
                 self.model = init_chat_model(
                     model,
                     model_provider=provider,
                     temperature=temperature,
                 )
+                self.final_answer_model = ChatOpenAI(
+                    model=model,
+                    temperature=0,
+                    streaming=True,
+                )
                 if len(tools) >= 1:
                     self.model = self.model.bind_tools(tools)
                 self.final_answer_model = self.model
             elif provider == "ollama":
-                from langchain_ollama import ChatOllama
                 self.model = ChatOllama(
                     model=model,
                     temperature=temperature,
+                    base_url=(
+                        openai_api_base
+                        if openai_api_base
+                        else "http://host.docker.internal:11434"
+                    ),
                 )
+                if len(tools) >= 1:
+                    self.model = self.model.bind_tools(tools)
                 self.final_answer_model = self.model
+
             else:
                 self.model = init_chat_model(
                     model,
                     model_provider=provider,
                     temperature=temperature,
                     streaming=True,
+                    openai_api_key=openai_api_key,
+                    openai_api_base=openai_api_base,
                 )
+                if len(tools) >= 1:
+                    self.model = self.model.bind_tools(tools)
                 self.final_answer_model = self.model
 
 
