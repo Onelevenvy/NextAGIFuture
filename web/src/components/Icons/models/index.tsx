@@ -104,9 +104,18 @@ const iconMap: { [key: string]: React.FC } = {
   zhipuai: ZhipuAIIcon,
   ollama: OllamaIcon,
   siliconflow: SiliconFlowIcon,
+  default: OpenAIIcon,
 };
 
-const DefaultIcon = OpenAIIcon;
+const getProviderFromModelName = (modelName: string): string => {
+  const lowerModelName = modelName.toLowerCase();
+  if (lowerModelName.includes("gpt")) return "openai";
+  if (lowerModelName.includes("glm")) return "zhipuai";
+  if (lowerModelName.includes("llama")) return "ollama";
+  if (lowerModelName.includes("/")) return "siliconflow";
+  // 添加更多模型名称到提供商的映射
+  return "default";
+};
 
 const ModelProviderIcon = ({
   modelprovider_name,
@@ -114,8 +123,14 @@ const ModelProviderIcon = ({
 }: {
   modelprovider_name?: string;
 } & IconProps) => {
-  const normalizedKey = (modelprovider_name || "").toLowerCase();
-  const IconComponent = iconMap[normalizedKey] || DefaultIcon;
+  let providerName = modelprovider_name?.toLowerCase() || "default";
+
+  // 如果 providerName 不在 iconMap 中，尝试从模型名称获取提供商
+  if (!iconMap[providerName]) {
+    providerName = getProviderFromModelName(providerName);
+  }
+
+  const IconComponent = iconMap[providerName];
 
   return <Icon as={IconComponent} {...props} />;
 };

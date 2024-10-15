@@ -1,5 +1,4 @@
 "use client";
-import type { MemberUpdate } from "@/client/models/MemberUpdate";
 import type { ModelsOut } from "@/client/models/ModelsOut";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
@@ -14,22 +13,26 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import React, { useState, useCallback } from "react";
-import { type Control, Controller } from "react-hook-form";
+import { type Control, Controller, FieldValues, Path } from "react-hook-form";
 import ModelProviderIcon from "../../Icons/models";
 
-const ModelSelect = ({
-  models,
-  control,
-  onModelSelect,
-  isLoading,
-  value,
-}: {
+interface ModelSelectProps<T extends FieldValues> {
   models: ModelsOut | undefined;
-  control: Control<MemberUpdate, any>;
+  control: Control<T>;
+  name: Path<T>;
   onModelSelect: (selectData: string) => void;
   isLoading?: boolean;
   value?: string;
-}) => {
+}
+
+function ModelSelect<T extends FieldValues>({
+  models,
+  control,
+  name,
+  onModelSelect,
+  isLoading,
+  value,
+}: ModelSelectProps<T>) {
   const groupedModels = models?.data.reduce(
     (acc, model) => {
       const providerName = model.provider.provider_name;
@@ -39,7 +42,7 @@ const ModelSelect = ({
       acc[providerName].push(model);
       return acc;
     },
-    {} as Record<string, typeof models.data>,
+    {} as Record<string, typeof models.data>
   );
 
   const [selectedModelProvider, setSelectedModelProvider] =
@@ -48,13 +51,13 @@ const ModelSelect = ({
   const updateSelectedProvider = useCallback(
     (modelName: string) => {
       const selectedModelData = models?.data.find(
-        (model) => model.ai_model_name === modelName,
+        (model) => model.ai_model_name === modelName
       );
       if (selectedModelData) {
         setSelectedModelProvider(selectedModelData.provider.provider_name);
       }
     },
-    [models],
+    [models]
   );
 
   return (
@@ -64,10 +67,10 @@ const ModelSelect = ({
           <Spinner size="md" />
         ) : (
           <Controller
-            name="model"
+            name={name}
             control={control}
             render={({ field }) => {
-              updateSelectedProvider(field.value!);
+              updateSelectedProvider(field.value);
               return (
                 <Menu autoSelect={false}>
                   <MenuButton
@@ -116,6 +119,6 @@ const ModelSelect = ({
       </FormControl>
     </Box>
   );
-};
+}
 
 export default ModelSelect;
