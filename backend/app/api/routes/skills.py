@@ -127,13 +127,13 @@ def update_skill(
         validate_tool_definition(skill_in.tool_definition)
 
     update_dict = skill_in.model_dump(exclude_unset=True)
-    
+
     # 处理 credentials 字段
-    if 'credentials' in update_dict:
+    if "credentials" in update_dict:
         if skill.credentials is None:
             skill.credentials = {}
-        skill.credentials.update(update_dict['credentials'])
-        del update_dict['credentials']  # 从 update_dict 中移除,因为我们已经单独处理了
+        skill.credentials.update(update_dict["credentials"])
+        del update_dict["credentials"]  # 从 update_dict 中移除,因为我们已经单独处理了
 
     skill.sqlmodel_update(update_dict)
     session.add(skill)
@@ -195,6 +195,7 @@ def update_skill_credentials(
     """
     Update a skill's credentials.
     """
+
     skill = session.get(Skill, id)
     if not skill:
         raise HTTPException(status_code=404, detail="Skill not found")
@@ -203,15 +204,12 @@ def update_skill_credentials(
 
     if skill.credentials is None:
         skill.credentials = {}
-    
-    # 更新凭证,保留原有的类型和描述信息
-    for key, new_cred in credentials.items():
-        if key in skill.credentials:
-            skill.credentials[key].update(new_cred)
-        else:
-            skill.credentials[key] = new_cred
+
+    # 直接更新整个凭证字典
+    skill.credentials = credentials
 
     session.add(skill)
     session.commit()
     session.refresh(skill)
+
     return skill
