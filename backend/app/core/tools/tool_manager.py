@@ -9,9 +9,7 @@ from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
 
-
-# api_key = get_credential_value("Tavily Search", "TAVILY_API_KEY")()
-# os.environ["TAVILY_API_KEY"] = api_key
+from typing import Dict, Any
 
 
 class ToolInfo(BaseModel):

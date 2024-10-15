@@ -5,7 +5,6 @@ from langchain.tools import StructuredTool
 from app.core.tools.utils import get_credential_value
 
 
-
 class Text2ImageInput(BaseModel):
     """Input for the text2img tool."""
 
@@ -18,7 +17,7 @@ def text2img(
     """
     invoke tools
     """
-    api_key = get_credential_value("siliconflow-img-gen", "SILICONFLOW_API_KEY")()
+    api_key = get_credential_value("Image Generation", "SILICONFLOW_API_KEY")()
 
     if not api_key:
         return "Error: Siliconflow API Key is not set."

@@ -70,29 +70,29 @@ def init_db(session: Session) -> None:
     existing_skills = session.exec(select(Skill)).all()
     existing_skills_dict = {skill.display_name: skill for skill in existing_skills}
 
-    current_skill_names = set(managed_tools.keys())
-
-    # Add or update skills in the database
     for skill_name, skill_info in managed_tools.items():
-        logger.debug(f"Processing skill: {skill_name}")
-        logger.debug(f"Skill info: {skill_info}")
-
         if skill_name in existing_skills_dict:
             existing_skill = existing_skills_dict[skill_name]
-            logger.debug(f"Updating existing skill: {existing_skill.display_name}")
-            logger.debug(f"Old credentials: {existing_skill.credentials}")
-
-            # 更新所有字段，包括凭证信息
+            
+            # 更新非凭证字段
             existing_skill.description = skill_info.description
             existing_skill.display_name = skill_info.display_name
             existing_skill.input_parameters = skill_info.input_parameters
-            existing_skill.credentials = skill_info.credentials  # 直接更新整个凭证字典
-
-            logger.debug(f"New credentials: {existing_skill.credentials}")
-
+            
+            # 更新凭证结构，但保留现有值
+            if existing_skill.credentials is None:
+                existing_skill.credentials = {}
+            
+            for key, value in skill_info.credentials.items():
+                if key not in existing_skill.credentials:
+                    existing_skill.credentials[key] = value
+                else:
+                    # 保留现有的值，只更新类型和描述
+                    existing_skill.credentials[key]['type'] = value['type']
+                    existing_skill.credentials[key]['description'] = value['description']
+            
             session.add(existing_skill)
         else:
-            logger.debug(f"Creating new skill: {skill_name}")
             new_skill = Skill(
                 name=skill_name,
                 description=skill_info.description,
@@ -102,20 +102,14 @@ def init_db(session: Session) -> None:
                 input_parameters=skill_info.input_parameters,
                 credentials=skill_info.credentials,
             )
-            logger.debug(f"New skill credentials: {new_skill.credentials}")
             session.add(new_skill)
 
-    # Delete skills that are no longer in the current code and are managed
+    # 删除不再存在的managed skills
     for skill_name in list(existing_skills_dict.keys()):
-        if (
-            skill_name not in current_skill_names
-            and existing_skills_dict[skill_name].managed
-        ):
-            skill_to_delete = existing_skills_dict[skill_name]
-            session.delete(skill_to_delete)
+        if skill_name not in managed_tools and existing_skills_dict[skill_name].managed:
+            session.delete(existing_skills_dict[skill_name])
 
     session.commit()
-    logger.debug("Database initialization completed.")
 
     # 打印 skills 信息
     print_skills_info(session)

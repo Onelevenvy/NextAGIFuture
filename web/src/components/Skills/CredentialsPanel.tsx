@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   VStack,
@@ -11,6 +11,7 @@ import {
   InputGroup,
   InputRightElement,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { SkillOut } from '@/client';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
@@ -18,33 +19,41 @@ import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 interface CredentialsPanelProps {
   skill: SkillOut;
   onClose: () => void;
-  onSave: (credentials: Record<string, string>) => void;
+  onSave: (credentials: Record<string, any>) => void;
 }
 
 const CredentialsPanel: React.FC<CredentialsPanelProps> = ({ skill, onClose, onSave }) => {
-  const [credentials, setCredentials] = useState<Record<string, string>>(() => {
-    if (skill.credentials) {
-      return Object.entries(skill.credentials).reduce((acc, [key, value]) => {
-        acc[key] = value.value || '';
-        return acc;
-      }, {} as Record<string, string>);
-    }
-    return {};
-  });
+  const [credentials, setCredentials] = useState<Record<string, any>>({});
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({});
+  const toast = useToast();
+
+  useEffect(() => {
+    if (skill.credentials) {
+      setCredentials(JSON.parse(JSON.stringify(skill.credentials)));
+    } else {
+      setCredentials({});
+    }
+  }, [skill]);
 
   const handleInputChange = (key: string, value: string) => {
-    setCredentials(prev => ({ ...prev, [key]: value }));
+    setCredentials(prev => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        value: value
+      }
+    }));
   };
 
   const handleSave = () => {
-    const updatedCredentials = Object.entries(credentials).reduce((acc, [key, value]) => {
-      if (skill.credentials && skill.credentials[key]) {
-        acc[key] = { ...skill.credentials[key], value };
-      }
-      return acc;
-    }, {} as Record<string, any>);
-    onSave(updatedCredentials);
+    onSave(credentials);
+    toast({
+      title: "Credentials saved",
+      description: "Your changes have been successfully saved.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
   };
 
   const togglePasswordVisibility = (key: string) => {
@@ -55,15 +64,15 @@ const CredentialsPanel: React.FC<CredentialsPanelProps> = ({ skill, onClose, onS
     <Box width="300px" p={4} borderLeft="1px" borderColor="gray.200">
       <CloseButton onClick={onClose} position="absolute" right="8px" top="8px" />
       <Heading size="md" mb={4}>Set Credentials for {skill.display_name}</Heading>
-      {skill.credentials && Object.keys(skill.credentials).length > 0 ? (
+      {credentials && Object.keys(credentials).length > 0 ? (
         <VStack spacing={4}>
-          {Object.entries(skill.credentials).map(([key, credInfo]) => (
+          {Object.entries(credentials).map(([key, credInfo]) => (
             <FormControl key={key}>
               <FormLabel>{credInfo.description || key}</FormLabel>
               <InputGroup>
                 <Input
                   type={showPasswords[key] ? 'text' : 'password'}
-                  value={credentials[key] || ''}
+                  value={credInfo.value || ''}
                   onChange={(e) => handleInputChange(key, e.target.value)}
                 />
                 <InputRightElement width="4.5rem">

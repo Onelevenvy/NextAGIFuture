@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 
 import useCustomToast from "@/hooks/useCustomToast";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   RiApps2Fill,
   RiArchiveDrawerFill,
@@ -35,7 +35,15 @@ function Skills() {
   const showToast = useCustomToast();
   const { t } = useTranslation();
 
-  const { data: skills, isLoading, isError, error, refetch } = useSkillsQuery();
+  const { data: initialSkills, isLoading, isError, error, refetch } = useSkillsQuery();
+  const [skills, setSkills] = useState<SkillOut[] | undefined>(initialSkills?.data);
+
+  useEffect(() => {
+    if (initialSkills) {
+      setSkills(initialSkills.data);
+    }
+  }, [initialSkills]);
+
   if (isError) {
     const errDetail = (error as ApiError).body?.detail;
     showToast("Something went wrong.", `${errDetail}`, "error");
@@ -63,7 +71,7 @@ function Skills() {
     defaultTab: "all",
   });
 
-  const filteredSkills = skills?.data.filter(
+  const filteredSkills = skills?.filter(
     (skill) => skill.name !== "ask-human"
   );
   const [selectedSkill, setSelectedSkill] = useState<SkillOut | null>(null);
@@ -76,15 +84,26 @@ function Skills() {
     setSelectedSkill(null);
   };
 
-  const handleSaveCredentials = async (credentials: Record<string, string>) => {
+  const handleSaveCredentials = async (updatedCredentials: Record<string, any>) => {
     if (selectedSkill) {
       try {
-        await ToolsService.updateSkillCredentials({
+        const updatedSkill = await ToolsService.updateSkillCredentials({
           id: selectedSkill.id,
-          requestBody: credentials
+          requestBody: updatedCredentials
         });
         showToast("Success", "Credentials updated successfully", "success");
-        refetch();
+        
+        setSkills(prevSkills => prevSkills?.map(skill => 
+          skill.id === selectedSkill.id ? { ...skill, credentials: updatedCredentials } : skill
+        ));
+        
+        // 更新选中的技能，而不是关闭面板
+        setSelectedSkill(prevSkill => ({
+          ...prevSkill!,
+          credentials: updatedCredentials
+        }));
+        
+        refetch(); // 重新获取所有技能数据
       } catch (error) {
         showToast("Error", "Failed to update credentials", "error");
       }
