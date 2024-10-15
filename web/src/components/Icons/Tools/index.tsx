@@ -120,7 +120,7 @@ const DuckduckgoSearch = createIcon({
           r="57.5"
           fill="none"
           stroke="#de5833"
-          stroke-width="5"
+          strokeWidth="5"
         />
       </g>
     </svg>
@@ -193,13 +193,13 @@ const tavilysearch = createIcon({
         <clipPath id="d0348dc115">
           <path
             d="M 109.378906 231.132812 L 146.484375 231.132812 L 146.484375 268.238281 L 109.378906 268.238281 Z M 109.378906 231.132812 "
-            clip-rule="nonzero"
+            clipRule="nonzero"
           />
         </clipPath>
         <clipPath id="a28b194a7a">
           <path
             d="M 127.933594 231.132812 C 117.6875 231.132812 109.378906 239.4375 109.378906 249.6875 C 109.378906 259.933594 117.6875 268.238281 127.933594 268.238281 C 138.179688 268.238281 146.484375 259.933594 146.484375 249.6875 C 146.484375 239.4375 138.179688 231.132812 127.933594 231.132812 Z M 127.933594 231.132812 "
-            clip-rule="nonzero"
+            clipRule="nonzero"
           />
         </clipPath>
       </defs>
@@ -210,7 +210,7 @@ const tavilysearch = createIcon({
         stroke-linejoin="miter"
         d="M 5.499573 5.500038 L 79.114962 5.500038 "
         stroke="#f25022"
-        stroke-width="11"
+        strokeWidth="11"
         stroke-opacity="1"
         stroke-miterlimit="4"
       />
@@ -221,7 +221,7 @@ const tavilysearch = createIcon({
         stroke-linejoin="round"
         d="M 59.865692 -10.999336 L 81.864858 5.500038 L 59.865692 21.999412 "
         stroke="#f25022"
-        stroke-width="11"
+        strokeWidth="11"
         stroke-opacity="1"
         stroke-miterlimit="4"
       />
@@ -232,7 +232,7 @@ const tavilysearch = createIcon({
         stroke-linejoin="miter"
         d="M 5.500751 5.50068 L 72.398214 5.499627 "
         stroke="#ffb901"
-        stroke-width="11"
+        strokeWidth="11"
         stroke-opacity="1"
         stroke-miterlimit="4"
       />
@@ -243,7 +243,7 @@ const tavilysearch = createIcon({
         stroke-linejoin="round"
         d="M 53.149037 -11.000109 L 75.148109 5.499895 L 53.14885 22.000154 "
         stroke="#ffb901"
-        stroke-width="11"
+        strokeWidth="11"
         stroke-opacity="1"
         stroke-miterlimit="4"
       />
@@ -254,7 +254,7 @@ const tavilysearch = createIcon({
         stroke-linejoin="miter"
         d="M 4.499518 4.49999 L 38.441562 4.500107 "
         stroke="#04a3ec"
-        stroke-width="9"
+        strokeWidth="9"
         stroke-opacity="1"
         stroke-miterlimit="4"
       />
@@ -265,7 +265,7 @@ const tavilysearch = createIcon({
         stroke-linejoin="round"
         d="M 22.691248 -9.000192 L 40.69038 4.49943 L 22.68978 17.999994 "
         stroke="#04a3ec"
-        stroke-width="9"
+        strokeWidth="9"
         stroke-opacity="1"
         stroke-miterlimit="4"
       />

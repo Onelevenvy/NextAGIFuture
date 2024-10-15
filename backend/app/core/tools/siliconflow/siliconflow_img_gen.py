@@ -17,7 +17,7 @@ def text2img(
     """
     invoke tools
     """
-    api_key = get_credential_value("Image Generation", "SILICONFLOW_API_KEY")()
+    api_key = get_credential_value("Image Generation", "SILICONFLOW_API_KEY")
 
     if not api_key:
         return "Error: Siliconflow API Key is not set."

@@ -29,7 +29,7 @@ import { useTabSearchParams } from "@/hooks/useTabSearchparams";
 import { useTranslation } from "react-i18next";
 import ToolsIcon from "@/components/Icons/Tools";
 import { MdSettings } from "react-icons/md";
-import CredentialsPanel from "@/components/Skills/CredentialsPanel";
+import CredentialsPanel from "@/components/Tools/CredentialsPanel";
 
 function Skills() {
   const showToast = useCustomToast();

@@ -9,7 +9,6 @@ import {
   InputGroup,
   InputRightElement,
   Text,
-  useToast,
   Tooltip,
   IconButton,
   CloseButton,
@@ -34,7 +33,7 @@ const CredentialsPanel: React.FC<CredentialsPanelProps> = ({
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>(
     {}
   );
-  const toast = useToast();
+ 
 
   useEffect(() => {
     if (skill.credentials) {
@@ -56,13 +55,6 @@ const CredentialsPanel: React.FC<CredentialsPanelProps> = ({
 
   const handleSave = () => {
     onSave(credentials);
-    toast({
-      title: "Credentials saved",
-      description: "Your changes have been successfully saved.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
   };
 
   const togglePasswordVisibility = (key: string) => {

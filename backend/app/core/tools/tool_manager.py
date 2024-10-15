@@ -83,14 +83,16 @@ class ToolManager:
                                     tool=tool_instance,
                                     display_name=tool_instance.name,
                                     input_parameters=input_parameters,
-                                    credentials=credentials if credentials else None,
+                                    credentials=credentials,  # 这里我们总是传递 credentials，即使它是空字典
                                 )
                             else:
                                 print(
                                     f"Warning: {tool_name} in {item} is not an instance of BaseTool"
                                 )
                     else:
-                        print(f"Warning: {item} does not define __all__")
+                        print(
+                            f"Warning: {item} does not define __all__, and has no tools to load"
+                        )
 
                 except (ImportError, AttributeError) as e:
                     print(f"Failed to load tool {item}: {e}")
@@ -100,25 +102,27 @@ class ToolManager:
 
     def load_external_tools(self):
         # Add external tools that can't be automatically loaded
-
         external_tools = {
             "duckduckgo-search": ToolInfo(
                 description="Searches the web using DuckDuckGo.",
                 tool=DuckDuckGoSearchRun(),
                 display_name="DuckDuckGo",
                 input_parameters={"query": "str"},
+                credentials={},
             ),
             "wikipedia": ToolInfo(
                 description="Searches Wikipedia.",
                 tool=WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper()),
                 display_name="Wikipedia",
                 input_parameters={"query": "str"},
+                credentials={},
             ),
             "tavilysearch": ToolInfo(
                 description="Tavily is useful when searching for information on the internet.",
                 tool=TavilySearchResults(max_results=1),
                 display_name="Tavily Search",
                 input_parameters={"query": "str"},
+                credentials={},
             ),
         }
         self.managed_tools.update(external_tools)

@@ -42,11 +42,14 @@ def print_skills_info(session: Session) -> None:
             print("  Input Parameters:")
             for param, param_type in skill.input_parameters.items():
                 print(f"    - {param}: {param_type}")
+        if skill.credentials:
+            print("  Credentials:")
+            for credential_name, credential_info in skill.credentials.items():
+                print(f"    - {credential_name}: {credential_info}")
         print()
 
 
 def init_db(session: Session) -> None:
-    # 保留原有的初始化逻辑
     # Tables should be created with Alembic migrations
     # But if you don't want to use migrations, create
     # the tables un-commenting the next lines
@@ -73,16 +76,16 @@ def init_db(session: Session) -> None:
     for skill_name, skill_info in managed_tools.items():
         if skill_name in existing_skills_dict:
             existing_skill = existing_skills_dict[skill_name]
-            
+
             # 更新非凭证字段
             existing_skill.description = skill_info.description
             existing_skill.display_name = skill_info.display_name
             existing_skill.input_parameters = skill_info.input_parameters
-            
+
             # 更新凭证结构，但保留现有值
             if existing_skill.credentials is None:
                 existing_skill.credentials = {}
-            
+
             # 添加对 skill_info.credentials 的检查
             if skill_info.credentials:
                 for key, value in skill_info.credentials.items():
@@ -91,11 +94,11 @@ def init_db(session: Session) -> None:
                         existing_skill.credentials[key] = value
                     else:
                         # 如果凭证字段已存在，只更新类型和描述，保留现有的值
-                        existing_value = existing_skill.credentials[key].get('value')
+                        existing_value = existing_skill.credentials[key].get("value")
                         existing_skill.credentials[key] = value
                         if existing_value:
-                            existing_skill.credentials[key]['value'] = existing_value
-            
+                            existing_skill.credentials[key]["value"] = existing_value
+
             session.add(existing_skill)
         else:
             new_skill = Skill(
@@ -195,9 +198,3 @@ def init_modelprovider_model_db(session: Session) -> None:
         ).all()
         for model in models:
             print(f"  - Model: {model.ai_model_name} (ID: {model.id})")
-
-
-
-
-
-
