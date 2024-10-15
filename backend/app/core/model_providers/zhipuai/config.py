@@ -19,11 +19,13 @@ SUPPORTED_MODELS = [
 ]
 
 
-def init_model(model: str, temperature: float, **kwargs):
+def init_model(
+    model: str, temperature: float, openai_api_key: str, openai_api_base: str, **kwargs
+):
     return ChatOpenAI(
         model=model,
         temperature=temperature,
-        openai_api_key=PROVIDER_CONFIG["api_key"],
-        openai_api_base=PROVIDER_CONFIG["base_url"],
+        openai_api_key=openai_api_key,
+        openai_api_base=openai_api_base,
         **kwargs
     )

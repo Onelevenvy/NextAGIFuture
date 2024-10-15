@@ -12,10 +12,10 @@ SUPPORTED_MODELS = [
     'llama3.1:8b',
 ]
 
-def init_model(model: str, temperature: float, **kwargs):
+def init_model(model: str, temperature: float,openai_api_key: str, openai_api_base: str, **kwargs):
     return ChatOllama(
         model=model,
         temperature=temperature,
-        base_url=PROVIDER_CONFIG['base_url'],
+        base_url=openai_api_base,
         **kwargs
     )
