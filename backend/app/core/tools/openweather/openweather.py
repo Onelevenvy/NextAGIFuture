@@ -1,9 +1,15 @@
 import json
 import os
+from typing import TYPE_CHECKING
 
 import requests
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import StructuredTool
+
+if TYPE_CHECKING:
+    from sqlmodel import Session
+
+from app.core.tools.utils import get_tool_credentials
 
 
 class WeatherSearchInput(BaseModel):
@@ -14,13 +20,16 @@ class WeatherSearchInput(BaseModel):
 
 def open_weather_qry(
     city: str,
-    appid: str = os.environ.get("OPEN_WEATHER_API_KEY", ""),
-    units: str = "metric",
-    lang: str = "zh_cn",
-):
+    db: "Session",
+) -> str:
     """
     invoke tools
     """
+    credentials = get_tool_credentials(db, "openweather")
+    appid = credentials.get("OPEN_WEATHER_API_KEY", "")
+
+    if not appid:
+        return "Error: OpenWeather API Key is not set."
 
     try:
         # request URL
@@ -30,13 +39,12 @@ def open_weather_qry(
         params = {
             "q": city,
             "appid": appid,
-            "units": units,
-            "lang": lang,
+            "units": "metric",
+            "lang": "zh_cn",
         }
         response = requests.get(url, params=params)
 
         if response.status_code == 200:
-
             data = response.json()
             return data
         else:
@@ -48,13 +56,13 @@ def open_weather_qry(
             return json.dumps(error_message)
 
     except Exception as e:
-        return json.dumps(f"Openweather API Key is invalid. {e}")
+        return json.dumps(f"OpenWeather API request failed. {e}")
 
 
 openweather = StructuredTool.from_function(
     func=open_weather_qry,
     name="Open Weather",
-    description="Useful for when you neet to get weather information. Please provide city name in English.",
+    description="Useful for when you need to get weather information. Please provide city name in English.",
     args_schema=WeatherSearchInput,
     return_direct=True,
 )

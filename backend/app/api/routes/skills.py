@@ -190,7 +190,7 @@ def update_skill_credentials(
     session: SessionDep,
     current_user: CurrentUser,
     id: int,
-    credentials: dict[str, str],
+    credentials: dict[str, dict[str, Any]],
 ) -> Any:
     """
     Update a skill's credentials.
@@ -203,7 +203,13 @@ def update_skill_credentials(
 
     if skill.credentials is None:
         skill.credentials = {}
-    skill.credentials.update(credentials)
+    
+    # 更新凭证,保留原有的类型和描述信息
+    for key, new_cred in credentials.items():
+        if key in skill.credentials:
+            skill.credentials[key].update(new_cred)
+        else:
+            skill.credentials[key] = new_cred
 
     session.add(skill)
     session.commit()

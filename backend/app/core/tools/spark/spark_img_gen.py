@@ -7,10 +7,16 @@ from datetime import datetime
 from time import mktime
 from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
+from typing import TYPE_CHECKING
 
 import requests
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import StructuredTool
+
+if TYPE_CHECKING:
+    from sqlmodel import Session
+
+from app.core.tools.utils import get_tool_credentials
 
 
 class Text2ImageInput(BaseModel):
@@ -103,35 +109,36 @@ def spark_response(text, appid, apisecret, apikey):
         return json.dumps(f"There is a error occured . {e}")
 
 
-def img_generation(prompt):
-    appid = os.environ.get("SPARK_APPID", "")
-    apisecret = os.environ.get("SPARK_APISECRET", "")
-    apikey = os.environ.get("SPARK_APIKEY", "")
+def img_generation(prompt: str, db: "Session"):
+    credentials = get_tool_credentials(db, "spark-img-gen")
+    appid = credentials.get("SPARK_APPID", "")
+    apisecret = credentials.get("SPARK_APISECRET", "")
+    apikey = credentials.get("SPARK_APIKEY", "")
+
     if not appid or not apisecret or not apikey:
-        return "api key is not set or not correct"
-    else:
-        response = spark_response(
-            text=prompt,
-            appid=appid,
-            apisecret=apisecret,
-            apikey=apikey,
-        )
-        try:
-            data = json.loads(response)
-            code = data["header"]["code"]
-            if code != 0:
-                return f"error: {code}, {data}"
-            else:
-                text = data["payload"]["choices"]["text"]
-                image_content = text[0]
-                image_base = image_content["content"]
-                bs64data = "data:image/jpeg;base64," + image_base
+        return "Error: Spark credentials are not set correctly."
 
-                return bs64data
-            # return aaa
+    response = spark_response(
+        text=prompt,
+        appid=appid,
+        apisecret=apisecret,
+        apikey=apikey,
+    )
+    try:
+        data = json.loads(response)
+        code = data["header"]["code"]
+        if code != 0:
+            return f"error: {code}, {data}"
+        else:
+            text = data["payload"]["choices"]["text"]
+            image_content = text[0]
+            image_base = image_content["content"]
+            bs64data = "data:image/jpeg;base64," + image_base
 
-        except Exception as e:
-            return json.dumps(f"There is a error occured . {e}")
+            return bs64data
+
+    except Exception as e:
+        return json.dumps(f"There is a error occured . {e}")
 
 
 spark_img_generation = StructuredTool.from_function(

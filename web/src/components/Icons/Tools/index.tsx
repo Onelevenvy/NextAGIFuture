@@ -75,8 +75,8 @@ const DuckduckgoSearch = createIcon({
             x2="113.887"
             y2="60.979"
           >
-            <stop offset=".006" stop-color="#6176b9" />
-            <stop offset=".691" stop-color="#394a9f" />
+            <stop offset=".006" stopColor="#6176b9" />
+            <stop offset=".691" stopColor="#394a9f" />
           </linearGradient>
           <path
             d="M113.886 59.718s-2.854-1.3-5.63.453-2.668 3.523-2.668 3.523-1.473-3.283 2.453-4.892 5.844.916 5.844.916z"
@@ -90,8 +90,8 @@ const DuckduckgoSearch = createIcon({
             x2="140.078"
             y2="58.371"
           >
-            <stop offset=".006" stop-color="#6176b9" />
-            <stop offset=".691" stop-color="#394a9f" />
+            <stop offset=".006" stopColor="#6176b9" />
+            <stop offset=".691" stopColor="#394a9f" />
           </linearGradient>
           <path
             d="M140.078 59.458s-2.05-1.172-3.643-1.152c-3.27.043-4.162 1.488-4.162 1.488s.55-3.445 4.732-2.754c2.268.377 3.073 2.418 3.073 2.418z"

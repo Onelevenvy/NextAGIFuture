@@ -336,7 +336,7 @@ class SkillBase(SQLModel):
         default_factory=dict, sa_column=Column(JSON)
     )
     input_parameters: dict[str, Any] | None = Field(
-        default_factory=dict, sa_column=Column(JSON)  # 用于存���输入参数
+        default_factory=dict, sa_column=Column(JSON)  # 用于存储输入参数
     )
     credentials: dict[str, Any] | None = Field(
         default_factory=dict, sa_column=Column(JSON)  # 新增字段,用于存储凭证信息

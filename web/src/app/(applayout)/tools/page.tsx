@@ -69,9 +69,7 @@ function Skills() {
   const [selectedSkill, setSelectedSkill] = useState<SkillOut | null>(null);
 
   const handleOpenCredentialsPanel = (skill: SkillOut) => {
-    if (skill.credentials && Object.keys(skill.credentials).length > 0) {
-      setSelectedSkill(skill);
-    }
+    setSelectedSkill(skill);
   };
 
   const handleCloseCredentialsPanel = () => {
@@ -186,7 +184,7 @@ function Skills() {
           )
         )}
       </Box>
-      {selectedSkill && selectedSkill.credentials && Object.keys(selectedSkill.credentials).length > 0 && (
+      {selectedSkill && (
         <CredentialsPanel
           skill={selectedSkill}
           onClose={handleCloseCredentialsPanel}

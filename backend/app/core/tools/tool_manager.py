@@ -55,6 +55,8 @@ class ToolManager:
                                     credentials_module = importlib.import_module(f".{item}.credentials", package="app.core.tools")
                                     if hasattr(credentials_module, "get_credentials"):
                                         credentials = credentials_module.get_credentials()
+                                        # 只保留凭证的结构,不包含初始值
+                                        credentials = {k: {**v, "value": ""} for k, v in credentials.items()}
                                 except ImportError:
                                     # No credentials file found, which is fine for tools that don't need them
                                     pass
