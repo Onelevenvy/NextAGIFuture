@@ -112,6 +112,7 @@ const getProviderFromModelName = (modelName: string): string => {
   if (lowerModelName.includes("gpt")) return "openai";
   if (lowerModelName.includes("glm")) return "zhipuai";
   if (lowerModelName.includes("llama")) return "ollama";
+  if (lowerModelName.includes("/")) return "siliconflow";
   // 添加更多模型名称到提供商的映射
   return "default";
 };
