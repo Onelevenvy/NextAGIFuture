@@ -39,14 +39,16 @@ class LLMBaseNode:
         self.agent_name = agent_name
 
         try:
-            self.model = model_provider_manager.init_model(provider, model, temperature,openai_api_key, openai_api_base)
+            self.model = model_provider_manager.init_model(
+                provider, model, temperature, openai_api_key, openai_api_base
+            )
 
             if len(tools) >= 1 and hasattr(self.model, "bind_tools"):
                 self.model = self.model.bind_tools(tools)
 
             # 为最终答案设置一个单独的模型实例
             self.final_answer_model = model_provider_manager.init_model(
-                provider, model, 0
+                provider, model, 0, openai_api_key, openai_api_base
             )
 
         except ValueError:
