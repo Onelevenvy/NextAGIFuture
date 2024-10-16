@@ -1,5 +1,6 @@
 import importlib
 import os
+import ast
 from typing import Dict, Any
 
 from app.core.tools.utils import get_credential_value
@@ -39,20 +40,23 @@ class ToolManager:
 
     def load_tools(self):
         tools_dir = os.path.dirname(os.path.abspath(__file__))
+
         for item in os.listdir(tools_dir):
-            if os.path.isdir(os.path.join(tools_dir, item)) and not item.startswith(
-                "__"
-            ):
+            item_path = os.path.join(tools_dir, item)
+            if os.path.isdir(item_path) and not item.startswith("__"):
+
                 try:
                     module = importlib.import_module(
                         f".{item}", package="app.core.tools"
                     )
 
                     if hasattr(module, "__all__"):
+
                         for tool_name in module.__all__:
+
                             tool_instance = getattr(module, tool_name, None)
                             if isinstance(tool_instance, BaseTool):
-                                formatted_name = self.format_tool_name(item)
+                                formatted_name = self.format_tool_name(tool_name)
 
                                 inputs_dict = tool_instance.args
                                 input_parameters = self.convert_to_input_parameters(
@@ -69,13 +73,11 @@ class ToolManager:
                                         credentials = (
                                             credentials_module.get_credentials()
                                         )
-                                        # 只保留凭证的结构,不包含初始值
                                         credentials = {
                                             k: {**v, "value": ""}
                                             for k, v in credentials.items()
                                         }
                                 except ImportError:
-                                    # No credentials file found, which is fine for tools that don't need them
                                     pass
 
                                 self.managed_tools[formatted_name] = ToolInfo(
@@ -83,7 +85,7 @@ class ToolManager:
                                     tool=tool_instance,
                                     display_name=tool_instance.name,
                                     input_parameters=input_parameters,
-                                    credentials=credentials,  # 这里我们总是传递 credentials，即使它是空字典
+                                    credentials=credentials,
                                 )
                             else:
                                 print(
@@ -94,8 +96,11 @@ class ToolManager:
                             f"Warning: {item} does not define __all__, and has no tools to load"
                         )
 
-                except (ImportError, AttributeError) as e:
-                    print(f"Failed to load tool {item}: {e}")
+                except Exception as e:
+                    print(f"Failed to load tool {item}: {str(e)}")
+                    import traceback
+
+                    print(traceback.format_exc())
 
         # Load external tools
         self.load_external_tools()
