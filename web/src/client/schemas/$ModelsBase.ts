@@ -13,5 +13,18 @@ export const $ModelsBase = {
             type: 'number',
             isRequired: true,
         },
+        categories: {
+            type: 'array',
+            contains: {
+                type: 'ModelCategory',
+            },
+            isRequired: true,
+        },
+        capabilities: {
+            type: 'array',
+            contains: {
+                type: 'ModelCapability',
+            },
+        },
     },
 } as const;

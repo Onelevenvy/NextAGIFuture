@@ -12,6 +12,20 @@ export const $ModelOut = {
             type: 'string',
             isRequired: true,
         },
+        categories: {
+            type: 'array',
+            contains: {
+                type: 'ModelCategory',
+            },
+            isRequired: true,
+        },
+        capabilities: {
+            type: 'array',
+            contains: {
+                type: 'ModelCapability',
+            },
+            isRequired: true,
+        },
         provider: {
             type: 'ModelProviderOut',
             isRequired: true,
