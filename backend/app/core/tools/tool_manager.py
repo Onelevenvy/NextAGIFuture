@@ -40,35 +40,43 @@ class ToolManager:
 
     def load_tools(self):
         tools_dir = os.path.dirname(os.path.abspath(__file__))
-        print(f"Loading tools from directory: {tools_dir}")
-        
+
         for item in os.listdir(tools_dir):
             item_path = os.path.join(tools_dir, item)
             if os.path.isdir(item_path) and not item.startswith("__"):
-                print(f"Processing directory: {item}")
+
                 try:
-                    module = importlib.import_module(f".{item}", package="app.core.tools")
-                    print(f"Successfully imported module: {item}")
+                    module = importlib.import_module(
+                        f".{item}", package="app.core.tools"
+                    )
 
                     if hasattr(module, "__all__"):
-                        print(f"__all__ in {item}: {module.__all__}")
+
                         for tool_name in module.__all__:
-                            print(f"Processing tool: {tool_name}")
+
                             tool_instance = getattr(module, tool_name, None)
                             if isinstance(tool_instance, BaseTool):
                                 formatted_name = self.format_tool_name(tool_name)
-                                print(f"Successfully loaded tool: {formatted_name}")
 
                                 inputs_dict = tool_instance.args
-                                input_parameters = self.convert_to_input_parameters(inputs_dict)
+                                input_parameters = self.convert_to_input_parameters(
+                                    inputs_dict
+                                )
 
                                 # Load credentials if they exist
                                 credentials = {}
                                 try:
-                                    credentials_module = importlib.import_module(f".{item}.credentials", package="app.core.tools")
+                                    credentials_module = importlib.import_module(
+                                        f".{item}.credentials", package="app.core.tools"
+                                    )
                                     if hasattr(credentials_module, "get_credentials"):
-                                        credentials = credentials_module.get_credentials()
-                                        credentials = {k: {**v, "value": ""} for k, v in credentials.items()}
+                                        credentials = (
+                                            credentials_module.get_credentials()
+                                        )
+                                        credentials = {
+                                            k: {**v, "value": ""}
+                                            for k, v in credentials.items()
+                                        }
                                 except ImportError:
                                     pass
 
@@ -80,13 +88,18 @@ class ToolManager:
                                     credentials=credentials,
                                 )
                             else:
-                                print(f"Warning: {tool_name} in {item} is not an instance of BaseTool")
+                                print(
+                                    f"Warning: {tool_name} in {item} is not an instance of BaseTool"
+                                )
                     else:
-                        print(f"Warning: {item} does not define __all__, and has no tools to load")
+                        print(
+                            f"Warning: {item} does not define __all__, and has no tools to load"
+                        )
 
                 except Exception as e:
                     print(f"Failed to load tool {item}: {str(e)}")
                     import traceback
+
                     print(traceback.format_exc())
 
         # Load external tools
