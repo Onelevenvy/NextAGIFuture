@@ -40,6 +40,8 @@ def get_models_by_provider(session: Session, provider_id: int) -> ModelsOut:
         ModelOut(
             id=model.id,
             ai_model_name=model.ai_model_name,
+            categories=model.categories,
+            capabilities=model.capabilities,
             provider=ModelProviderOut(
                 id=model.provider.id,
                 provider_name=model.provider.provider_name,
@@ -76,6 +78,8 @@ def get_all_models(session: Session) -> ModelsOut:
         ModelOut(
             id=model.id,
             ai_model_name=model.ai_model_name,
+            categories=model.categories,
+            capabilities=model.capabilities,
             provider=ModelProviderOut(
                 id=model.provider.id,
                 provider_name=model.provider.provider_name,

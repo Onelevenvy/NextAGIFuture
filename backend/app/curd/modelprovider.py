@@ -83,7 +83,12 @@ def get_model_provider_with_models(
     result = session.exec(statement).first()
     if result:
         models_out = [
-            ModelOutIdWithAndName(id=model.id, ai_model_name=model.ai_model_name)
+            ModelOutIdWithAndName(
+                id=model.id, 
+                ai_model_name=model.ai_model_name,
+                categories=model.categories,
+                capabilities=model.capabilities
+            )
             for model in result.models
         ]
         if models_out:
@@ -119,7 +124,12 @@ def get_model_provider_list_with_models(
     providers_list = []
     for result in results:
         models_out = [
-            ModelOutIdWithAndName(id=model.id, ai_model_name=model.ai_model_name)
+            ModelOutIdWithAndName(
+                id=model.id, 
+                ai_model_name=model.ai_model_name,
+                categories=model.categories,
+                capabilities=model.capabilities
+            )
             for model in result.models
         ]
         providers_list.append(
