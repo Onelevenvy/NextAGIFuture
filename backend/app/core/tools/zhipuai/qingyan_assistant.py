@@ -101,7 +101,7 @@ def qingyan_assistant_query(query: str, assistant_type: str = "ai_search") -> st
     """
     Invoke Qingyan Assistant API
     """
-    api_key = get_credential_value("Qingyan Assistant", "QINGYAN_ASSISTANT_API_KEY")
+    api_key = get_credential_value("Qingyan Assistant", "ZHIPUAI_API_KEY")
 
     if not api_key:
         return "Error: Qingyan Assistant API Key is not set."
