@@ -124,14 +124,11 @@ def init_db(session: Session) -> None:
 
 
 def init_modelprovider_model_db(session: Session) -> None:
-    # 获取所有提供商配置
     providers = model_provider_manager.get_all_providers()
 
-    # 按照提供商名称排序，确保处理顺序一致
     for provider_name in sorted(providers.keys()):
         provider_data = providers[provider_name]
 
-        # 查找现有的提供商记录
         db_provider = session.exec(
             select(ModelProvider).where(
                 ModelProvider.provider_name == provider_data["provider_name"]
@@ -139,12 +136,9 @@ def init_modelprovider_model_db(session: Session) -> None:
         ).first()
 
         if db_provider:
-            # 更新提供商信息，但保留现有的 API 密钥和基础 URL
             db_provider.icon = provider_data["icon"]
             db_provider.description = provider_data["description"]
-            # 注意：我们不更新 api_key 和 base_url，因为它们可能已被用户修改
         else:
-            # 如果提供商不存在，创建新记录
             db_provider = ModelProvider(
                 provider_name=provider_data["provider_name"],
                 base_url=provider_data["base_url"],
@@ -154,47 +148,45 @@ def init_modelprovider_model_db(session: Session) -> None:
             )
             session.add(db_provider)
 
-        session.flush()  # 确保 provider_id 已生成
+        session.flush()
 
-        # 获取该提供商支持的模型
-        supported_models = set(
-            model_provider_manager.get_supported_models(provider_name)
-        )
-
-        # 获取数据库中该提供商现有的模型
-        existing_models = set(
-            model.ai_model_name
+        supported_models = model_provider_manager.get_supported_models(provider_name)
+        existing_models = {
+            model.ai_model_name: model
             for model in session.exec(
                 select(Models).where(Models.provider_id == db_provider.id)
             )
-        )
+        }
 
-        # 添加新模型
-        for model_name in sorted(supported_models - existing_models):
-            new_model = Models(ai_model_name=model_name, provider_id=db_provider.id)
-            session.add(new_model)
-
-        # 删除不再支持的模型
-        for model_name in sorted(existing_models - supported_models):
-            session.exec(
-                select(Models).where(
-                    Models.ai_model_name == model_name,
-                    Models.provider_id == db_provider.id,
+        for model_info in supported_models:
+            if model_info["name"] in existing_models:
+                model = existing_models[model_info["name"]]
+                model.categories = model_info["categories"]
+                model.capabilities = model_info["capabilities"]
+            else:
+                new_model = Models(
+                    ai_model_name=model_info["name"],
+                    provider_id=db_provider.id,
+                    categories=model_info["categories"],
+                    capabilities=model_info["capabilities"],
                 )
-            ).delete()
+                session.add(new_model)
+
+        for model_name in set(existing_models.keys()) - set(model["name"] for model in supported_models):
+            session.delete(existing_models[model_name])
 
     session.commit()
 
-    # 打印当前数据库状态，用于验证
+    # 打印当前数据库状态
     providers = session.exec(select(ModelProvider).order_by(ModelProvider.id)).all()
     for provider in providers:
         print(f"Provider: {provider.provider_name} (ID: {provider.id})")
         print(f"  Base URL: {provider.base_url}")
-        print(
-            f"  API Key: {'*' * len(provider.api_key)}"
-        )  # 出于安全考虑，不打印实际的 API 密钥
+        print(f"  API Key: {'*' * len(provider.api_key)}")
         models = session.exec(
             select(Models).where(Models.provider_id == provider.id).order_by(Models.id)
         ).all()
         for model in models:
             print(f"  - Model: {model.ai_model_name} (ID: {model.id})")
+            print(f"    Categories: {', '.join(model.categories)}")
+            print(f"    Capabilities: {', '.join(model.capabilities)}")

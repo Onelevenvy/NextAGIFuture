@@ -1,4 +1,5 @@
 from langchain_openai import ChatOpenAI
+from app.models import ModelCategory, ModelCapability
 
 PROVIDER_CONFIG = {
     "provider_name": "openai",
@@ -9,19 +10,52 @@ PROVIDER_CONFIG = {
 }
 
 SUPPORTED_MODELS = [
-    "gpt-4",
-    "gpt-4-0314",
-    "gpt-4-32k",
-    "gpt-4-32k-0314",
-    "gpt-3.5-turbo",
-    "gpt-3.5-turbo-16k",
-    "gpt-4o-mini",
+    {
+        "name": "gpt-4",
+        "categories": [ModelCategory.LLM, ModelCategory.CHAT],
+        "capabilities": [],
+    },
+    {
+        "name": "gpt-4-0314",
+        "categories": [ModelCategory.LLM, ModelCategory.CHAT],
+        "capabilities": [],
+    },
+    {
+        "name": "gpt-4-32k",
+        "categories": [ModelCategory.LLM, ModelCategory.CHAT],
+        "capabilities": [],
+    },
+    {
+        "name": "gpt-4-32k-0314",
+        "categories": [ModelCategory.LLM, ModelCategory.CHAT],
+        "capabilities": [],
+    },
+    {
+        "name": "gpt-3.5-turbo",
+        "categories": [ModelCategory.LLM, ModelCategory.CHAT],
+        "capabilities": [],
+    },
+    {
+        "name": "gpt-3.5-turbo-16k",
+        "categories": [ModelCategory.LLM, ModelCategory.CHAT],
+        "capabilities": [],
+    },
+    {
+        "name": "gpt-4o-mini",
+        "categories": [ModelCategory.LLM, ModelCategory.CHAT],
+        "capabilities": [],
+    },
 ]
 
-
-def init_model(
-    model: str, temperature: float, openai_api_key: str, openai_api_base: str, **kwargs
-):
-    return ChatOpenAI(
-        model=model, temperature=temperature, openai_api_key=openai_api_key, **kwargs
-    )
+def init_model(model: str, temperature: float, openai_api_key: str, openai_api_base: str, **kwargs):
+    model_info = next((m for m in SUPPORTED_MODELS if m["name"] == model), None)
+    if model_info and ModelCategory.CHAT in model_info["categories"]:
+        return ChatOpenAI(
+            model=model,
+            temperature=temperature,
+            openai_api_key=openai_api_key,
+            openai_api_base=openai_api_base,
+            **kwargs
+        )
+    else:
+        raise ValueError(f"Model {model} is not supported as a chat model.")
