@@ -358,6 +358,7 @@ const spark = createIcon({
     </svg>
   ),
 });
+
 const iconMap: { [key: string]: React.FC } = {
   open_weather: OpenWeather,
   google_translate: GoogleTranslate,
@@ -368,6 +369,8 @@ const iconMap: { [key: string]: React.FC } = {
   image_generation: SiliconFlowIcon,
   spark_image_generation: spark,
   image_understanding: ZhipuAIIcon,
+  qingyan_assistant: ZhipuAIIcon,
+  web_search_pro: ZhipuAIIcon,
 };
 
 const DefaultIcon = Wikipedia;
