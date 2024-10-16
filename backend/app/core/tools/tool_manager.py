@@ -3,7 +3,6 @@ import os
 import ast
 from typing import Dict, Any
 
-from app.core.tools.utils import get_credential_value
 from langchain.pydantic_v1 import BaseModel
 from langchain.tools import BaseTool
 from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun
