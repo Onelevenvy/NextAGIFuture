@@ -1,7 +1,17 @@
 import ModelProviderIconLong from "@/components/Icons/Providers";
 import ModelProviderIcon from "@/components/Icons/models";
 import { useModelProviderContext } from "@/contexts/modelprovider";
-import { Box, Button, Collapse, Text, VStack, HStack, Tag, Wrap, WrapItem } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Collapse,
+  Text,
+  VStack,
+  HStack,
+  Tag,
+  Wrap,
+  WrapItem,
+} from "@chakra-ui/react";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CiSettings } from "react-icons/ci";
@@ -25,8 +35,8 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
 
   const allCategories = useMemo(() => {
     const categories = new Set<string>();
-    providerInfo?.models.forEach(model => {
-      model.categories.forEach(category => {
+    providerInfo?.models.forEach((model) => {
+      model.categories.forEach((category) => {
         if (category !== "chat") {
           categories.add(category);
         }
@@ -49,10 +59,10 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
         <Box
           display={"flex"}
           flexDirection={"row"}
-          alignItems={"center"}
+          alignItems={"end"}
           justifyContent={"space-between"}
-          pt="3"
           pl="3"
+          my="2"
         >
           <Box>
             <ModelProviderIconLong
@@ -63,8 +73,13 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
             <Wrap spacing={2} mt={2}>
               {allCategories.map((category, index) => (
                 <WrapItem key={index}>
-                  <Tag size="sm" colorScheme="blue">
-                    {category}
+                  <Tag
+                    size="sm"
+                    colorScheme="gray"
+                    variant="outline"
+                    color={"black"}
+                  >
+                    {category.toUpperCase()}
                   </Tag>
                 </WrapItem>
               ))}
@@ -126,11 +141,18 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
                     <Text>{model.ai_model_name}</Text>
                   </HStack>
                   <HStack spacing={2}>
-                    {model.categories.filter(cat => cat !== "chat").map((category, catIndex) => (
-                      <Tag key={catIndex} size="sm" colorScheme="blue">
-                        {category}
-                      </Tag>
-                    ))}
+                    {model.categories
+                      .filter((cat) => cat !== "chat")
+                      .map((category, catIndex) => (
+                        <Tag
+                          key={catIndex}
+                          size="sm"
+                          colorScheme="gray"
+                          variant="outline"
+                        >
+                          {category.toUpperCase()}
+                        </Tag>
+                      ))}
                     {model.capabilities.includes("vision") && (
                       <FaEye color="gray" />
                     )}
