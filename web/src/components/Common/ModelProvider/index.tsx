@@ -1,6 +1,7 @@
 "use client";
 import type { ModelsOut } from "@/client/models/ModelsOut";
 import { ChevronDownIcon } from "@chakra-ui/icons";
+import { FaEye } from "react-icons/fa";
 import {
   Box,
   Button,
@@ -33,7 +34,11 @@ function ModelSelect<T extends FieldValues>({
   isLoading,
   value,
 }: ModelSelectProps<T>) {
-  const groupedModels = models?.data.reduce(
+  const filteredModels = models?.data.filter(model => 
+    model.categories.includes("llm") || model.categories.includes("chat")
+  );
+
+  const groupedModels = filteredModels?.reduce(
     (acc, model) => {
       const providerName = model.provider.provider_name;
       if (!acc[providerName]) {
@@ -42,7 +47,7 @@ function ModelSelect<T extends FieldValues>({
       acc[providerName].push(model);
       return acc;
     },
-    {} as Record<string, typeof models.data>
+    {} as Record<string, typeof filteredModels>
   );
 
   const [selectedModelProvider, setSelectedModelProvider] =
@@ -106,6 +111,9 @@ function ModelSelect<T extends FieldValues>({
                               h={6}
                             />
                             {model.ai_model_name}
+                            {model.capabilities.includes("vision") && (
+                              <FaEye style={{ marginLeft: 'auto' }} color="gray" />
+                            )}
                           </MenuItem>
                         ))}
                       </MenuGroup>
