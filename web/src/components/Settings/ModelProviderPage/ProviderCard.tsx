@@ -1,10 +1,11 @@
 import ModelProviderIconLong from "@/components/Icons/Providers";
 import ModelProviderIcon from "@/components/Icons/models";
 import { useModelProviderContext } from "@/contexts/modelprovider";
-import { Box, Button, Collapse, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Collapse, Text, VStack, HStack, Tag } from "@chakra-ui/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CiSettings } from "react-icons/ci";
+import { FaEye } from "react-icons/fa";
 import {
   MdOutlineKeyboardDoubleArrowDown,
   MdOutlineKeyboardDoubleArrowUp,
@@ -81,7 +82,7 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
             </Button>
           </Box>
           <Collapse in={isOpen}>
-            <VStack align="start" bg={"#edeef1"}>
+            <VStack align="start" bg={"#edeef1"} spacing={2}>
               {providerInfo?.models.map((model, index) => (
                 <Box
                   key={index}
@@ -90,14 +91,27 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
                   alignItems={"center"}
                   w="full"
                   pl="3"
+                  pr="3"
+                  justifyContent="space-between"
                 >
-                  <ModelProviderIcon
-                    modelprovider_name={providerName}
-                    w={4}
-                    h={4}
-                    mr={2}
-                  />
-                  <Text>{model.ai_model_name}</Text>
+                  <HStack spacing={2}>
+                    <ModelProviderIcon
+                      modelprovider_name={providerName}
+                      w={4}
+                      h={4}
+                    />
+                    <Text>{model.ai_model_name}</Text>
+                  </HStack>
+                  <HStack spacing={2}>
+                    {model.categories.map((category, catIndex) => (
+                      <Tag key={catIndex} size="sm" colorScheme="blue">
+                        {category}
+                      </Tag>
+                    ))}
+                    {model.capabilities.includes("vision") && (
+                      <FaEye color="gray" />
+                    )}
+                  </HStack>
                 </Box>
               ))}
             </VStack>
