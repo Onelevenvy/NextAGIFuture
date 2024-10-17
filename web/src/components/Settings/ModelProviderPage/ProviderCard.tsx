@@ -141,6 +141,9 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
                     <Text>{model.ai_model_name}</Text>
                   </HStack>
                   <HStack spacing={2}>
+                  {model.capabilities.includes("vision") && (
+                      <FaEye color="gray" />
+                    )}
                     {model.categories
                       .filter((cat) => cat !== "chat")
                       .map((category, catIndex) => (
@@ -153,9 +156,7 @@ const ModelProviderCard: React.FC<ModelCardProps> = ({ providerName }) => {
                           {category.toUpperCase()}
                         </Tag>
                       ))}
-                    {model.capabilities.includes("vision") && (
-                      <FaEye color="gray" />
-                    )}
+                   
                   </HStack>
                 </Box>
               ))}
