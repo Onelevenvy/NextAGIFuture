@@ -196,7 +196,7 @@ export class ToolsService {
         requestBody,
     }: {
         id: number,
-        requestBody: Record<string, string>,
+        requestBody: Record<string, Record<string, any>>,
     }): CancelablePromise<SkillOut> {
         return __request(OpenAPI, {
             method: 'POST',

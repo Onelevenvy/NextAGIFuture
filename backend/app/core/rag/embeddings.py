@@ -8,14 +8,29 @@ from langchain_core.pydantic_v1 import BaseModel, Extra
 from langchain_openai import OpenAIEmbeddings
 
 from app.core.config import settings
+from app.models import ModelProvider
+from sqlmodel import select
+from app.core.workflow.utils.db_utils import db_operation
 
 logger = logging.getLogger(__name__)
 
 
+def get_api_key(provider_name: str) -> str:
+    def _get_api_key(session):
+        provider = session.exec(
+            select(ModelProvider).where(ModelProvider.provider_name == provider_name)
+        ).first()
+        if not provider:
+            raise ValueError(f"Provider {provider_name} not found")
+        return provider.api_key
+
+    return db_operation(_get_api_key)
+
+
 class ZhipuAIEmbeddings(BaseModel, Embeddings):
-    api_key: str = settings.ZHIPUAI_API_KEY
+    api_key: str
     model: str = "embedding-3"
-    dimension: int = 2048  # 添加这一行，设置默认维度
+    dimension: int = 2048
 
     class Config:
         extra = Extra.forbid
@@ -27,7 +42,7 @@ class ZhipuAIEmbeddings(BaseModel, Embeddings):
         response = client.embeddings.create(model=self.model, input=texts)
         embeddings = [item.embedding for item in response.data]
         if embeddings:
-            self.dimension = len(embeddings[0])  # 更新实际的维度
+            self.dimension = len(embeddings[0])
         return embeddings
 
     def embed_query(self, text: str) -> List[float]:
@@ -35,7 +50,7 @@ class ZhipuAIEmbeddings(BaseModel, Embeddings):
 
 
 class SiliconFlowEmbeddings(BaseModel, Embeddings):
-    api_key: str = settings.SILICONFLOW_API_KEY
+    api_key: str
     model: str = "BAAI/bge-large-zh-v1.5"
 
     class Config:
@@ -51,9 +66,7 @@ class SiliconFlowEmbeddings(BaseModel, Embeddings):
         payload = {"model": self.model, "input": texts, "encoding_format": "float"}
         response = requests.post(url, json=payload, headers=headers)
         response_json = response.json()
-        logger.debug(
-            f"SiliconFlow API response: {response_json}"
-        )  # 添加这行来记录完整的响应
+        logger.debug(f"SiliconFlow API response: {response_json}")
 
         if "data" not in response_json or not isinstance(response_json["data"], list):
             raise ValueError(
@@ -78,7 +91,6 @@ def get_embedding_dimension(embedding_model: Embeddings) -> int:
     elif hasattr(embedding_model, "embedding_dim"):
         return embedding_model.embedding_dim
     else:
-        # 如果无法获取维度，我们可以尝试嵌入一个样本文本并获取其长度
         sample_embedding = embedding_model.embed_query("Sample text for dimension")
         return len(sample_embedding)
 
@@ -87,11 +99,14 @@ def get_embedding_model(model_name: str) -> Embeddings:
     logger.info(f"Initializing embedding model: {model_name}")
     try:
         if model_name == "openai":
-            embedding_model = OpenAIEmbeddings(openai_api_key=settings.OPENAI_API_KEY)
+            api_key = get_api_key("openai")
+            embedding_model = OpenAIEmbeddings(openai_api_key=api_key)
         elif model_name == "zhipuai":
-            embedding_model = ZhipuAIEmbeddings()
+            api_key = get_api_key("zhipuai")
+            embedding_model = ZhipuAIEmbeddings(api_key=api_key)
         elif model_name == "siliconflow":
-            embedding_model = SiliconFlowEmbeddings()
+            api_key = get_api_key("Siliconflow")
+            embedding_model = SiliconFlowEmbeddings(api_key=api_key)
         elif model_name == "local":
             embedding_model = HuggingFaceEmbeddings(
                 model_name=settings.DENSE_EMBEDDING_MODEL,
@@ -102,7 +117,6 @@ def get_embedding_model(model_name: str) -> Embeddings:
 
         logger.info(f"Embedding model created: {type(embedding_model)}")
 
-        # 对于 ZhipuAIEmbeddings，我们不需要手动设置 dimension
         if not isinstance(embedding_model, ZhipuAIEmbeddings):
             embedding_model.dimension = get_embedding_dimension(embedding_model)
 

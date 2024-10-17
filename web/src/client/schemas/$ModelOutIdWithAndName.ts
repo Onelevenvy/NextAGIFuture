@@ -12,5 +12,19 @@ export const $ModelOutIdWithAndName = {
             type: 'string',
             isRequired: true,
         },
+        categories: {
+            type: 'array',
+            contains: {
+                type: 'ModelCategory',
+            },
+            isRequired: true,
+        },
+        capabilities: {
+            type: 'array',
+            contains: {
+                type: 'ModelCapability',
+            },
+            isRequired: true,
+        },
     },
 } as const;

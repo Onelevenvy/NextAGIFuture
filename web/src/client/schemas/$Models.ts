@@ -13,6 +13,19 @@ export const $Models = {
             type: 'number',
             isRequired: true,
         },
+        categories: {
+            type: 'array',
+            contains: {
+                type: 'ModelCategory',
+            },
+            isRequired: true,
+        },
+        capabilities: {
+            type: 'array',
+            contains: {
+                type: 'ModelCapability',
+            },
+        },
         id: {
             type: 'any-of',
             contains: [{
