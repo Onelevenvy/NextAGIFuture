@@ -1,4 +1,4 @@
-## 📃 NextAGIFuture
+## 📃 Flock
 
 <p align="center">
   <a href="./README_cn.md">简体中文</a> |
@@ -30,9 +30,9 @@
 </p>
 
 ### Human-in-the-Loop（人工审批或让 LLM 重新思考或寻求人工帮助）
-NextAGIFuture 旨在成为一个开源的大语言模型（LLM）应用开发平台。它是一个基于 LangChain 和 LangGraph 概念的 LLM 应用。目标是创建一套支持聊天机器人、RAG 应用、代理和多代理系统的 LLMOps 解决方案，并具备离线运行能力。
+Flock 旨在成为一个开源的大语言模型（LLM）应用开发平台。它是一个基于 LangChain 和 LangGraph 概念的 LLM 应用。目标是创建一套支持聊天机器人、RAG 应用、代理和多代理系统的 LLMOps 解决方案，并具备离线运行能力。
 
-受 [StreetLamb](https://github.com/StreetLamb) 项目及其 [tribe](https://github.com/StreetLamb/tribe) 项目的启发，NextAGIFuture 采用了许多相同的方法和代码。在此基础上，它引入了一些新的功能和方向。
+受 [StreetLamb](https://github.com/StreetLamb) 项目及其 [tribe](https://github.com/StreetLamb/tribe) 项目的启发，Flock 采用了许多相同的方法和代码。在此基础上，它引入了一些新的功能和方向。
 
 本项目的一些布局参考了 [Lobe-chat](https://github.com/lobehub/lobe-chat)、[Dify](https://github.com/langgenius/dify) 和 [fastgpt](https://github.com/labring/FastGPT)。它们都是优秀的开源项目，在此表示感谢 🙇‍。
 
@@ -82,7 +82,7 @@ NextAGIFuture 旨在成为一个开源的大语言模型（LLM）应用开发平
 
 ##### 1.1 克隆代码
 
-git clone https://github.com/Onelevenvy/NextAGIFuture.git
+git clone https://github.com/Onelevenvy/flock.git
 
 ##### 1.2 复制环境配置文件
 
