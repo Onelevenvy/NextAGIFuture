@@ -103,8 +103,8 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 ##### 1.3 postgres、qdrant、redis をインストール
 
 ```bash
-cd nextagi
-docker compose up -d
+cd docker
+docker compose  --env-file ../.env up -d
 ```
 
 #### 2. バックエンドを実行

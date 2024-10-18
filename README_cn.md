@@ -104,8 +104,8 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 ##### 1.3 安装 postgres、qdrant、redis
 
 ```bash
-cd nextagi
-docker compose up -d
+cd docker
+docker compose  --env-file ../.env up -d
 ```
 
 #### 2.运行后端

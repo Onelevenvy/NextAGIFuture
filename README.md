@@ -12,16 +12,20 @@ A chatbot, RAG, agent, and multi-agent application project based on LangChain, L
 </video>
 
 ### 🤖️ Overview
+
 ![alt text](assets/image.png)
+
 ### work flow
 
 ![image](https://github.com/user-attachments/assets/a4e33565-7acf-45d9-8e82-5a740cd88344)
 ![image](https://github.com/user-attachments/assets/4d5874f1-aeb0-47c5-b907-21878a2fa4d9)
+
 ### AGent Chat
 
-
 ![image](https://github.com/user-attachments/assets/4097b087-0309-4aab-8be9-a06fdc9d4964)
+
 ### Image
+
 ![a](https://github.com/user-attachments/assets/836fac80-ab49-4f6b-973c-25ba173149eb)
 
 ### Knowledge Retrieval
@@ -110,8 +114,8 @@ Copy the content and use that as password / secret key. And run that again to ge
 ##### 1.3 Insatll postgres，qdrant,redis
 
 ```bash
-cd nextagi
-docker compose up -d
+cd docker
+docker compose  --env-file ../.env up -d
 ```
 
 #### 2.Run Backend
@@ -188,4 +192,3 @@ pnpm dev
 
 # or pnpm build then pnpm start
 ```
-
