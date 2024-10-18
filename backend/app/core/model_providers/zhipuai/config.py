@@ -4,7 +4,7 @@ from app.models import ModelCategory, ModelCapability
 PROVIDER_CONFIG = {
     "provider_name": "zhipuai",
     "base_url": "https://open.bigmodel.cn/api/paas/v4",
-    "api_key": "5e867fc4396cff20bc3431d39e8c240f.d5Y8YBqIawDigP46",
+    "api_key": "fake_api_key",
     "icon": "zhipuai_icon",
     "description": "智谱AI",
 }
