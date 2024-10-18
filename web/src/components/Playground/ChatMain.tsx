@@ -212,10 +212,10 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     
     if (matchingNode) {
       console.log("Matching node found:", matchingNode);
-      // 添加 500ms 的延迟
+      // 添加 100ms 的延迟
       setTimeout(() => {
         setActiveNodeName(response.name);
-      }, 500);
+      }, 100);
     } else {
       console.log("No matching node found for name:", response.name);
       console.log("Available node IDs:", nodes.map(node => node.id));
