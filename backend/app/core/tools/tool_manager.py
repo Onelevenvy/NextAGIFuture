@@ -120,13 +120,13 @@ class ToolManager:
                 input_parameters={"query": "str"},
                 credentials={},
             ),
-            "tavilysearch": ToolInfo(
-                description="Tavily is useful when searching for information on the internet.",
-                tool=TavilySearchResults(max_results=1),
-                display_name="Tavily Search",
-                input_parameters={"query": "str"},
-                credentials={},
-            ),
+            # "tavilysearch": ToolInfo(
+            #     description="Tavily is useful when searching for information on the internet.",
+            #     tool=TavilySearchResults(max_results=1),
+            #     display_name="Tavily Search",
+            #     input_parameters={"query": "str"},
+            #     credentials={},
+            # ),
         }
         self.managed_tools.update(external_tools)
 

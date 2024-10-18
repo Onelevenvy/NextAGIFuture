@@ -6,9 +6,9 @@
             "port": 5432,
             "driver": "PostgreSQL",
             "name": "n",
-            "database": "evoagi",
+            "database": "flock",
             "username": "postgres",
-            "password": "evoagi123456"
+            "password": "flock123456"
         }
     ]
 }

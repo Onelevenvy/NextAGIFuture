@@ -170,7 +170,7 @@ class Settings(BaseSettings):
     RECURSION_LIMIT: int = 25
     TAVILY_API_KEY: str | None = None
 
-    OPENAI_API_KEY: str
+    OPENAI_API_KEY: str | None = None
 
     # LangSmith
     # USE_LANGSMITH: bool = True
