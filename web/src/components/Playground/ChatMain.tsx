@@ -68,8 +68,9 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const { setActiveNodeName } = useWorkflowStore();
 
   // 从 graphData 中获取初始节点和边
-  const { data: graphData, isLoading: isGraphLoading } = useQuery(["graph", teamId], () =>
-    GraphsService.readGraphs({ teamId })
+  const { data: graphData, isLoading: isGraphLoading } = useQuery(
+    ["graph", teamId],
+    () => GraphsService.readGraphs({ teamId })
   );
 
   const initialNodes = graphData?.data[0]?.config?.nodes || [];
@@ -206,19 +207,32 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     // 更新活跃节点名称
     console.log("Response name:", response.name);
     console.log("Current nodes:", nodes);
-    console.log("Node IDs:", nodes.map(node => node.id));
-    
-    const matchingNode = nodes.find((node) => node.id === response.name);
-    
-    if (matchingNode) {
-      console.log("Matching node found:", matchingNode);
+
+    let activeNode = nodes.find((node) => node.id === response.name);
+
+    if (!activeNode) {
+      // 如果没有直接匹配的节点ID，检查工具节点
+      activeNode = nodes.find(
+        (node) =>
+          node.type === "tool" &&
+          node.data.tools &&
+          Array.isArray(node.data.tools) &&
+          node.data.tools.includes(response.name)
+      );
+    }
+
+    if (activeNode) {
+      console.log("Matching node found:", activeNode);
       // 添加 100ms 的延迟
       setTimeout(() => {
         setActiveNodeName(response.name);
       }, 100);
     } else {
       console.log("No matching node found for name:", response.name);
-      console.log("Available node IDs:", nodes.map(node => node.id));
+      console.log(
+        "Available node IDs:",
+        nodes.map((node) => node.id)
+      );
     }
     console.log("Setting active node name:", response.name);
   };

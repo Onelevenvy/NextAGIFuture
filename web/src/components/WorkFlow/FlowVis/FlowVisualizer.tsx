@@ -91,7 +91,13 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const nodesWithSelection = useMemo(() => {
     console.log("FlowVisualizer - Rendering nodes. Active Node Name:", activeNodeName);
     return nodes?.map((node) => {
-      const isActive = node.id === activeNodeName;
+      let isActive = node.id === activeNodeName;
+      
+      // 对于工具节点，检查工具列表
+      if (node.type === 'tool' && node.data.tools && Array.isArray(node.data.tools)) {
+        isActive = isActive || node.data.tools.includes(activeNodeName);
+      }
+      
       console.log(`Node ${node.id} active:`, isActive);
       return {
         ...node,
