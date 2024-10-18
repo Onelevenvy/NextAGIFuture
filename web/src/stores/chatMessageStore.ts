@@ -6,6 +6,8 @@ interface ChatMessageState {
   setMessages: (
     update: ChatResponse[] | ((prevMessages: ChatResponse[]) => ChatResponse[]),
   ) => void;
+  activeNodeName: string | null;
+  setActiveNodeName: (name: string | null) => void;
 }
 
 const useChatMessageStore = create<ChatMessageState>((set) => ({
@@ -14,6 +16,8 @@ const useChatMessageStore = create<ChatMessageState>((set) => ({
     set((state) => ({
       messages: typeof update === "function" ? update(state.messages) : update,
     })),
+  activeNodeName: null,
+  setActiveNodeName: (name) => set({ activeNodeName: name }),
 }));
 
 export default useChatMessageStore;

@@ -1,5 +1,9 @@
 import useChatMessageStore from "@/stores/chatMessageStore";
 import useChatTeamIdStore from "@/stores/chatTeamIDStore";
+import useWorkflowStore from "@/stores/workflowStore";
+import { useFlowState } from "@/hooks/graphs/useFlowState";
+import { useEffect } from "react";
+
 import { Box, Button } from "@chakra-ui/react";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,6 +19,7 @@ import {
 import {
   type ApiError,
   type ChatResponse,
+  GraphsService,
   type InterruptDecision,
   OpenAPI,
   type OpenAPIConfig,
@@ -60,9 +65,22 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const threadId = searchParams.get("threadId");
   const { t } = useTranslation();
   const { teamId } = useChatTeamIdStore();
+  const { setActiveNodeName } = useWorkflowStore();
+
+  // 从 graphData 中获取初始节点和边
+  const { data: graphData, isLoading: isGraphLoading } = useQuery(
+    ["graph", teamId],
+    () => GraphsService.readGraphs({ teamId })
+  );
+
+  const initialNodes = graphData?.data[0]?.config?.nodes || [];
+  const initialEdges = graphData?.data[0]?.config?.edges || [];
+
+  const { nodes } = useFlowState(initialNodes, initialEdges);
+
   const [imageData, setImageData] = useState<string | null>(null);
   const [currentThreadId, setCurrentThreadId] = useState<string | null>(
-    searchParams.get("threadId"),
+    searchParams.get("threadId")
   );
   const showToast = useCustomToast();
   const [input, setInput] = useState("");
@@ -105,7 +123,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
           processMessage(message);
         }
       },
-    },
+    }
   );
 
   const createThread = async (data: ThreadCreate) => {
@@ -163,7 +181,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
   const processMessage = (response: ChatResponse) => {
     setMessages((prevMessages: ChatResponse[]) => {
       const messageIndex = prevMessages.findIndex(
-        (msg) => msg.id === response.id,
+        (msg) => msg.id === response.id
       );
       if (messageIndex !== -1) {
         return prevMessages.map((msg, index) =>
@@ -173,11 +191,31 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
                 content: (msg.content ?? "") + (response.content ?? ""),
                 tool_output: response.tool_output,
               }
-            : msg,
+            : msg
         );
       }
       return [...prevMessages, response];
     });
+
+    let activeNode = nodes.find((node) => node.id === response.name);
+
+    if (!activeNode) {
+      activeNode = nodes.find(
+        (node) =>
+          node.type === "tool" &&
+          node.data.tools &&
+          Array.isArray(node.data.tools) &&
+          node.data.tools.includes(response.name)
+      );
+    }
+
+    if (activeNode) {
+      setActiveNodeName(response.name);
+      // 5秒后重置高亮节点
+      // setTimeout(() => {
+      //   setActiveNodeName(null);
+      // }, 5000);
+    }
   };
 
   const stream = async (id: number, threadId: string, data: TeamChat) => {
@@ -275,7 +313,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
         type: "human",
         id: self.crypto.randomUUID(),
         content: data.messages[0].content,
-        img:imageData,
+        img: imageData,
         name: "user",
       },
     ]);
@@ -308,7 +346,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
       setInput("");
       setImageData("");
     },
-    [input, mutation],
+    [input, mutation]
   );
 
   const newChatHandler = useCallback(() => {
@@ -334,7 +372,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
         interrupt: { decision, tool_message },
       });
     },
-    [mutation],
+    [mutation]
   );
 
   return (
@@ -361,7 +399,7 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
             key={index}
             message={message}
             onResume={onResumeHandler}
-            isPlayground = {isPlayground}
+            isPlayground={isPlayground}
           />
         ))}
       </Box>

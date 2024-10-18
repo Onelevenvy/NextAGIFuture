@@ -1,6 +1,6 @@
 "use client";
 import type React from "react";
-import { type KeyboardEvent, useCallback, useMemo, useState } from "react";
+import { type KeyboardEvent, useCallback, useMemo, useState, useEffect } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -45,6 +45,7 @@ import { type NodeType, nodeConfig } from "../Nodes/nodeConfig";
 import type { CustomNode, FlowVisualizerProps } from "../types";
 import { calculateEdgeCenter } from "./utils";
 import SharedNodeMenu from "./SharedNodeMenu";
+import useWorkflowStore from "@/stores/workflowStore";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -81,16 +82,33 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     [setSelectedNodeId]
   );
 
+  const { activeNodeName } = useWorkflowStore();
+
   const nodesWithSelection = useMemo(() => {
-    return nodes?.map((node) => ({
-      ...node,
-      style: {
-        ...node.style,
-        border: node.id === selectedNodeId ? "2px solid #2970ff" : "none",
-        borderRadius: "8px",
-      },
-    }));
-  }, [nodes, selectedNodeId]);
+    return nodes?.map((node) => {
+      let isActive = node.id === activeNodeName;
+      
+      if (node.type === 'tool' && node.data.tools && Array.isArray(node.data.tools)) {
+        isActive = isActive || node.data.tools.includes(activeNodeName);
+      }
+      
+      return {
+        ...node,
+        style: {
+          ...node.style,
+          border: node.id === selectedNodeId 
+            ? "2px solid #2970ff" 
+            : isActive 
+              ? "3px solid #38a169"
+              : "none",
+          borderRadius: "8px",
+          backgroundColor: isActive ? "#e6fffa" : "white",
+          boxShadow: isActive ? "0 0 10px rgba(56, 161, 105, 0.5)" : "none",
+          transition: "all 0.3s ease",
+        },
+      };
+    });
+  }, [nodes, selectedNodeId, activeNodeName]);
 
   const getNodePropertiesComponent = (node: Node | null) => {
     if (!node) return null;
@@ -485,6 +503,21 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
     setSelectedNodeId(null); // 取消选中的节点
   }, [setSelectedNodeId]);
 
+  const edgesWithStyles = useMemo(() => {
+    return edges?.map((edge) => ({
+      ...edge,
+      style: {
+        ...edge.style,
+        strokeWidth: 2, // 加粗线条
+        stroke: edge.source === activeNodeName || edge.target === activeNodeName 
+          ? "#38a169" // 如果边连接到活跃节点，使用绿色
+          : edge.type === "default" 
+            ? "#5e5a6a" 
+            : "#517359",
+      },
+    }));
+  }, [edges, activeNodeName]);
+
   return (
     <Box
       display="flex"
@@ -504,19 +537,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         <ReactFlow
           onNodeClick={onNodeClick}
           nodes={nodesWithSelection}
-          edges={edges?.map((edge) => ({
-            ...edge,
-            style: {
-              ...edge.style,
-              strokeWidth: 2, // Increased thickness
-              stroke: edge.selected
-                ? "#2970ff"
-                : edge.type === "default"
-                  ? "#5e5a6a"
-                  : "#517359", // Blue for solid, Red for dashed
-              strokeDasharray: edge.type === "default" ? "none" : "5,5",
-            },
-          }))}
+          edges={edgesWithStyles}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}

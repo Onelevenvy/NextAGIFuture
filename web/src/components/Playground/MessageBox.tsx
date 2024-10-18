@@ -36,6 +36,7 @@ import {
 
 import { GrFormNextLink } from "react-icons/gr";
 import Markdown from "../Markdown/Markdown";
+import useWorkflowStore from "@/stores/workflowStore";
 
 interface MessageBoxProps {
   message: ChatResponse;
@@ -49,6 +50,7 @@ const MessageBox = ({ message, onResume, isPlayground }: MessageBoxProps) => {
   const [decision, setDecision] = useState<InterruptDecision | null>(null);
   const [toolMessage, setToolMessage] = useState<string | null>(null);
   const { isOpen: showClipboardIcon, onOpen, onClose } = useDisclosure();
+  const { activeNodeName } = useWorkflowStore();
 
   const onDecisionHandler = (decision: InterruptDecision) => {
     setDecision(decision);
