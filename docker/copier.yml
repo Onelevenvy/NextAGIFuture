@@ -1,12 +1,12 @@
 project_name:
   type: str
   help: The name of the project, shown to API users (in .env)
-  default: nextagi
+  default: flock
 
 stack_name:
   type: str
   help: The name of the stack used for Docker Compose labels (no spaces) (in .env)
-  default: nextagi
+  default: flock
 
 secret_key:
   type: str

@@ -76,7 +76,7 @@ function Login() {
           fontSize={"xx-large"}
           mb={4}
         >
-          Next AGI Future
+          Flock AGI
         </Container>
         <FormControl id="username" isInvalid={!!errors.username || !!error}>
           <Input

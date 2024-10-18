@@ -29,11 +29,11 @@ const Sidebar = () => {
           <Box w="full">
             <VStack align="center" spacing={6}>
               <Link
-                href="https://github.com/Onelevenvy/NextAGIFuture"
+                href="https://github.com/Onelevenvy/flock"
                 isExternal
               >
                 <Tooltip
-                  label="https://github.com/Onelevenvy/NextAGIFuture"
+                  label="https://github.com/Onelevenvy/flock"
                   fontSize="2xs"
                 >
                   <Avatar
