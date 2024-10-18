@@ -15,10 +15,10 @@ logger = logging.getLogger(__name__)
 
 def get_url():
     user = os.getenv("POSTGRES_USER", "postgres")
-    password = os.getenv("POSTGRES_PASSWORD", "evoagi123456")
+    password = os.getenv("POSTGRES_PASSWORD", "flock123456")
     server = os.getenv("POSTGRES_SERVER", "localhost")
     port = os.getenv("POSTGRES_PORT", "5432")
-    db = os.getenv("POSTGRES_DB", "evoagi")
+    db = os.getenv("POSTGRES_DB", "flock")
     return f"postgresql+psycopg://{user}:{password}@{server}:{port}/{db}"
 
 
@@ -172,7 +172,9 @@ def init_modelprovider_model_db(session: Session) -> None:
                 )
                 session.add(new_model)
 
-        for model_name in set(existing_models.keys()) - set(model["name"] for model in supported_models):
+        for model_name in set(existing_models.keys()) - set(
+            model["name"] for model in supported_models
+        ):
             session.delete(existing_models[model_name])
 
     session.commit()
