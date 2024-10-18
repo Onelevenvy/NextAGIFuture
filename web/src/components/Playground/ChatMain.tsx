@@ -78,13 +78,6 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
 
   const { nodes } = useFlowState(initialNodes, initialEdges);
 
-  // 在组件的顶部添加这个 useEffect
-  useEffect(() => {
-    if (!isGraphLoading && nodes.length > 0) {
-      console.log("Nodes loaded:", nodes);
-    }
-  }, [isGraphLoading, nodes]);
-
   const [imageData, setImageData] = useState<string | null>(null);
   const [currentThreadId, setCurrentThreadId] = useState<string | null>(
     searchParams.get("threadId")
@@ -204,14 +197,9 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
       return [...prevMessages, response];
     });
 
-    // 更新活跃节点名称
-    console.log("Response name:", response.name);
-    console.log("Current nodes:", nodes);
-
     let activeNode = nodes.find((node) => node.id === response.name);
 
     if (!activeNode) {
-      // 如果没有直接匹配的节点ID，检查工具节点
       activeNode = nodes.find(
         (node) =>
           node.type === "tool" &&
@@ -222,19 +210,12 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     }
 
     if (activeNode) {
-      console.log("Matching node found:", activeNode);
-      // 添加 100ms 的延迟
+      setActiveNodeName(response.name);
+      // 5秒后重置高亮节点
       setTimeout(() => {
-        setActiveNodeName(response.name);
-      }, 100);
-    } else {
-      console.log("No matching node found for name:", response.name);
-      console.log(
-        "Available node IDs:",
-        nodes.map((node) => node.id)
-      );
+        setActiveNodeName(null);
+      }, 5000);
     }
-    console.log("Setting active node name:", response.name);
   };
 
   const stream = async (id: number, threadId: string, data: TeamChat) => {

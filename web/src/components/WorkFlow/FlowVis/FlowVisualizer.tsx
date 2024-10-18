@@ -84,21 +84,14 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
 
   const { activeNodeName } = useWorkflowStore();
 
-  useEffect(() => {
-    console.log("FlowVisualizer - Active Node Name changed:", activeNodeName);
-  }, [activeNodeName]);
-
   const nodesWithSelection = useMemo(() => {
-    console.log("FlowVisualizer - Rendering nodes. Active Node Name:", activeNodeName);
     return nodes?.map((node) => {
       let isActive = node.id === activeNodeName;
       
-      // 对于工具节点，检查工具列表
       if (node.type === 'tool' && node.data.tools && Array.isArray(node.data.tools)) {
         isActive = isActive || node.data.tools.includes(activeNodeName);
       }
       
-      console.log(`Node ${node.id} active:`, isActive);
       return {
         ...node,
         style: {
@@ -106,11 +99,11 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
           border: node.id === selectedNodeId 
             ? "2px solid #2970ff" 
             : isActive 
-              ? "3px solid #38a169" // 绿色边框，更粗
+              ? "3px solid #38a169"
               : "none",
           borderRadius: "8px",
-          backgroundColor: isActive ? "#e6fffa" : "white", // 浅绿色背景
-          boxShadow: isActive ? "0 0 10px rgba(56, 161, 105, 0.5)" : "none", // 添加阴影效果
+          backgroundColor: isActive ? "#e6fffa" : "white",
+          boxShadow: isActive ? "0 0 10px rgba(56, 161, 105, 0.5)" : "none",
           transition: "all 0.3s ease",
         },
       };
