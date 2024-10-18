@@ -27,7 +27,7 @@ import { TbDatabaseSearch } from "react-icons/tb";
 import { useMutation, useQueryClient } from "react-query";
 import { type ApiError, type TeamCreate, TeamsService } from "../../client";
 import useCustomToast from "../../hooks/useCustomToast";
-import { SiVisualstudiocode } from "react-icons/si";
+import { SiKashflow, SiVisualstudiocode } from "react-icons/si";
 import IconPicker from "@/components/Icons/TqxIcon";
 
 interface AddTeamProps {
@@ -119,9 +119,9 @@ const AddTeam = ({ isOpen, onClose }: AddTeamProps) => {
       descripthion: t("team.teamcard.ragbot.description"),
     },
     workflow: {
-      colorScheme: "green",
-      backgroundColor: "#4caf50",
-      icon: <TbDatabaseSearch size="24" />,
+      colorScheme: "teal",
+      backgroundColor: "teal",
+      icon: <SiKashflow size="24" />,
       title: t("team.teamcard.workflow.title"),
       descripthion: t("team.teamcard.workflow.description"),
     },
