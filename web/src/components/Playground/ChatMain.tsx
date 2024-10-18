@@ -212,9 +212,9 @@ const ChatMain = ({ isPlayground }: { isPlayground?: boolean }) => {
     if (activeNode) {
       setActiveNodeName(response.name);
       // 5秒后重置高亮节点
-      setTimeout(() => {
-        setActiveNodeName(null);
-      }, 5000);
+      // setTimeout(() => {
+      //   setActiveNodeName(null);
+      // }, 5000);
     }
   };
 
