@@ -1,4 +1,4 @@
-## 📃 NextAGIFuture
+## 📃 Flock
 
 <p align="center">
   <a href="./README_cn.md">简体中文</a> |
@@ -29,9 +29,9 @@ LangChain、LangGraph、およびその他のフレームワークに基づい�
   <img src="https://github.com/user-attachments/assets/1c7d383d-e6bf-42b8-94ec-9f0c37be19b8" alt="image" style="width: 49%; display: inline-block;">
 </p>
 
-NextAGIFuture は、大規模言語モデル（LLM）アプリケーションを開発するためのオープンソースプラットフォームを目指しています。これは、LangChain と LangGraph の概念を利用した LLM ベースのアプリケーションです。チャットボット、RAG アプリケーション、エージェント、およびマルチエージェントシステムをサポートする LLMOps ソリューションのスイートを作成し、オフライン操作の機能を備えることを目指しています。
+Flock は、大規模言語モデル（LLM）アプリケーションを開発するためのオープンソースプラットフォームを目指しています。これは、LangChain と LangGraph の概念を利用した LLM ベースのアプリケーションです。チャットボット、RAG アプリケーション、エージェント、およびマルチエージェントシステムをサポートする LLMOps ソリューションのスイートを作成し、オフライン操作の機能を備えることを目指しています。
 
-[StreetLamb](https://github.com/StreetLamb)プロジェクトおよびその[tribe](https://github.com/StreetLamb/tribe)プロジェクトに触発され、NextAGIFuture は多くのアプローチとコードを採用しています。この基盤の上に、新しい機能と方向性を導入しています。
+[StreetLamb](https://github.com/StreetLamb)プロジェクトおよびその[tribe](https://github.com/StreetLamb/tribe)プロジェクトに触発され、Flock は多くのアプローチとコードを採用しています。この基盤の上に、新しい機能と方向性を導入しています。
 
 このプロジェクトのレイアウトの一部は、[Lobe-chat](https://github.com/lobehub/lobe-chat)、[Dify](https://github.com/langgenius/dify)、および[fastgpt](https://github.com/labring/FastGPT)を参考にしています。これらはすべて優れたオープンソースプロジェクトであり、感謝しています 🙇‍。
 
@@ -81,7 +81,7 @@ NextAGIFuture は、大規模言語モデル（LLM）アプリケーションを
 
 ##### 1.1 コードをクローン
 
-git clone https://github.com/Onelevenvy/NextAGIFuture.git
+git clone https://github.com/Onelevenvy/flock.git
 
 ##### 1.2 環境設定ファイルをコピー
 
@@ -103,8 +103,8 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 ##### 1.3 postgres、qdrant、redis をインストール
 
 ```bash
-cd nextagi
-docker compose up -d
+cd docker
+docker compose  --env-file ../.env up -d
 ```
 
 #### 2. バックエンドを実行

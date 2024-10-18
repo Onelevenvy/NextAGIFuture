@@ -1,4 +1,4 @@
-## 📃 NextAGIFuture
+## 📃 Flock
 
 <p align="center">
   <a href="./README_cn.md">简体中文</a> |
@@ -12,16 +12,20 @@ A chatbot, RAG, agent, and multi-agent application project based on LangChain, L
 </video>
 
 ### 🤖️ Overview
+
 ![alt text](assets/image.png)
+
 ### work flow
 
 ![image](https://github.com/user-attachments/assets/a4e33565-7acf-45d9-8e82-5a740cd88344)
 ![image](https://github.com/user-attachments/assets/4d5874f1-aeb0-47c5-b907-21878a2fa4d9)
+
 ### AGent Chat
 
-
 ![image](https://github.com/user-attachments/assets/4097b087-0309-4aab-8be9-a06fdc9d4964)
+
 ### Image
+
 ![a](https://github.com/user-attachments/assets/836fac80-ab49-4f6b-973c-25ba173149eb)
 
 ### Knowledge Retrieval
@@ -33,10 +37,10 @@ A chatbot, RAG, agent, and multi-agent application project based on LangChain, L
 
 ### Human in the loop (human approval or let the LLM rethink or ask human for help)
 
-NextAGIFuture aims to be an open-source platform for developing large language model (LLM) applications. It is an LLM-based application utilizing the concepts of
+Flock aims to be an open-source platform for developing large language model (LLM) applications. It is an LLM-based application utilizing the concepts of
 LangChain and LangGraph. The goal is to create a suite of LLMOps solutions that supports chatbots, RAG applications, agents, and multi-agent systems, with the capability for offline operation.
 
-Inspired by the [StreetLamb](https://github.com/StreetLamb) project and its [tribe](https://github.com/StreetLamb/tribe) project , NextAGIFuture adopts much of the approach and code.
+Inspired by the [StreetLamb](https://github.com/StreetLamb) project and its [tribe](https://github.com/StreetLamb/tribe) project , Flock adopts much of the approach and code.
 Building on this foundation, it introduces some new features and directions of its own.
 
 Some of the layout in this project references [Lobe-chat](https://github.com/lobehub/lobe-chat), [Dify](https://github.com/langgenius/dify), and [fastgpt](https://github.com/labring/FastGPT).
@@ -88,7 +92,7 @@ Project tech stack: LangChain + LangGraph + React + Next.js + Chakra UI + Postgr
 
 ##### 1.1 Clone the Code
 
-git clone https://github.com/Onelevenvy/NextAGIFuture.git
+git clone https://github.com/Onelevenvy/flock.git
 
 ##### 1.2 Copy Environment Configuration File
 
@@ -110,8 +114,8 @@ Copy the content and use that as password / secret key. And run that again to ge
 ##### 1.3 Insatll postgres，qdrant,redis
 
 ```bash
-cd nextagi
-docker compose up -d
+cd docker
+docker compose  --env-file ../.env up -d
 ```
 
 #### 2.Run Backend
@@ -188,4 +192,3 @@ pnpm dev
 
 # or pnpm build then pnpm start
 ```
-

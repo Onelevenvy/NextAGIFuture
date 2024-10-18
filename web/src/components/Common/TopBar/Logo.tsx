@@ -1,6 +1,6 @@
 import { Box, Image, Text } from "@chakra-ui/react";
 
-export function NextAGILogo() {
+export function FlockLogo() {
   return (
     <Box
       display="flex"
@@ -10,7 +10,7 @@ export function NextAGILogo() {
     >
       <Image src="logo.png" h={"55px"} w={"55px"} alt="Logo" bg="transparent" />
       <Text fontSize="2xl" fontWeight="bold">
-        NextAGI
+        Flock
       </Text>
     </Box>
   );
