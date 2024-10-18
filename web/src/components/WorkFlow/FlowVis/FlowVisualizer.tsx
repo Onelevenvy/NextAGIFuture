@@ -1,6 +1,12 @@
 "use client";
 import type React from "react";
-import { type KeyboardEvent, useCallback, useMemo, useState, useEffect } from "react";
+import {
+  type KeyboardEvent,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -46,6 +52,7 @@ import type { CustomNode, FlowVisualizerProps } from "../types";
 import { calculateEdgeCenter } from "./utils";
 import SharedNodeMenu from "./SharedNodeMenu";
 import useWorkflowStore from "@/stores/workflowStore";
+import { Node as FlowNode } from "reactflow";
 
 const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   nodeTypes,
@@ -87,20 +94,25 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
   const nodesWithSelection = useMemo(() => {
     return nodes?.map((node) => {
       let isActive = node.id === activeNodeName;
-      
-      if (node.type === 'tool' && node.data.tools && Array.isArray(node.data.tools)) {
+
+      if (
+        node.type === "tool" &&
+        node.data.tools &&
+        Array.isArray(node.data.tools)
+      ) {
         isActive = isActive || node.data.tools.includes(activeNodeName);
       }
-      
+
       return {
         ...node,
         style: {
           ...node.style,
-          border: node.id === selectedNodeId 
-            ? "2px solid #2970ff" 
-            : isActive 
-              ? "3px solid #38a169"
-              : "none",
+          border:
+            node.id === selectedNodeId
+              ? "2px solid #2970ff"
+              : isActive
+                ? "3px solid #38a169"
+                : "none",
           borderRadius: "8px",
           backgroundColor: isActive ? "#e6fffa" : "white",
           boxShadow: isActive ? "0 0 10px rgba(56, 161, 105, 0.5)" : "none",
@@ -427,8 +439,11 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       const targetNode = nodes.find((node) => node.id === selectedEdge.target);
       if (!sourceNode || !targetNode) return;
 
-      const centerX = (sourceNode.position.x + targetNode.position.x) / 2;
-      const centerY = (sourceNode.position.y + targetNode.position.y) / 2;
+      const nodeSpacing = 300; // 节点之间的固定距离
+
+      // 计算新节点的位置（在源节点和目标节点之间）
+      const newNodeX = (sourceNode.position.x + targetNode.position.x) / 2;
+      const newNodeY = (sourceNode.position.y + targetNode.position.y) / 2;
 
       let newNode: CustomNode;
 
@@ -436,7 +451,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         newNode = {
           id: `${tool.display_name}-${nodes.length + 1}`,
           type: "plugin",
-          position: { x: centerX, y: centerY },
+          position: { x: newNodeX, y: newNodeY },
           data: {
             label: tool.display_name,
             toolName: tool.display_name,
@@ -449,7 +464,7 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         newNode = {
           id: newNodeId,
           type: nodeType as NodeType,
-          position: { x: centerX, y: centerY },
+          position: { x: newNodeX, y: newNodeY },
           data: {
             label: generateUniqueName(nodeConfig[nodeType as NodeType].display),
             customName: generateUniqueName(
@@ -462,6 +477,32 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         };
       }
 
+      // 更新节点
+      setNodes((nds) => {
+        // 对节点按 x 坐标排序
+        const sortedNodes = [...nds].sort(
+          (a, b) => a.position.x - b.position.x
+        );
+
+        // 找到新节点应该插入的位置
+        const insertIndex = sortedNodes.findIndex(
+          (node) => node.position.x > newNodeX
+        );
+
+        // 插入新节点
+        sortedNodes.splice(insertIndex, 0, newNode);
+
+        // 重新计算所有节点的位置
+        return sortedNodes.map((node, index) => ({
+          ...node,
+          position: {
+            x: index * nodeSpacing,
+            y: node.position.y,
+          },
+        }));
+      });
+
+      // 更新边
       const newEdge1: Edge = {
         id: `e${selectedEdge.source}-${newNode.id}`,
         source: selectedEdge.source,
@@ -480,7 +521,6 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
         type: selectedEdge.type,
       };
 
-      setNodes((nds) => nds.concat(newNode));
       setEdges((eds) =>
         eds.filter((e) => e.id !== selectedEdge.id).concat(newEdge1, newEdge2)
       );
@@ -509,11 +549,12 @@ const FlowVisualizer: React.FC<FlowVisualizerProps> = ({
       style: {
         ...edge.style,
         strokeWidth: 2, // 加粗线条
-        stroke: edge.source === activeNodeName || edge.target === activeNodeName 
-          ? "#38a169" // 如果边连接到活跃节点，使用绿色
-          : edge.type === "default" 
-            ? "#5e5a6a" 
-            : "#517359",
+        stroke:
+          edge.source === activeNodeName || edge.target === activeNodeName
+            ? "#38a169" // 如果边连接到活跃节点，使用绿色
+            : edge.type === "default"
+              ? "#5e5a6a"
+              : "#517359",
       },
     }));
   }, [edges, activeNodeName]);
